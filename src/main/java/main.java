@@ -1,5 +1,8 @@
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import org.python.google.common.collect.Multisets;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -183,9 +186,7 @@ public class main {
 //        };
 
 
-//        List<Object> a = net.ss.node.entrySet().stream()
-//                .filter(n->n.getValue().get(0).size() == 1 && n.getValue().get(2).size() == 2)
-//                .collect(Collectors.toList());
+
 
 
         Petrinet net = new Petrinet(T, color, TP, M, V, G, E);
@@ -195,38 +196,20 @@ public class main {
             e.printStackTrace();
         }
 
-        Map<Integer, Set<Integer>> inArc = net.ss.inArc;
-        Map<Integer, Set<Integer>> outArc = net.ss.outArc;
 
-        int fromNode = 0;
-        int toNode = 33;
+//        List<Object> a = net.ss.node.entrySet().stream()
+//                .filter(n->n.getValue().get(0).equals(net.ss.node.get(0).get(0)))
+//                .collect(Collectors.toList());
+//
+//        for(Object o: a){
+//            print(o.toString());
+//        }
 
-        Stack<Integer> path = new Stack<>();
-        Stack<Integer> upcoming = new Stack<>();
-
-        upcoming.push(0);
-
-        while(!upcoming.empty()){
-            int current = upcoming.pop();
-            path.push(current);
-
-            if (current == toNode){
-                break;
-            }
-
-            if (outArc.containsKey(current)){
-                for (int c: outArc.get(current)){
-                    upcoming.push(c);
-                }
-            }
-            else{
-                path.pop();
-                while (!outArc.get(path.peek()).contains(upcoming.peek())){
-                    path.pop();
-                }
-            }
+        for (List<Integer> p: net.ss.allPathsBetween(0, 30, new ArrayList<>())){
+            print(p.toString());
         }
-        print(path.toString());
+
+
 
 
     }

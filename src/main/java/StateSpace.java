@@ -2,6 +2,7 @@ import com.google.common.collect.Multiset;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StateSpace {
     Map<Integer, Map<Integer, Multiset<List<String>>>> node = new HashMap<>();
@@ -37,10 +38,44 @@ public class StateSpace {
         return obj.toString();
     }
 
-    List<Integer> fipathBetween(int fromNode, int toNode){
-        List<Integer> result = new ArrayList<>();
+    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath){
+
+        List<Integer> path = new ArrayList<>();
+        for (int i: inPath){
+            path.add(i);
+        }
+        path.add(start);
+
+        if (start == end){
+            List<List<Integer>> temp = new ArrayList<>();
+            temp.add(path);
+            return temp;
+        }
+
+        if (!outArc.containsKey(start)){
+            List<List<Integer>> temp = new ArrayList<>();
+            return temp;
+        }
+
+        List<List<Integer>> result = new ArrayList<>();
+
+        for (int n: outArc.get(start)){
+            if (!path.contains(n)){
+                List<List<Integer>> newPaths = allPathsBetween(n, end, path);
+                for (List<Integer> p: newPaths){
+                    result.add(p);
+                }
+            }
+        }
 
         return result;
+    }
+    
+
+
+
+    void print(String s){
+        System.out.println(s);
     }
 
 }
