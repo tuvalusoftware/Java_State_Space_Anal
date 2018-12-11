@@ -122,7 +122,7 @@ public class main {
         //		};
 
 
-//      PERMUTATION
+////      PERMUTATION
         int T = 1;
         //raw input data
         String[] color = new String[]{
@@ -147,11 +147,10 @@ public class main {
         //P to T variable
         String[] V = new String[]{
                 "0,0,s",
-                "1,0,n",
-                "2,1,s,n"
+                "1,0,n"
         };
 
-        //PLAIN NET
+//        //PLAIN NET
 //        int T = 2;
 //        //raw input data
 //        String[] color = new String[]{
@@ -187,8 +186,6 @@ public class main {
 
 
 
-
-
         Petrinet net = new Petrinet(T, color, TP, M, V, G, E);
         try {
             net.generateStateSpace();
@@ -196,20 +193,7 @@ public class main {
             e.printStackTrace();
         }
 
-
-//        List<Object> a = net.ss.node.entrySet().stream()
-//                .filter(n->n.getValue().get(0).equals(net.ss.node.get(0).get(0)))
-//                .collect(Collectors.toList());
-//
-//        for(Object o: a){
-//            print(o.toString());
-//        }
-
-        for (List<Integer> p: net.ss.allPathsBetween(0, 30, new ArrayList<>())){
-            print(p.toString());
-        }
-
-
+        print(net.ss.getGraphXJson());
 
 
     }

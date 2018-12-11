@@ -193,6 +193,7 @@ public class Petrinet implements Serializable{
         Map<Integer,Map<Integer,Multiset<List<String>>>> node = new HashMap<>();
         Map<Integer,Set<Integer>> inArc = new HashMap<>();
         Map<Integer,Set<Integer>> outArc = new HashMap<>();
+        Map<String, Integer> arcTransition = new HashMap<>();
 
         //init
         int id = 0;
@@ -263,6 +264,9 @@ public class Petrinet implements Serializable{
                             temp.add(id);
                             outArc.put(parentID,temp);
                         }
+
+                        //add new arc transition
+                        arcTransition.put("[" + parentID + ", " + id +"]",T);
                     }
                     //if exist then only update new arc
                     else {
@@ -277,12 +281,16 @@ public class Petrinet implements Serializable{
                             temp.add(existID);
                             outArc.put(parentID, temp);
                         }
+
+                        //add new arc transition
+                        arcTransition.put("[" + parentID + ", " + existID +"]",T);
                     }
+
                 }
             }
         }
         //init state space object in petrinet
-        ss = new StateSpace(node,inArc,outArc);
+        ss = new StateSpace(node,inArc,outArc,arcTransition);
     }
 
 
