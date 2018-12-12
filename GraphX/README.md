@@ -63,5 +63,16 @@ graph.edges\
 path = graph.find('(a)-[e1]->(b); (b)-[e2]->(c); (c)-[e3]->(d)')
 path.filter('a.id == 0 and d.id == 29').show()
 
+path = graph.find('(a)-[e1]->(b); (b)-[e2]->(c); (c)-[e3]->(d)')
+path.filter('a.id == 0 and d.id == 29')\
+.filter('c.P0[0].m0 == \'a\'')\
+.select('c','e1','e2','e3')\
+.show(1000,False)
+
+path = graph.find('(b)-[e2]->(c); (c)-[e3]->(d); (c)-[e4]->(e); (d)-[e5]->(f); (e)-[e6]->(f)')\
+.select('e2','e3','e4','e5','e6')\
+.filter('e2.dst == 1 and e3 != e4')\
+.show(1000,False)
+
 #node properties:
-graph.vertices.filter(graph.vertices.marking['0']=="[['c']]").show()
+.filter('c.P0[0].m0 == \'a\'')\

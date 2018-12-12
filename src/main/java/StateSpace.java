@@ -1,4 +1,5 @@
 import com.google.common.collect.Multiset;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
@@ -45,22 +46,23 @@ public class StateSpace {
 
     String getGraphXJson(){
         JSONObject obj = new JSONObject();
-        JSONObject nodeObj = new JSONObject();
+        JSONArray nodeArray = new JSONArray();
         JSONObject arcObj = new JSONObject();
 
         for (int key: node.keySet()){
             JSONObject marking = new JSONObject();
+            marking.put("id",key);
             for (int k=0; k< node.get(key).keySet().size(); k++){
-                marking.put(k+"",node.get(key).get(k).toArray());
+                marking.put("P"+k,node.get(key).get(k).toString());
             }
-            nodeObj.put(key+"",marking);
+            nodeArray.put(marking);
         }
 
         for (String key: arcTransition.keySet()){
             arcObj.put(key,arcTransition.get(key));
         }
 
-        obj.put("node",nodeObj);
+        obj.put("node",nodeArray);
         obj.put("arc",arcObj);
         return obj.toString();
     }

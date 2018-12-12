@@ -659,7 +659,6 @@ public class Petrinet implements Serializable{
             if (pos>0) {
                 n = Integer.parseInt(e[j].substring(0, pos));
             }
-
             List<String> data = Arrays.asList(e[j].substring(pos+2, e[j].length()-1).split(","));
             MP.add(data, n);
         }
