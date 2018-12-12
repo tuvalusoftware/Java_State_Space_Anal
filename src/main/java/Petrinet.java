@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.*;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.python.util.PythonInterpreter;
 
@@ -299,6 +301,34 @@ public class Petrinet implements Serializable{
      *
      *
      */
+    String getGraphXSchema(){
+        JSONObject obj = new JSONObject();
+        obj.put("id",1000);
+        for (int p: toColorSet.keySet()){
+            JSONArray arr = new JSONArray();
+            JSONObject token = new JSONObject();
+            for (int i=0; i<toColorSet.get(p).length; i++){
+                switch(toColorSet.get(p)[i]){
+                    case "STRING":
+                        token.put("m" + i,"string_holder");
+                        break;
+                    case "INT":
+                        token.put("m" + i,5);
+                        break;
+                    case "BOOL":
+                        token.put("m" + i,true);
+                        break;
+                    case "DOUBLE":
+                        token.put("m" + i,3.14);
+                        break;
+                }
+            }
+            arr.put(token);
+            obj.put("P"+p,arr);
+        }
+        return obj.toString();
+    }
+
     String getMarking() {
         JSONObject obj = new JSONObject();
         for (int i=0; i<toMarking.size(); i++) {

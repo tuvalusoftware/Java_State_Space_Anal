@@ -126,9 +126,9 @@ public class main {
         int T = 1;
         //raw input data
         String[] color = new String[]{
-                "INT*STRING",
+                "STRING",
                 "INT",
-                "UNIT",
+                "STRING*INT",
         };
 
         int[] TP = new int[]{2, 1, 0, 1, 2};

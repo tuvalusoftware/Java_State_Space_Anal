@@ -3,6 +3,28 @@ sqlContext = SQLContext(sc)
 
 ./bin/spark-submit --packages graphframes:graphframes:0.6.0-spark2.3-s_2.11 b.py
 
+##construct DataFrame schema
+schema  = StructType([
+StructField('id',StringType()),
+StructField('p0',ArrayType(StructType([
+        StructField('s',StringType())
+        ]))),
+StructField('p1',ArrayType(StructType([
+        StructField('n',IntegerType())
+        ]))),
+StructField('p2',ArrayType(StructType([
+        StructField('s',StringType()),
+        StructField('n',IntegerType())
+        ])))
+])
+
+#[] for a list, () for a object, single element object (o,)
+data = [
+('id467', [('a',),('b',),('c',)], [(1,),(2,),(3,)], [('aaa',5),('bbb',28)])
+]
+
+node = sqlContext.createDataFrame(data,schema)
+node.printSchema()
 
 
 ##query
@@ -19,6 +41,10 @@ graph.vertices\
 
 graph.vertices.filter(graph.vertices.marking['0']=="[['c']]").show()
 
+graph.vertices.printSchema()
+graph.vertices\
+.filter('p0[0].n == 1 and size(p0)=2')\
+.show()
 
 #select:
 graph.vertices\

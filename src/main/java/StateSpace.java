@@ -50,8 +50,8 @@ public class StateSpace {
 
         for (int key: node.keySet()){
             JSONObject marking = new JSONObject();
-            for (int k: node.get(key).keySet()){
-                marking.put(k+"",node.get(key).get(k).toString());
+            for (int k=0; k< node.get(key).keySet().size(); k++){
+                marking.put(k+"",node.get(key).get(k).toArray());
             }
             nodeObj.put(key+"",marking);
         }
