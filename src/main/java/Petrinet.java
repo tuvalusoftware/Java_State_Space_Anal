@@ -292,7 +292,7 @@ public class Petrinet implements Serializable{
             }
         }
         //init state space object in petrinet
-        ss = new StateSpace(node,inArc,outArc,arcTransition);
+        ss = new StateSpace(T,toMarking.size(),node,inArc,outArc,arcTransition);
     }
 
 

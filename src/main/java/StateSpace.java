@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StateSpace {
+    long T;
+    long P;
     Map<Integer, Map<Integer, Multiset<List<String>>>> node = new HashMap<>();
     Map<Integer, Set<Integer>> inArc = new HashMap<>();
     Map<Integer, Set<Integer>> outArc = new HashMap<>();
@@ -13,8 +15,10 @@ public class StateSpace {
     Map<String, Integer> arcTransition = new HashMap<>();
 
 
-    public StateSpace( Map<Integer, Map<Integer, Multiset<List<String>>>> node,  Map<Integer, Set<Integer>> inArc,
+    public StateSpace( long T, long P,Map<Integer, Map<Integer, Multiset<List<String>>>> node,  Map<Integer, Set<Integer>> inArc,
                        Map<Integer, Set<Integer>> outArc, Map<String, Integer> arcTransition){
+        this.T = T;
+        this.P = P;
         this.node = node;
         this.inArc = inArc;
         this.outArc = outArc;
@@ -48,7 +52,8 @@ public class StateSpace {
         JSONObject obj = new JSONObject();
         JSONArray nodeArray = new JSONArray();
         JSONObject arcObj = new JSONObject();
-
+        obj.put("T",T);
+        obj.put("P",P);
         for (int key: node.keySet()){
             JSONObject marking = new JSONObject();
             marking.put("id",key);

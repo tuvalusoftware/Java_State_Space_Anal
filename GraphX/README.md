@@ -26,6 +26,9 @@ data = [
 node = sqlContext.createDataFrame(data,schema)
 node.printSchema()
 
+#size of graph:
+print((graph.vertices.count(), len(graph.vertices.columns)))
+
 
 ##query
 #sort:
@@ -74,5 +77,31 @@ path = graph.find('(b)-[e2]->(c); (c)-[e3]->(d); (c)-[e4]->(e); (d)-[e5]->(f); (
 .filter('e2.dst == 1 and e3 != e4')\
 .show(1000,False)
 
-#node properties:
 .filter('c.P0[0].m0 == \'a\'')\
+
+##state space properties:
+#boundedness/k-safe:
+graph.vertices.agg(F.max(F.size(graph.vertices.P0))).show()
+graph.vertices.agg(F.min(F.size(graph.vertices.P0))).show()
+
+#dead marking/deadlock:
+validSrc = set(i.src for i in graph.edges.select('src').distinct().collect())
+graph.vertices.filter(~graph.vertices.id.isin(validSrc)).show(1000,False)
+
+#dead tranition:
+validTransition = set(i.transition for i in graph.edges.select('transition').distinct().collect())
+allTransition = set(i for i in range(T))
+deadTransition = allTransition.difference(validTransition)
+
+#invariance + [condition]:
+size = graph.vertices.count()
+qualified = graph.vertices.filter(F.size(graph.vertices.P0)>0).count()
+if (qualified == size):
+    print True
+else:
+    print False
+
+#reachability + [currentmarking] + [condition]:
+#from currentmarkingID -> marking qualifies [condition]
+path = graph.bfs("id = 0", "id = 33",edgeFilter="transition == 0", maxPathLength=5)
+path.show(1000,False)
