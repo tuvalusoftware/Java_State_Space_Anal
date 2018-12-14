@@ -1,4 +1,3 @@
-
 import inspect
 import json
 import collections
@@ -25,10 +24,7 @@ temp = []
 for node in raw['node']:
     marking = []
     for p in node:
-        if p == 'id':
-            marking.append(node[p])
-        else:
-            marking.append(eval(node[p]))
+        marking.append(eval(node[p]))
     temp.append(tuple(marking))
 
 v = sqlContext.createDataFrame(temp,schema)
@@ -42,8 +38,7 @@ e = sqlContext.createDataFrame(temp, ['src','dst','transition'])
 graph = GraphFrame(v,e)
 
 #basic query
-graph.vertices.agg(F.max(F.size(graph.vertices.P0))).show()
-
+graph.vertices.withColumn("token",F.explode("P0")).filter("token.m1=='nam'").show()
 
 
 

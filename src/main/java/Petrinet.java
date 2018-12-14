@@ -321,6 +321,10 @@ public class Petrinet implements Serializable{
                     case "DOUBLE":
                         token.put("m" + i,3.14);
                         break;
+                    //treat UNIT token as  place with single integer token
+                    case "UNIT":
+                        token.put("m" + i,5);
+                        break;
                 }
             }
             arr.put(token);

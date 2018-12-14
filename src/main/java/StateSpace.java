@@ -56,9 +56,17 @@ public class StateSpace {
         obj.put("P",P);
         for (int key: node.keySet()){
             JSONObject marking = new JSONObject();
-            marking.put("id",key);
+            marking.put("id",Integer.toString(key));
             for (int k=0; k< node.get(key).keySet().size(); k++){
-                marking.put("P"+k,node.get(key).get(k).toString());
+                //the inside is empty means this is a UNIT token
+                //put in the size of whole place as integer
+                if (node.get(key).get(k).elementSet().toString().equals("[[]]")){
+                    marking.put("P"+k,"[[" + node.get(key).get(k).size() + "]]");
+                }
+                //put token detail in
+                else{
+                    marking.put("P"+k,Arrays.toString(node.get(key).get(k).toArray()));
+                }
             }
             nodeArray.put(marking);
         }

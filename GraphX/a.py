@@ -17,6 +17,13 @@ StructField('p2',ArrayType(StructType([
         StructField('n',IntegerType())
         ])))
 ])
+#size of graph:
+print((graph.vertices.count(), len(graph.vertices.columns)))
+
+#change name:
+graph.vertices.select(F.explode("P0").alias("P0"),"id").show(1000,False)
+
+
 #sort:
 graph.vertices.sort('id',ascending=True).show()
 graph.edges.orderBy(['dst','src'], ascending=[0, 1]).show()
@@ -71,5 +78,9 @@ else:
 
 #reachability + [currentmarking] + [condition]:
 #from currentmarkingID -> marking qualifies [condition]
-path = graph.bfs("id = 0", "id = 33",edgeFilter="transition == 0", maxPathLength=5)
+path = graph.bfs("id = 0", "id = 52",edgeFilter="transition != 2", maxPathLength=5)
 path.show(1000,False)
+
+
+#filter on token value using explode: 2d array of token -> 1 token object per row
+graph.vertices.withColumn("token",F.explode("P0")).filter("token.m1=='nam'").show()
