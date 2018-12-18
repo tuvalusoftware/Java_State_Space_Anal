@@ -8,19 +8,19 @@ import java.util.stream.Collectors;
 public class StateSpace {
     long T;
     long P;
+    int[] TP;
     Map<Integer, Map<Integer, Multiset<List<String>>>> node = new HashMap<>();
-    Map<Integer, Set<Integer>> inArc = new HashMap<>();
     Map<Integer, Set<Integer>> outArc = new HashMap<>();
     //[src,dst] -> arc data
     Map<String, Integer> arcTransition = new HashMap<>();
 
 
-    public StateSpace( long T, long P,Map<Integer, Map<Integer, Multiset<List<String>>>> node,  Map<Integer, Set<Integer>> inArc,
+    public StateSpace( int[] TP, long T, long P,Map<Integer, Map<Integer, Multiset<List<String>>>> node,
                        Map<Integer, Set<Integer>> outArc, Map<String, Integer> arcTransition){
+        this.TP = TP;
         this.T = T;
         this.P = P;
         this.node = node;
-        this.inArc = inArc;
         this.outArc = outArc;
         this.arcTransition = arcTransition;
     }
@@ -29,6 +29,7 @@ public class StateSpace {
         JSONObject obj = new JSONObject();
         JSONObject nodeObj = new JSONObject();
         JSONObject arcObj = new JSONObject();
+        obj.put("TP",TP);
 
         for (int key: node.keySet()){
             String s = "";

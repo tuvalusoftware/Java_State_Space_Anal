@@ -128,16 +128,22 @@
 
 <div>
   GRAPH
-  <div id="graph">
-  </div>
+  <div id="petrinet"></div>
+  <div id="statespace"></div>
 </div>
 
 <script>
 let socket = io.connect('http://localhost:2000');
 
-socket.on('graph',data=>{
-  document.getElementById('graph').innerHTML = data
+socket.on('statespace',data=>{
+  document.getElementById('statespace').innerHTML = data
 })
+
+socket.on('petrinet',data=>{
+  document.getElementById('petrinet').innerHTML = data
+})
+
+
 
 
 </script>

@@ -160,6 +160,20 @@ public class Petrinet implements Serializable{
         this.toExpression = parseExpression(E);
     }
 
+    public Petrinet(PetrinetModel model){
+        this.T = model.T;
+        this.TP = model.TP;
+        this.pi = new PythonInterpreter();
+        this.toColorSet = parseColorSet(model.color);
+        List<Map<Integer,int[]>> InOutPlace = parseTP(model.TP);
+        this.toInPlace = InOutPlace.get(0);
+        this.toOutPlace = InOutPlace.get(1);
+        this.toMarking = parseMarking(model.M);
+        this.toVariable = parseVariable(model.V);
+        this.toGuard = parseGuard(model.G);
+        this.toExpression = parseExpression(model.E);
+    }
+
     /*set functions
      *
      *
@@ -193,7 +207,6 @@ public class Petrinet implements Serializable{
         Queue<Integer> index = new LinkedList<>();
         //state space result
         Map<Integer,Map<Integer,Multiset<List<String>>>> node = new HashMap<>();
-        Map<Integer,Set<Integer>> inArc = new HashMap<>();
         Map<Integer,Set<Integer>> outArc = new HashMap<>();
         Map<String, Integer> arcTransition = new HashMap<>();
 
@@ -252,17 +265,11 @@ public class Petrinet implements Serializable{
                         node.put(id,ref);
 
                         //update arcs
-                        //in arc, new key for sure
-                        Set<Integer> temp = new HashSet<>();
-                        temp.add(parentID);
-                        inArc.put(id,temp);
-
-                        //out arc
                         if (outArc.containsKey(parentID)){
                             outArc.get(parentID).add(id);
                         }
                         else{
-                            temp = new HashSet<>();
+                            Set<Integer> temp = new HashSet<>();
                             temp.add(id);
                             outArc.put(parentID,temp);
                         }
@@ -272,9 +279,6 @@ public class Petrinet implements Serializable{
                     }
                     //if exist then only update new arc
                     else {
-                        //in arc, already exist for sure
-                        inArc.get(existID).add(parentID);
-
                         //out arc
                         if (outArc.containsKey(parentID)) {
                             outArc.get(parentID).add(existID);
@@ -292,7 +296,7 @@ public class Petrinet implements Serializable{
             }
         }
         //init state space object in petrinet
-        ss = new StateSpace(T,toMarking.size(),node,inArc,outArc,arcTransition);
+        ss = new StateSpace(TP,T,toMarking.size(),node,outArc,arcTransition);
     }
 
 
