@@ -25,7 +25,7 @@ public class StateSpace {
         this.arcTransition = arcTransition;
     }
 
-    String getGraphVizJson(){
+    JSONObject getGraphVizJson(){
         JSONObject obj = new JSONObject();
         JSONObject nodeObj = new JSONObject();
         JSONObject arcObj = new JSONObject();
@@ -46,10 +46,10 @@ public class StateSpace {
         obj.put("node",nodeObj);
         obj.put("arc",arcObj);
 
-        return obj.toString();
+        return obj;
     }
 
-    String getGraphXJson(){
+    JSONObject getGraphXJson(){
         JSONObject obj = new JSONObject();
         JSONArray nodeArray = new JSONArray();
         JSONObject arcObj = new JSONObject();
@@ -78,7 +78,8 @@ public class StateSpace {
 
         obj.put("node",nodeArray);
         obj.put("arc",arcObj);
-        return obj.toString();
+
+        return obj;
     }
 
     List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath){

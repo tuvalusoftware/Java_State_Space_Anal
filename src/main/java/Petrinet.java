@@ -232,6 +232,8 @@ public class Petrinet implements Serializable{
                     List<List<String>> add = formatToken((List<List<Object>>) pi.get("result"));
                     List<List<String>> remove = formatToken(qualified.get(T).get(i));
 
+                    if(add.isEmpty()) break;
+
                     //loop through input places to remove
                     int[] inPlace = toInPlace.get(T);
                     for (int j=0; j<remove.size(); j++) {
@@ -305,7 +307,7 @@ public class Petrinet implements Serializable{
      *
      *
      */
-    String getGraphXSchema(){
+    JSONObject getGraphXSchema(){
         JSONObject obj = new JSONObject();
         obj.put("id",1000);
         for (int p: toColorSet.keySet()){
@@ -334,7 +336,7 @@ public class Petrinet implements Serializable{
             arr.put(token);
             obj.put("P"+p,arr);
         }
-        return obj.toString();
+        return obj;
     }
 
     String getMarking() {
@@ -454,8 +456,9 @@ public class Petrinet implements Serializable{
         String result = "";
         for (int p: this.toOutPlace.get(T)) {
             String arc = "[" + T + ", " + p + "]";
-            result += "\"\"\"" + toExpression.get(arc) + "\"\"\",";
+            if(toExpression.containsKey(arc)) result += "\"\"\"" + toExpression.get(arc) + "\"\"\",";
         }
+        if (result.length()==0) return "[]";
         return "[" + result.substring(0,result.length()-1) + "]";
     }
 
