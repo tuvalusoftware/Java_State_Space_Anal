@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.net.URISyntaxException;
+import java.util.Base64;
 
 public class main {
 
@@ -13,27 +14,40 @@ public class main {
 
         try{
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
-            print(path);
-//            String petrinetInput = "/Users/macos/Desktop/Java_State_Space_Anal/src/main/java/PetrinetJson/permu.json";
-            String petrinetInput = path + args[0];
-            String graphXOutput = path + args[1];
-            String graphVizOutput = path + args[2];
 
+//            String option = "analysis";
+//            String petrinetInput = "/Users/macos/Downloads/sign.json";
+//            String graphXOutput = "/Users/macos/Desktop/a.json";
+//            String graphVizOutput = "/Users/macos/Desktop/b.json";
+
+            String option = args[0];
+            String petrinetInput = path + args[1];
+
+            print("option: " + option);
             print(petrinetInput);
-            print(graphXOutput);
-            print(graphVizOutput);
 
             PetrinetModel model = parseJson(petrinetInput);
             Petrinet net = new Petrinet(model);
 
-            try {
-                net.generateStateSpace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            switch(option){
+                case "compile":
+                    print(serialize(net));
+                    break;
 
-            exportGraphXJson(net,graphXOutput);
-            exportGraphVizJson(net,graphVizOutput);
+                case "analysis":
+                    String graphXOutput = path + args[2];
+                    String graphVizOutput = path + args[3];
+                    print(graphXOutput);
+                    print(graphVizOutput);
+                    try {
+                        net.generateStateSpace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    exportGraphXJson(net,graphXOutput);
+                    exportGraphVizJson(net,graphVizOutput);
+                    break;
+            }
 
         } catch(Exception e){
             e.printStackTrace();
@@ -87,6 +101,27 @@ public class main {
         } catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    //*********serialize/deserialize functions*********
+    //*
+    //*
+    //*
+    private static Object deSerialize( String s ) throws IOException, ClassNotFoundException {
+        byte [] data = Base64.getDecoder().decode( s );
+        ObjectInputStream ois = new ObjectInputStream(
+                new ByteArrayInputStream(  data ) );
+        Object o  = ois.readObject();
+        ois.close();
+        return o;
+    }
+
+    private static String serialize( Serializable o ) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream( baos );
+        oos.writeObject( o );
+        oos.close();
+        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 
 

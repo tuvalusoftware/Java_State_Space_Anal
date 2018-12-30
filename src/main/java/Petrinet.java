@@ -61,7 +61,7 @@ public class Petrinet implements Serializable{
             "%s\n" +
             "\n" +
             "#guard for current transition\n" +
-            "G = '%s'\n" +
+            "G = \"\"\"%s\"\"\"\n" +
             "\n" +
             "#expression on output arc\n" +
             "E = %s\n" +
@@ -116,9 +116,7 @@ public class Petrinet implements Serializable{
             "    exec('def Ex():\\n' + e)\n" +
             "    result.append(Ex())\n";
 
-    //these 2 are used in stringToList()
-    int index = 1;
-    String temp = "";
+
     /*data structure
      * T: number of transitions
      * toColorSet: map a place to its data type
@@ -141,7 +139,7 @@ public class Petrinet implements Serializable{
     Map<Integer,Multiset<List<String>>> toMarking = new HashMap<>();
 
     //state space data
-    StateSpace ss;
+    transient StateSpace ss;
 
 
 
@@ -201,7 +199,7 @@ public class Petrinet implements Serializable{
         }
     }
 
-    void generateStateSpace() throws IOException, ClassNotFoundException{
+    void  generateStateSpace() throws IOException, ClassNotFoundException{
         Map<Integer,Multiset<List<String>>> ref = toMarking;
         Queue<Map<Integer,Multiset<List<String>>>> queue = new LinkedList<>();
         Queue<Integer> index = new LinkedList<>();
