@@ -1,3 +1,5 @@
+package io.ferdon.statespace;
+
 import com.google.common.collect.Multiset;
 import org.json.JSONArray;
 import org.json.JSONObject;

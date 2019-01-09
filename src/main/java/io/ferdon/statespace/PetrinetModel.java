@@ -1,3 +1,5 @@
+package io.ferdon.statespace;
+
 import java.util.Arrays;
 
 public class PetrinetModel {
@@ -29,7 +31,7 @@ public class PetrinetModel {
 
     @Override
     public String toString() {
-        return "PetrinetModel{" +
+        return "io.ferdon.statespace.PetrinetModel{" +
                 "T=" + T +
                 ", color=" + Arrays.toString(color) +
                 ", TP=" + Arrays.toString(TP) +

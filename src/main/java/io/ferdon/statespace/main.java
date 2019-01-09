@@ -1,3 +1,5 @@
+package io.ferdon.statespace;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -5,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.util.Base64;
 
 public class main {
