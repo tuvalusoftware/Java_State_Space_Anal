@@ -1,0 +1,9 @@
+{
+    "name":"arcSchema",
+    "type": "record",
+    "fields": [
+        {"name":"src", "type":"int"},
+        {"name":"dst", "type":"int"},
+        {"name":"transition", "type":"int"}
+    ]
+}

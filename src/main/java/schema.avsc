@@ -1,0 +1,29 @@
+{
+ "name" : "PetriNet" ,
+ "type"  : "record" ,
+ "fields" : [
+{"name" : "P0", "type": {"type":"array", "items":{
+ "name" : "DataP0" ,
+ "type"  : "record" ,
+ "fields" : [
+	{"name" : "unit_0" , "type" : ["int", "null"] }
+]}}},
+{"name" : "P1", "type": {"type":"array", "items":{
+ "name" : "DataP1" ,
+ "type"  : "record" ,
+ "fields" : [
+	{"name" : "unit_0" , "type" : ["int", "null"] }
+]}}},
+{"name" : "P2", "type": {"type":"array", "items":{
+ "name" : "DataP2" ,
+ "type"  : "record" ,
+ "fields" : [
+	{"name" : "unit_0" , "type" : ["int", "null"] }
+]}}},
+{"name" : "P3", "type": {"type":"array", "items":{
+ "name" : "DataP3" ,
+ "type"  : "record" ,
+ "fields" : [
+	{"name" : "unit_0" , "type" : ["int", "null"] }
+]}}},{"name":"id", "type":"int"}
+]}
