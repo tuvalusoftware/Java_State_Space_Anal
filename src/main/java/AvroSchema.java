@@ -20,9 +20,8 @@ import java.io.IOException;
 
 public class AvroSchema {
 
-    JSONObject obj;
-
-    public JSONObject readJson(String filename) {
+    //read petrinet json file
+     public JSONObject readJson(String filename) {
         JSONObject object;
         try {
             File file = new File(filename);
@@ -34,7 +33,7 @@ public class AvroSchema {
         }
         return null;
     }
-
+    //create one field with "name" and "type"
     public String field(String name, String type) {
         String ans = "";
         ans = ans + "\t{\"name\" : \"" + name + "\" ,";
@@ -45,15 +44,15 @@ public class AvroSchema {
         ans = ans + " \"type\" : [\"" + type + "\", \"null\"] }\n";
         return ans;
     }
-
-    public String fieldRecord(String name, String fields) {
+    // create token schema.
+    public String tokenSchema(String name, String fields) {
         String ans = "";
         String[] sp = fields.split("\\*");
         ans = ans + "{\n \"name\" : \"" + name + "\" ,\n";
         ans = ans + " \"type\"  : \"record\" ,\n";
         ans = ans + " \"fields\" : [\n";
         int k = 0;
-        String tmp = "";
+        String tmp;
         for (String s : sp) {
             if (k > 0)
                 ans = ans + ",";
@@ -64,14 +63,15 @@ public class AvroSchema {
         ans = ans + "]}";
         return ans;
     }
-
-    public String Record(String name, String fields) {
+    // create Place Schema (or list token schema)
+    public String listTokenSchema(String name, String fields) {
         String ans = "";
-        ans = ans + "{\"name\" : \"" + name + "\", \"type\": {\"type\":\"array\", \"items\":" + fieldRecord("Data" + name, fields) + "}}";
+        ans = ans + "{\"name\" : \"" + name + "\", \"type\": {\"type\":\"array\", \"items\":" + tokenSchema("Data" + name, fields) + "}}";
         return ans;
     }
-
+    // create petri net schema
     public String createAvroSchema(String filename) {
+        JSONObject obj;
         String s = "";
         s = s + "{\n \"name\" : \"PetriNet\" ,\n";
         s = s + " \"type\"  : \"record\" ,\n";
@@ -84,14 +84,14 @@ public class AvroSchema {
         for (Object color : objArray) {
             if (k > 0)
                 s = s + ",\n";
-            s = s + Record("P" + k, (String) color);
+            s = s + listTokenSchema("P" + k, (String) color);
             k++;
         }
         s = s + ",{\"name\":\"id\", \"type\":\"int\"}\n";
         s = s + "]}";
         return s;
     }
-
+    // write schema to file.
     public void createSchemaFile(String inputfile, String outputfile) {
         String s = createAvroSchema(inputfile);
         try {

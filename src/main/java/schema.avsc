@@ -6,7 +6,10 @@
  "name" : "DataP0" ,
  "type"  : "record" ,
  "fields" : [
-	{"name" : "unit_0" , "type" : ["int", "null"] }
+	{"name" : "int_0" , "type" : ["int", "null"] }
+,	{"name" : "string_1" , "type" : ["string", "null"] }
+,	{"name" : "bool_2" , "type" : ["boolean", "null"] }
+,	{"name" : "double_3" , "type" : ["double", "null"] }
 ]}}},
 {"name" : "P1", "type": {"type":"array", "items":{
  "name" : "DataP1" ,
@@ -18,12 +21,21 @@
  "name" : "DataP2" ,
  "type"  : "record" ,
  "fields" : [
-	{"name" : "unit_0" , "type" : ["int", "null"] }
+	{"name" : "int_0" , "type" : ["int", "null"] }
+,	{"name" : "string_1" , "type" : ["string", "null"] }
+,	{"name" : "bool_2" , "type" : ["boolean", "null"] }
+,	{"name" : "double_3" , "type" : ["double", "null"] }
 ]}}},
 {"name" : "P3", "type": {"type":"array", "items":{
  "name" : "DataP3" ,
  "type"  : "record" ,
  "fields" : [
-	{"name" : "unit_0" , "type" : ["int", "null"] }
+	{"name" : "string_0" , "type" : ["string", "null"] }
+]}}},
+{"name" : "P4", "type": {"type":"array", "items":{
+ "name" : "DataP4" ,
+ "type"  : "record" ,
+ "fields" : [
+	{"name" : "string_0" , "type" : ["string", "null"] }
 ]}}},{"name":"id", "type":"int"}
 ]}

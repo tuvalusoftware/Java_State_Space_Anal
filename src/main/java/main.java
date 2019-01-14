@@ -16,7 +16,7 @@ public class main {
      //       String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
             String option = "analysis";
-            String petrinetInput = "/Users/apple/Github/Java_State_Space_Analysis/src/main/java/PetrinetJson/plainNet.json";
+            String petrinetInput = "/Users/apple/Github/Java_State_Space_Analysis/src/main/java/PetrinetJson/objectFilter.json";
             String graphXOutput = "/Users/apple/Desktop/a.json";
             String graphVizOutput = "/Users/apple/Desktop/b.json";
             String jsonSchema = "/Users/apple/Github/Java_State_Space_Analysis/src/main/java/schema.avsc";

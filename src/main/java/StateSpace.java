@@ -1,3 +1,14 @@
+/*
+ * File Name: StateSpace.java
+ *
+ * File Description:
+ *
+ * Write data with parquet format.
+ * Link https://avro.apache.org/docs/1.8.2/
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ */
+
 import com.google.common.collect.Multiset;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericArray;
@@ -150,6 +161,7 @@ public class StateSpace {
         //type is unit
         return null;
     }
+    //create parquet Writer, write to outputFile with the schema.
     ParquetWriter<GenericRecord> parquetWriter(String outputFile, Schema schema) {
         ParquetWriter<GenericRecord> writer = null;
         try {
@@ -168,7 +180,7 @@ public class StateSpace {
         }
         return  writer;
     }
-    //write Arc in parquet format.
+    //write Arc in parquet format. read schema from schemaFile and write data to outputFile.
     void parqueWriteArc(String schemaFile, String outputFile) {
         Schema schema = null;
         GenericRecord record = null;
@@ -194,7 +206,7 @@ public class StateSpace {
 
 
     }
-    //write Node in parquet format.
+    //write Node in parquet format.read schema from schemaFile and write data to outputFile.
     void parquetWriteNode(String schemaFile, String outputFile) {
         Schema schema = null; // schema of petri net
         Schema listTokenSchema[] = new Schema[(int) P]; // schema of listTokenace = list of Token
