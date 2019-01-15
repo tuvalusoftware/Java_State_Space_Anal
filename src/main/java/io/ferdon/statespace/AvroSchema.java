@@ -39,10 +39,12 @@ public class AvroSchema {
     public String field(String name, String type) {
         String ans = "";
         ans = ans + "\t{\"name\" : \"" + name + "\" ,";
-        if (type.equals("unit") == true)
+        if (type.equals("unit"))
             type = "int";
         if (type.equals("bool"))
             type = "boolean";
+        if (type.equals("real"))
+            type = "double";
         ans = ans + " \"type\" : [\"" + type + "\", \"null\"] }\n";
         return ans;
     }
@@ -80,13 +82,13 @@ public class AvroSchema {
 
         //System.out.println(s);
         JSONObject obj = readJson(filename);
-        JSONArray objArray = obj.getJSONArray("Colors");
-        int k = 0;
-        for (Object color : objArray) {
+        obj = obj.getJSONObject("placeToColor");
+        for (String number : obj.keySet()) {
+            int k = Integer.parseInt(number);
+            //System.out.println(k);
             if (k > 0)
                 s = s + ",\n";
-            s = s + fieldPlaceSchema("P" + k, (String) color);
-            k++;
+            s = s + fieldPlaceSchema("P" + k, obj.get(number).toString());
         }
         s = s + ",{\"name\":\"id\", \"type\":\"int\"}\n";
         s = s + "]}";

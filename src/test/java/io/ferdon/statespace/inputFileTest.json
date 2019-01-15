@@ -1,3 +1,7 @@
 {
-  "color": ["INT*STRING*DOUBLE*BOOL","UNIT"]
+  "color": ["INT*STRING*DOUBLE*BOOL","UNIT"],
+  "placeToColor": {
+    "0": "INT*STRING*DOUBLE*BOOL",
+    "1": "UNIT"
+  }
 }

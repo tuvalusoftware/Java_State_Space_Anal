@@ -57,22 +57,21 @@ public class main {
 //            e.printStackTrace();
 //        }
 
-        String petrinetInput = "/Users/macos/Desktop/objectFilter.json";
+        String petrinetInput = "/Users/apple/Desktop/objectFilter.json";
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
 
-//        try{
-//            String nodeParquet = "/Users/apple/Desktop/node.parquet";
-//            String arcParquet = "/Users/apple/Desktop/arc.parquet";
-//
-//            AvroSchema aq = new AvroSchema();
-//            Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
-//            Schema arcSchema = aq.createArcSchema();
-//
-//            exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
+        try{
+            String nodeParquet = "/Users/apple/Desktop/node.parquet";
+            String arcParquet = "/Users/apple/Desktop/arc.parquet";
+            net.generateStateSpace();
+            AvroSchema aq = new AvroSchema();
+            Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
+            Schema arcSchema = aq.createArcSchema();
+            exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
 
 
     }
