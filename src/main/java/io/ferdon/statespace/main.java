@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.avro.Schema;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -13,46 +14,65 @@ public class main {
 
     public static void main(String[] args) {
 
+//        try{
+//            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
+//
+////            String option = "analysis";
+////            String petrinetInput = "/Users/macos/Downloads/sign.json";
+////            String graphXOutput = "/Users/macos/Desktop/a.json";
+////            String graphVizOutput = "/Users/macos/Desktop/b.json";
+//
+//            String option = args[0];
+//            String petrinetInput = path + args[1];
+//
+//            print("option: " + option);
+//            print(petrinetInput);
+//
+//            PetrinetModel model = parseJson(petrinetInput);
+//            Petrinet net = new Petrinet(model);
+//
+//            switch(option){
+//                case "compile":
+//                    print(serialize(net));
+//                    break;
+//
+//                case "analysis":
+//                    String graphXOutput = path + args[2];
+//                    String graphVizOutput = path + args[3];
+//                    print(graphXOutput);
+//                    print(graphVizOutput);
+//                    try {
+//                        net.generateStateSpace();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    exportGraphXJson(net,graphXOutput);
+//                    exportGraphVizJson(net,graphVizOutput);
+//                    break;
+//            }
+//
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }
+
+        String petrinetInput = "/Users/apple/Github/Java_State_Space_Analysis/src/main/java/PetrinetJson/kanban.json";
+        PetrinetModel model = parseJson(petrinetInput);
+        Petrinet net = new Petrinet(model);
         try{
-            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
+            net.generateStateSpace();
+            String nodeParquet = "/Users/apple/Desktop/node.parquet";
+            String arcParquet = "/Users/apple/Desktop/arc.parquet";
 
-//            String option = "analysis";
-//            String petrinetInput = "/Users/macos/Downloads/sign.json";
-//            String graphXOutput = "/Users/macos/Desktop/a.json";
-//            String graphVizOutput = "/Users/macos/Desktop/b.json";
+            AvroSchema aq = new AvroSchema();
+            Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
+            Schema arcSchema = aq.createArcSchema();
 
-            String option = args[0];
-            String petrinetInput = path + args[1];
-
-            print("option: " + option);
-            print(petrinetInput);
-
-            PetrinetModel model = parseJson(petrinetInput);
-            Petrinet net = new Petrinet(model);
-
-            switch(option){
-                case "compile":
-                    print(serialize(net));
-                    break;
-
-                case "analysis":
-                    String graphXOutput = path + args[2];
-                    String graphVizOutput = path + args[3];
-                    print(graphXOutput);
-                    print(graphVizOutput);
-                    try {
-                        net.generateStateSpace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    exportGraphXJson(net,graphXOutput);
-                    exportGraphVizJson(net,graphVizOutput);
-                    break;
-            }
-
+            //exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
         } catch(Exception e){
             e.printStackTrace();
         }
+
+
     }
 
     static void print(String s) {
@@ -102,6 +122,11 @@ public class main {
         } catch(IOException e){
             e.printStackTrace();
         }
+    }
+
+    public static void exportGraphXParquet(Petrinet net, Schema nodeSchema, Schema arcSchema, String nodeParquet, String arcParquet) {
+        net.ss.parquetWriteNode(nodeSchema, nodeParquet);
+        net.ss.parqueWriteArc(arcSchema, arcParquet);
     }
 
     //*********serialize/deserialize functions*********
