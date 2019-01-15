@@ -678,7 +678,9 @@ public class Petrinet implements Serializable {
         }
 
         for (String key : binding.keySet()) {
-            result += key + " = None\n" + indent;
+            if (!key.equals("")) {
+                result += key + " = None\n" + indent;
+            }
         }
         return result;
     }
@@ -687,8 +689,10 @@ public class Petrinet implements Serializable {
         String result = "";
         if (binding.isEmpty()) return "{}";
         for (String key : binding.keySet()) {
-            result += "'" + key + "'" + ":";
-            result += binding.get(key).toString() + ",";
+            if (!key.equals("")) {
+                result += "'" + key + "'" + ":";
+                result += binding.get(key).toString() + ",";
+            }
         }
         result = result.substring(0, result.length() - 1);
         result = "{" + result + "}";

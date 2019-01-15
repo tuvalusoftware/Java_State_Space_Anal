@@ -80,7 +80,7 @@ public class AvroSchema {
 
         //System.out.println(s);
         JSONObject obj = readJson(filename);
-        JSONArray objArray = obj.getJSONArray("color");
+        JSONArray objArray = obj.getJSONArray("Colors");
         int k = 0;
         for (Object color : objArray) {
             if (k > 0)
