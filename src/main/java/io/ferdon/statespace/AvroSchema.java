@@ -47,7 +47,7 @@ public class AvroSchema {
         return ans;
     }
 
-    public String fieldRecord(String name, String fields) {
+    public String tokenSchema(String name, String fields) {
         String ans = "";
         String[] sp = fields.split("\\*");
         ans = ans + "{\n \"name\" : \"" + name + "\" ,\n";
@@ -66,15 +66,15 @@ public class AvroSchema {
         return ans;
     }
 
-    public String Record(String name, String fields) {
+    public String fieldPlaceSchema(String name, String fields) {
         String ans = "";
-        ans = ans + "{\"name\" : \"" + name + "\", \"type\": {\"type\":\"array\", \"items\":" + fieldRecord("Data" + name, fields) + "}}";
+        ans = ans + "{\"name\" : \"" + name + "\", \"type\": {\"type\":\"array\", \"items\":" + tokenSchema("Data" + name, fields) + "}}";
         return ans;
     }
 
     public Schema createNodeSchema(String filename) {
         String s = "";
-        s = s + "{\n \"name\" : \"PetriNet\" ,\n";
+        s = s + "{\n \"name\" : \"nodeSchema\" ,\n";
         s = s + " \"type\"  : \"record\" ,\n";
         s = s + " \"fields\" : [\n";
 
@@ -85,14 +85,13 @@ public class AvroSchema {
         for (Object color : objArray) {
             if (k > 0)
                 s = s + ",\n";
-            s = s + Record("P" + k, (String) color);
+            s = s + fieldPlaceSchema("P" + k, (String) color);
             k++;
         }
         s = s + ",{\"name\":\"id\", \"type\":\"int\"}\n";
         s = s + "]}";
 
         Schema.Parser parser = new Schema.Parser();
-
         return parser.parse(s);
     }
 
