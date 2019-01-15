@@ -57,13 +57,13 @@ public class main {
 //            e.printStackTrace();
 //        }
 
-        String petrinetInput = "/Users/apple/Desktop/objectFilter.json";
+        String petrinetInput = "/Users/macos/Desktop/objectFilter.json";
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
 
         try{
-            String nodeParquet = "/Users/apple/Desktop/node.parquet";
-            String arcParquet = "/Users/apple/Desktop/arc.parquet";
+            String nodeParquet = "/Users/macos/Desktop/node.parquet";
+            String arcParquet = "/Users/macos/Desktop/arc.parquet";
             net.generateStateSpace();
             AvroSchema aq = new AvroSchema();
             Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
