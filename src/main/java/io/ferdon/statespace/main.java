@@ -55,19 +55,19 @@ public class main {
 //            e.printStackTrace();
 //        }
 
-        String petrinetInput = "/Users/macos/Desktop/Java_State_Space_Analysis/src/main/java/PetrinetJson/objectFilter.json";
+        String petrinetInput = "/Users/apple/Github/Java_State_Space_Analysis/src/main/java/PetrinetJson/kanban.json";
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
         try{
             net.generateStateSpace();
-            String nodeParquet = "/Users/macos/Desktop/node.parquet";
-            String arcParquet = "/Users/macos/Desktop/arc.parquet";
+            String nodeParquet = "/Users/apple/Desktop/node.parquet";
+            String arcParquet = "/Users/apple/Desktop/arc.parquet";
 
             AvroSchema aq = new AvroSchema();
             Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
             Schema arcSchema = aq.createArcSchema();
 
-            exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
+            //exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
         } catch(Exception e){
             e.printStackTrace();
         }

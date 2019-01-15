@@ -2,17 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="02369b78-d086-41ee-9287-e04836346ce3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/io/ferdon/statespace/AvroSchemaTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/Petrinet.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/PetrinetModel.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/StateSpace.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/main.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/AvroSchema.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/AvroSchema.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -30,14 +25,70 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="85">
-              <caret line="204" column="31" lean-forward="true" selection-start-line="204" selection-start-column="31" selection-end-line="204" selection-end-column="31" />
+            <state relative-caret-position="-555">
+              <caret line="203" column="51" selection-start-line="203" selection-start-column="51" selection-end-line="203" selection-end-column="51" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1485">
+              <caret line="106" column="18" selection-start-line="98" selection-start-column="21" selection-end-line="106" selection-end-column="18" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="870">
+              <caret line="66" column="45" selection-start-line="66" selection-start-column="45" selection-end-line="66" selection-end-column="45" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/PetrinetJson/kanban.json">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2340">
+              <caret line="163" selection-start-line="163" selection-end-line="163" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/AvroSchemaTest.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="495">
+              <caret line="171" column="31" selection-start-line="171" selection-start-column="16" selection-end-line="171" selection-end-column="31" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
             </state>
           </provider>
         </entry>
@@ -48,6 +99,7 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Class" />
+        <option value="JUnit4 Test Class" />
       </list>
     </option>
   </component>
@@ -66,16 +118,19 @@
       <list>
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/arcSchema.java" />
         <option value="$PROJECT_DIR$/build.gradle" />
-        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" />
-        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" />
+        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" />
+        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" />
+        <option value="$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json" />
+        <option value="$PROJECT_DIR$/src/test/java/io/ferdon/statespace/AvroSchemaTest.java" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="1440" />
-    <option name="height" value="900" />
+  <component name="ProjectFrameBounds">
+    <option name="y" value="23" />
+    <option name="width" value="1280" />
+    <option name="height" value="777" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="2" id="Add" />
@@ -85,8 +140,8 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -120,11 +175,60 @@
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="statespace" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="PetrinetJson" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="statespace" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
     </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547526071362" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
+    <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="io.ferdon.statespace" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -138,23 +242,93 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
-    <configuration name="main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.main" />
-      <module name="nam.nam.main" />
+  <component name="RunManager" selected="JUnit.AvroSchemaTest.createNodeSchema">
+    <configuration name="AvroSchemaTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="nam.nam.test" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="io.ferdon.statespace.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="io.ferdon.statespace" />
+      <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.AvroSchemaTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AvroSchemaTest.createNodeSchema" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="nam.nam.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="io.ferdon.statespace.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="io.ferdon.statespace" />
+      <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.AvroSchemaTest" />
+      <option name="METHOD_NAME" value="createNodeSchema" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AvroSchemaTest.placeSchema" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="nam.nam.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="io.ferdon.statespace.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="io.ferdon.statespace" />
+      <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.AvroSchemaTest" />
+      <option name="METHOD_NAME" value="placeSchema" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AvroSchemaTest.token" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="nam.nam.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="io.ferdon.statespace.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="io.ferdon.statespace" />
+      <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.AvroSchemaTest" />
+      <option name="METHOD_NAME" value="token" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AvroSchemaTest.tokenSchema" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="nam.nam.test" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="io.ferdon.statespace.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="io.ferdon.statespace" />
+      <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.AvroSchemaTest" />
+      <option name="METHOD_NAME" value="tokenSchema" />
+      <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.main" />
+        <item itemvalue="JUnit.AvroSchemaTest.createNodeSchema" />
+        <item itemvalue="JUnit.AvroSchemaTest" />
+        <item itemvalue="JUnit.AvroSchemaTest.placeSchema" />
+        <item itemvalue="JUnit.AvroSchemaTest.tokenSchema" />
+        <item itemvalue="JUnit.AvroSchemaTest.token" />
       </list>
     </recent_temporary>
   </component>
@@ -168,36 +342,96 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1547429288437</updated>
+      <workItem from="1547517227306" duration="7358000" />
+      <workItem from="1547525702359" duration="319000" />
     </task>
     <servers />
   </component>
+  <component name="TestHistory">
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 41m 28s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 42m 18s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 44m 01s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 44m 52s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 46m 36s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 47m 36s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 48m 15s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 58m 57s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 10h 59m 12s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="AvroSchemaTest_createNodeSchema - 2019.01.15 at 11h 00m 20s.xml">
+      <configuration name="AvroSchemaTest.createNodeSchema" configurationId="JUnit" />
+    </history-entry>
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="7677000" />
+  </component>
+  <component name="TodoView">
+    <todo-panel id="selected-file">
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+    <todo-panel id="all">
+      <are-packages-shown value="true" />
+      <is-autoscroll-to-source value="true" />
+    </todo-panel>
+  </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <frame x="0" y="23" width="1280" height="777" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.25679544" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26494345" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
+      <window_info id="Image Layers" order="4" />
+      <window_info id="Capture Tool" order="5" />
+      <window_info id="UI Designer" order="6" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49928468" visible="true" weight="0.32891566" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49928468" weight="0.3281471" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32956153" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32956153" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5007153" side_tool="true" weight="0.32891566" />
       <window_info anchor="bottom" id="Build" order="10" weight="0.29036143" />
-      <window_info anchor="bottom" id="Messages" order="11" />
+      <window_info anchor="bottom" id="Messages" order="11" weight="0.32956153" />
+      <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Java Enterprise" order="13" weight="0.32956153" />
+      <window_info anchor="bottom" id="JProfiler" order="14" />
+      <window_info anchor="bottom" id="Database Changes" order="15" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Maven" order="3" />
       <window_info anchor="right" id="Gradle" order="4" />
       <window_info anchor="right" id="Palette&#9;" order="5" />
+      <window_info anchor="right" id="Palette" order="6" />
+      <window_info anchor="right" id="Capture Analysis" order="7" />
+      <window_info anchor="right" id="Database" order="8" />
+      <window_info anchor="right" id="Theme Preview" order="9" />
     </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/build.gradle">
@@ -218,17 +452,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="381" column="21" lean-forward="true" selection-start-line="381" selection-start-column="21" selection-end-line="381" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1018">
-          <caret line="76" column="43" selection-start-line="76" selection-start-column="43" selection-end-line="76" selection-end-column="43" />
+        <state relative-caret-position="1485">
+          <caret line="106" column="18" selection-start-line="98" selection-start-column="21" selection-end-line="106" selection-end-column="18" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -237,19 +465,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="35" column="29" selection-start-line="35" selection-start-column="29" selection-end-line="35" selection-end-column="29" />
-          <folding>
-            <element signature="e#2741#2742#0" expanded="true" />
-            <element signature="e#2778#2779#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="870">
+          <caret line="66" column="45" selection-start-line="66" selection-start-column="45" selection-end-line="66" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/PetrinetJson/kanban.json">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2340">
+          <caret line="163" selection-start-line="163" selection-end-line="163" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="44" selection-start-line="1" selection-start-column="44" selection-end-line="1" selection-end-column="44" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="85">
-          <caret line="204" column="31" lean-forward="true" selection-start-line="204" selection-start-column="31" selection-end-line="204" selection-end-column="31" />
+        <state relative-caret-position="-555">
+          <caret line="203" column="51" selection-start-line="203" selection-start-column="51" selection-end-line="203" selection-end-column="51" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/AvroSchemaTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="171" column="31" selection-start-line="171" selection-start-column="16" selection-end-line="171" selection-end-column="31" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
