@@ -1,24 +1,68 @@
 package io.ferdon.statespace;
 
-import java.util.Arrays;
+import java.util.Map;
 
 public class PetrinetModel {
     int T;
-    String color[];
-    int[] TP;
-    String[] M;
-    String[] G;
-    String[] E;
-    String[] V;
+    Map<String, String> placeToColor;
+    Map<String, String> typeToColor;
+    Map<String, String> placeToType;
+    int[][] outPlace;
+    int[][] inPlace;
+    String[] Markings;
+    String[] Guards;
+    Object[][][] Expressions;
+    Object[][][] Variables;
 
-    public PetrinetModel(int t, String[] color, int[] tp, String[] m, String[] g, String[] e, String[] v) {
+    public Map<String, String> getTypeToColor() {
+        return typeToColor;
+    }
+
+    public void setTypeToColor(Map<String, String> typeToColor) {
+        this.typeToColor = typeToColor;
+    }
+
+    public void setPlaceToType(Map<String, String> placeToType) {
+        this.placeToType = placeToType;
+    }
+
+    public void setOutPlace(int[][] outPlace) {
+        this.outPlace = outPlace;
+    }
+
+    public void setInPlace(int[][] inPlace) {
+        this.inPlace = inPlace;
+    }
+
+    public void setMarkings(String[] markings) {
+        this.Markings = markings;
+    }
+
+    public void setGuards(String[] guards) {
+        this.Guards = guards;
+    }
+
+    public void setExpressions(Object[][][] expressions) {
+        this.Expressions = expressions;
+    }
+
+    public void setVariables(Object[][][] variables) {
+        this.Variables = variables;
+    }
+
+    public PetrinetModel(int t, Map<String, String> placeToColor, Map<String, String> typeToColor,
+                         Map<String, String> placeToType, int[][] outPlace, int[][] inPlace, String[] markings,
+                         String[] guards, Object[][][] expressions, Object [][][] variables) {
         T = t;
-        this.color = color;
-        this.TP = TP;
-        M = m;
-        G = g;
-        E = e;
-        V = v;
+        this.placeToColor = placeToColor;
+        this.typeToColor = typeToColor;
+        this.placeToType = placeToType;
+        this.outPlace = outPlace;
+        this.inPlace = inPlace;
+        this.Markings = markings;
+        this.Guards = guards;
+        this.Expressions = expressions;
+        this.Variables = variables;
     }
 
     public PetrinetModel(){
@@ -29,68 +73,43 @@ public class PetrinetModel {
         return T;
     }
 
-    @Override
-    public String toString() {
-        return "io.ferdon.statespace.PetrinetModel{" +
-                "T=" + T +
-                ", color=" + Arrays.toString(color) +
-                ", TP=" + Arrays.toString(TP) +
-                ", M=" + Arrays.toString(M) +
-                ", G=" + Arrays.toString(G) +
-                ", E=" + Arrays.toString(E) +
-                ", V=" + Arrays.toString(V) +
-                '}';
+    public Map<String, String> getPlaceToType() {
+        return placeToType;
+    }
+
+    public int[][] getOutPlace() {
+        return outPlace;
+    }
+
+    public int[][] getInPlace() {
+        return inPlace;
+    }
+
+    public String[] getMarkings() {
+        return Markings;
+    }
+
+    public String[] getGuards() {
+        return Guards;
+    }
+
+    public Object[][][] getExpressions() {
+        return Expressions;
+    }
+
+    public Object[][][] getVariables() {
+        return Variables;
+    }
+
+    public void setPlaceToColor(Map<String, String> placeToColor) {
+        this.placeToColor = placeToColor;
+    }
+
+    public Map<String, String> getPlaceToColor() {
+        return  placeToColor;
     }
 
     public void setT(int t) {
         T = t;
-    }
-
-    public String[] getColor() {
-        return color;
-    }
-
-    public void setColor(String[] color) {
-        this.color = color;
-    }
-
-    public int[] getTP() {
-        return TP;
-    }
-
-    public void setTP(int[] TP) {
-        this.TP = TP;
-    }
-
-    public String[] getM() {
-        return M;
-    }
-
-    public void setM(String[] m) {
-        M = m;
-    }
-
-    public String[] getG() {
-        return G;
-    }
-
-    public void setG(String[] g) {
-        G = g;
-    }
-
-    public String[] getE() {
-        return E;
-    }
-
-    public void setE(String[] e) {
-        E = e;
-    }
-
-    public String[] getV() {
-        return V;
-    }
-
-    public void setV(String[] v) {
-        V = v;
     }
 }

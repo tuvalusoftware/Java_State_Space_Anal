@@ -3,6 +3,7 @@ package io.ferdon.statespace;
 import java.io.*;
 import java.util.*;
 
+import javafx.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.python.util.PythonInterpreter;
@@ -48,22 +49,20 @@ import com.google.common.collect.*;
  * 	execute and update marking
  */
 
-
-
-public class Petrinet implements Serializable{
+public class Petrinet implements Serializable {
     //to see an example of fireable script, print composeFireableScript()
     static String fireableScript = "import random\n" +
             "\n" +
             "#T => input places => all unique tokens of each input places => concat to create this list\n" +
             "input = %s\n" +
             "\n" +
-            "#T => input places => inArc variables string inArc[T][index P] => if in hashmap then add [T,index P] else create new key and add\n" +
+            "#T => input places => inArc Variables string inArc[T][index P] => if in hashmap then add [T,index P] else create new key and add\n" +
             "variable = %s\n" +
-            "#loop through keys in variables and generate place holders\n" +
+            "#loop through keys in Variables and generate place holders\n" +
             "%s\n" +
             "\n" +
             "#guard for current transition\n" +
-            "G = \"\"\"%s\"\"\"\n" +
+            "G = '%s'\n" +
             "\n" +
             "#expression on output arc\n" +
             "E = %s\n" +
@@ -86,7 +85,7 @@ public class Petrinet implements Serializable{
             "                    break\n" +
             "        if not flag:\n" +
             "            break\n" +
-            "    #if all variables are valid then check the guard\n" +
+            "    #if all Variables are valid then check the guard\n" +
             "    if flag:\n" +
             "        #guard condition\n" +
             "        if eval(G):\n" +
@@ -99,9 +98,9 @@ public class Petrinet implements Serializable{
             "#T => input places => all unique tokens of each input places => concat to create this list\n" +
             "qualified = %s\n" +
             "\n" +
-            "#T => input places => inArc variables string inArc[T][index P] => if in hashmap then add [T,index P] else create new key and add\n" +
+            "#T => input places => inArc Variables string inArc[T][index P] => if in hashmap then add [T,index P] else create new key and add\n" +
             "variable = %s\n" +
-            "#loop through keys in variables and generate place holders\n" +
+            "#loop through keys in Variables and generate place holders\n" +
             "%s\n" +
             "\n" +
             "#expression on output arc\n" +
@@ -119,7 +118,7 @@ public class Petrinet implements Serializable{
             "    result.append(Ex())\n";
 
 
-    /*data structure
+    /**
      * T: number of transitions
      * toColorSet: map a place to its data type
      * toInPlace: from a transition map to input places
@@ -129,80 +128,142 @@ public class Petrinet implements Serializable{
      * toGuard: from transition map to its guard condition
      * toMarking: from a place map to its marking
      */
-    int T;
+    private int T;
     transient PythonInterpreter pi;
-    int[] TP;
-    Map<Integer, String[]> toColorSet = new HashMap<>();
-    Map<Integer, int[]> toInPlace = new HashMap<>();
-    Map<Integer, int[]> toOutPlace = new HashMap<>();
-    Map<String, String> toVariable = new HashMap<>();
-    Map<Integer,String> toGuard = new HashMap<>();
-    Map<String, String> toExpression = new HashMap<>();
-    Map<Integer,Multiset<List<String>>> toMarking = new HashMap<>();
+    private int[] TP;
+    private Map<Integer, String[]> colorSet = new HashMap<>();
+    private Map<Integer, int[]> inPlaces = new HashMap<>();
+    private Map<Integer, int[]> outPlaces = new HashMap<>();
+    private Map<Pair<Integer, Integer>, String> variables = new HashMap<>();
+    private Map<Integer,String> guards = new HashMap<>();
+    private Map<Pair<Integer, Integer>, String> expressions = new HashMap<>();
+    private Map<Integer,Multiset<List<String>>> markings = new HashMap<>();
 
     //state space data
     transient StateSpace ss;
 
+    public PythonInterpreter getPi() {
+        return pi;
+    }
 
+    public void setPi(PythonInterpreter pi) {
+        this.pi = pi;
+    }
 
-    //constructor
-    public Petrinet(int T, String[] color, int[] TP, String[] M, String[] V, String[] G, String[] E) {
-        this.T = T;
-        this.TP = TP;
+    /**
+     * Constructor
+     */
+    public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
+                    String[] guards, Object[][][] expressions, Object[][][] variables) {
+
         this.pi = new PythonInterpreter();
-        this.toColorSet = parseColorSet(color);
-        List<Map<Integer,int[]>> InOutPlace = parseTP(TP);
-        this.toInPlace = InOutPlace.get(0);
-        this.toOutPlace = InOutPlace.get(1);
-        this.toMarking = parseMarking(M);
-        this.toVariable = parseVariable(V);
-        this.toGuard = parseGuard(G);
-        this.toExpression = parseExpression(E);
+        this.T = T;
+        this.colorSet = parseColorSet(placeToColor);
+        this.TP = parseTP(inPlace, outPlace);
+        this.inPlaces = parsePlace(inPlace);
+        this.outPlaces = parsePlace(outPlace);
+        this.markings = parseMarking(markings);
+        this.variables = parseExpression(variables);
+        this.guards = parseGuard(guards);
+        this.expressions = parseExpression(expressions);
     }
 
     public Petrinet(PetrinetModel model){
         this.T = model.T;
-        this.TP = model.TP;
+        this.TP = parseTP(model.inPlace, model.outPlace);
         this.pi = new PythonInterpreter();
-        this.toColorSet = parseColorSet(model.color);
-        List<Map<Integer,int[]>> InOutPlace = parseTP(model.TP);
-        this.toInPlace = InOutPlace.get(0);
-        this.toOutPlace = InOutPlace.get(1);
-        this.toMarking = parseMarking(model.M);
-        this.toVariable = parseVariable(model.V);
-        this.toGuard = parseGuard(model.G);
-        this.toExpression = parseExpression(model.E);
+        this.colorSet = parseColorSet(model.placeToColor);
+        this.inPlaces = parsePlace(model.inPlace);
+        this.outPlaces = parsePlace(model.outPlace);
+        this.markings = parseMarking(model.Markings);
+        this.variables = parseExpression(model.Variables);
+        this.guards = parseGuard(model.Guards);
+        this.expressions = parseExpression(model.Expressions);
     }
 
-    /*set functions
-     *
-     *
-     *
-     */
+    public int getT() {
+        return T;
+    }
 
-    //send script to jython and read current marking - result marking of this execution
-    void executeTransition(Map<Integer,List<List<List<Object>>>> qualified,int selectTransition, int selectToken) {
-        String script = composeExecuteScript(qualified,selectTransition,selectToken);
-        pi.exec(script);
+    public void setT(int t) {
+        T = t;
+    }
 
-        //tokens from input places to remove, tokens to add to output places
-        List<List<String>> add = formatToken((List<List<Object>>) pi.get("result"));
-        List<List<String>> remove = formatToken(qualified.get(selectTransition).get(selectToken));
+    public int[] getTP() {
+        return TP;
+    }
 
-        //loop through input places to remove
-        int[] inPlace = toInPlace.get(selectTransition);
-        for (int i=0; i<remove.size(); i++) {
-            toMarking.get(inPlace[i]).remove(remove.get(i));
+    public void setTP(int[] TP) {
+        this.TP = TP;
+    }
+
+    public Map<Integer, String[]> getColorSet() {
+        return colorSet;
+    }
+
+    public void setColorSet(Map<Integer, String[]> colorSet) {
+        this.colorSet = colorSet;
+    }
+
+    public Map<Integer, int[]> getInPlaces() {
+        return inPlaces;
+    }
+
+    public void setInPlaces(Map<Integer, int[]> inPlaces) {
+        this.inPlaces = inPlaces;
+    }
+
+    public Map<Integer, int[]> getOutPlaces() {
+        return outPlaces;
+    }
+
+    public void setOutPlaces(Map<Integer, int[]> outPlaces) {
+        this.outPlaces = outPlaces;
+    }
+
+    public Map<Pair<Integer, Integer>, String> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<Pair<Integer, Integer>, String> variables) {
+        this.variables = variables;
+    }
+
+    public Map<Integer, String> getGuards() {
+        return guards;
+    }
+
+    public void setGuards(Map<Integer, String> guards) {
+        this.guards = guards;
+    }
+
+    public Map<Pair<Integer, Integer>, String> getExpressions() {
+        return expressions;
+    }
+
+    public void setExpressions(Map<Pair<Integer, Integer>, String> expressions) {
+        this.expressions = expressions;
+    }
+
+    public Map<Integer, Multiset<List<String>>> getMarkings() {
+        return markings;
+    }
+
+    public void setMarkings(Map<Integer, Multiset<List<String>>> markings) {
+        this.markings = markings;
+    }
+
+    private Map<Integer, String[]> parseColorSet(Map<String, String> placeToColor) {
+        Map<Integer, String[]> result = new HashMap<>();
+        for (String key : placeToColor.keySet()) {
+            String[] c = placeToColor.get(key).split("\\*");
+            result.put(Integer.parseInt(key), c);
         }
-        //loop through out places to add
-        int[] outPlace = toOutPlace.get(selectTransition);
-        for (int i=0; i<add.size(); i++) {
-            toMarking.get(outPlace[i]).add(add.get(i));
-        }
+        return result;
     }
 
     void  generateStateSpace() throws IOException, ClassNotFoundException{
-        Map<Integer,Multiset<List<String>>> ref = toMarking;
+        Map<Integer,Multiset<List<String>>> ref = markings;
         Queue<Map<Integer,Multiset<List<String>>>> queue = new LinkedList<>();
         Queue<Integer> index = new LinkedList<>();
         //state space result
@@ -217,7 +278,7 @@ public class Petrinet implements Serializable{
         node.put(0,ref);
 
         while(queue.size()>0){
-            toMarking = queue.remove();
+            markings = queue.remove();
             int parentID = index.remove();
             Map<Integer,List<List<List<Object>>>> qualified = getFireable();
             for (int T: qualified.keySet()){
@@ -235,12 +296,12 @@ public class Petrinet implements Serializable{
                     if(add.isEmpty()) break;
 
                     //loop through input places to remove
-                    int[] inPlace = toInPlace.get(T);
+                    int[] inPlace = inPlaces.get(T);
                     for (int j=0; j<remove.size(); j++) {
                         ref.get(inPlace[j]).remove(remove.get(j));
                     }
                     //loop through out places to add
-                    int[] outPlace = toOutPlace.get(T);
+                    int[] outPlace = outPlaces.get(T);
                     for (int j=0; j<add.size(); j++) {
                         ref.get(outPlace[j]).add(add.get(j));
                     }
@@ -298,7 +359,7 @@ public class Petrinet implements Serializable{
             }
         }
         //init state space object in petrinet
-        ss = new StateSpace(TP,T,toMarking.size(),node,outArc,arcTransition);
+        ss = new StateSpace(TP,T,markings.size(),node,outArc,arcTransition);
     }
 
 
@@ -310,11 +371,11 @@ public class Petrinet implements Serializable{
     JSONObject getGraphXSchema(){
         JSONObject obj = new JSONObject();
         obj.put("id",1000);
-        for (int p: toColorSet.keySet()){
+        for (int p: colorSet.keySet()){
             JSONArray arr = new JSONArray();
             JSONObject token = new JSONObject();
-            for (int i=0; i<toColorSet.get(p).length; i++){
-                switch(toColorSet.get(p)[i]){
+            for (int i=0; i<colorSet.get(p).length; i++){
+                switch(colorSet.get(p)[i]){
                     case "STRING":
                         token.put("m" + i,"string_holder");
                         break;
@@ -339,22 +400,10 @@ public class Petrinet implements Serializable{
         return obj;
     }
 
-    String getMarking() {
-        JSONObject obj = new JSONObject();
-        for (int i=0; i<toMarking.size(); i++) {
-            List<String> temp = new ArrayList<>();
-            for (List<String> l: toMarking.get(i).elementSet()) {
-                temp.add(toMarking.get(i).count(l) + ": " + l.toString());
-            }
-            obj.put(Integer.toString(i), temp);
-        }
-        return obj.toString();
-    }
-
     Map<Integer,Multiset<List<String>>> copyMarking() throws IOException,ClassNotFoundException{
         // Serialize to byte[]
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new ObjectOutputStream(os).writeObject(this.toMarking);
+        new ObjectOutputStream(os).writeObject(this.markings);
         byte[] buf = os.toByteArray();
 
         //deserialize to object
@@ -362,33 +411,131 @@ public class Petrinet implements Serializable{
         return (Map<Integer,Multiset<List<String>>>) new ObjectInputStream(is).readObject();
     }
 
+    private int[] parseTP(int[][] inPlace, int[][] outPlace) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < T; i++) {
+            result.add(inPlace[i].length);
+            result.add(outPlace[i].length);
+            for (int j = 0; j < inPlace[i].length; j++) {
+                result.add(inPlace[i][j]);
+            }
+            for (int j = 0; j < outPlace[i].length; j++) {
+                result.add(outPlace[i][j]);
+            }
+        }
+
+        return result.stream().mapToInt(i -> i).toArray();
+    }
+
+    private Map<Integer, int[]> parsePlace(int[][] places) {
+        Map<Integer, int[]> result = new HashMap<>();
+
+        for (int i = 0; i < places.length; i++) {
+            result.put(i, places[i]);
+        }
+
+        return result;
+    }
+
+    private Map<Integer, Multiset<List<String>>> parseMarking(String[] markings) {
+        Map<Integer, Multiset<List<String>>> result = new HashMap<>();
+        for (int i = 0; i < markings.length; i++) {
+            result.put(i, stringToMultiset(markings[i]));
+        }
+
+        return result;
+    }
+
+    private Map<Pair<Integer, Integer>, String> parseExpression(Object[][][] expressions) {
+        Map<Pair<Integer, Integer>, String> result = new HashMap<>();
+
+        for (int transitionId = 0; transitionId < expressions.length; transitionId++) {
+            for (int j = 0; j < expressions[transitionId].length; j++) {
+
+                int inPlaceId = (Integer) expressions[transitionId][j][0];
+
+                Pair<Integer, Integer> key = new Pair<>(transitionId, inPlaceId);
+                result.put(key, (String) expressions[transitionId][j][1]);
+            }
+        }
+
+        return result;
+    }
+
+    private Map<Integer, String> parseGuard(String[] guards) {
+        Map<Integer, String> result = new HashMap<>();
+        for (int transitionId = 0; transitionId < guards.length; transitionId++) {
+            result.put(transitionId, guards[transitionId]);
+        }
+
+        return result;
+    }
+
+    /*set functions
+     *
+     *
+     *
+     */
+    //send script to jython and read current marking - result marking of this execution
+    void executeTransition(Map<Integer, List<List<List<Object>>>> qualified, int selectTransition, int selectToken) {
+        String script = composeExecuteScript(qualified, selectTransition, selectToken);
+        pi.exec(script);
+
+        //tokens from input places to remove, tokens to add to output places
+        List<List<String>> add = formatToken((List<List<Object>>) pi.get("result"));
+        List<List<String>> remove = formatToken(qualified.get(selectTransition).get(selectToken));
+
+        //loop through input places to remove
+        int[] inPlace = inPlaces.get(selectTransition);
+        for (int i = 0; i < remove.size(); i++) {
+            markings.get(inPlace[i]).remove(remove.get(i));
+        }
+        //loop through out places to add
+        int[] outPlace = outPlaces.get(selectTransition);
+        for (int i = 0; i < add.size(); i++) {
+            markings.get(outPlace[i]).add(add.get(i));
+        }
+    }
+
+    /*get functions
+     *
+     *
+     *
+     */
+
+    String getStringMarking() {
+        JSONObject obj = new JSONObject();
+        for (int i = 0; i < markings.size(); i++) {
+            List<String> temp = new ArrayList<>();
+            for (List<String> l : markings.get(i).elementSet()) {
+                temp.add(markings.get(i).count(l) + ": " + l.toString());
+            }
+            obj.put(Integer.toString(i), temp);
+        }
+        return obj.toString();
+    }
 
     //format token to string from jython script
-    List<List<String>> formatToken(List<List<Object>> token){
+    List<List<String>> formatToken(List<List<Object>> token) {
         List<List<String>> result = new ArrayList<>();
-        for (List<Object> a: token) {
+        for (List<Object> a : token) {
             List<String> temp = new ArrayList<>();
             //edge case with unit token
             if (a.size() == 0) {
                 result.add(Arrays.asList(""));
-            }
-            else {
-                for (Object b: a) {
+            } else {
+                for (Object b : a) {
                     if (b instanceof java.lang.Integer) {
                         temp.add(Integer.toString((int) b));
-                    }
-                    else if (b instanceof java.lang.Double) {
+                    } else if (b instanceof java.lang.Double) {
                         temp.add(Double.toString((double) b));
-                    }
-                    else if (b instanceof java.lang.Boolean){
+                    } else if (b instanceof java.lang.Boolean) {
                         if (b.toString() == "true") {
                             temp.add("True");
-                        }
-                        else {
+                        } else {
                             temp.add("False");
                         }
-                    }
-                    else {
+                    } else {
                         temp.add("'" + b.toString() + "'");
                     }
                 }
@@ -399,12 +546,12 @@ public class Petrinet implements Serializable{
     }
 
     //calculate fireable transition of current marking
-    Map<Integer,List<List<List<Object>>>> getFireable(){
-        Map<Integer,List<List<List<Object>>>>result = new HashMap<>();
-        for (int t=0; t<T; t++) {
+    Map<Integer, List<List<List<Object>>>> getFireable() {
+        Map<Integer, List<List<List<Object>>>> result = new HashMap<>();
+        for (int t = 0; t < T; t++) {
             boolean flag = true;
-            for (int p: toInPlace.get(t)) {
-                if (toMarking.get(p).size() == 0) {
+            for (int p : inPlaces.get(t)) {
+                if (markings.get(p).size() == 0) {
                     flag = false;
                     break;
                 }
@@ -413,7 +560,7 @@ public class Petrinet implements Serializable{
                 String script = composeFireableScript(t);
                 pi.exec(script);
                 List<List<List<Object>>> qualified = (List<List<List<Object>>>) pi.get("qualified");
-                if (qualified.size()>0) {
+                if (qualified.size() > 0) {
                     result.put(t, qualified);
                 }
             }
@@ -422,11 +569,11 @@ public class Petrinet implements Serializable{
     }
 
     //compose script to execute selected transition, token
-    String composeExecuteScript(Map<Integer,List<List<List<Object>>>> qualified,int selectTransition, int selectToken) {
+    String composeExecuteScript(Map<Integer, List<List<List<Object>>>> qualified, int selectTransition, int selectToken) {
         String selection = qualified.get(selectTransition).get(selectToken).toString();
-        Map<String,List<List<String>>> obj = getCurrentVariableBinding(selectTransition);
+        Map<String, List<List<String>>> obj = getCurrentVariableBinding(selectTransition);
         String binding = formatVariableBinding(obj);
-        String varname = formatVariableName(obj,0);
+        String varname = formatVariableName(obj, 0);
         //get expression
         String expression = getCurrentExpression(selectTransition);
         return String.format(executeScript, selection, binding, varname, expression);
@@ -437,47 +584,48 @@ public class Petrinet implements Serializable{
     String composeFireableScript(int T) {
         String token = getBindingValue(T).toString();
         //get binding variable
-        Map<String,List<List<String>>> obj = getCurrentVariableBinding(T);
+        Map<String, List<List<String>>> obj = getCurrentVariableBinding(T);
         String binding = formatVariableBinding(obj);
-        String varname1 = formatVariableName(obj,0);
-        String varname2 = formatVariableName(obj,1);
+        String varname1 = formatVariableName(obj, 0);
+        String varname2 = formatVariableName(obj, 1);
         //get guard
-        String guard = toGuard.get(T);
+        String guard = guards.get(T);
         //get expression
         String expression = getCurrentExpression(T);
 
         //compose the jython script to calculate fireable transition
         //can change the approach to compile=>put in variable to improve performance
-        return String.format(fireableScript, token, binding, varname1, guard, expression,varname2);
+        return String.format(fireableScript, token, binding, varname1, guard, expression, varname2);
     }
 
-    //from transition map to expressions on output arc
+    //from transition map to Expressions on output arc
     String getCurrentExpression(int T) {
         String result = "";
-        for (int p: this.toOutPlace.get(T)) {
-            String arc = "[" + T + ", " + p + "]";
-            if(toExpression.containsKey(arc)) result += "\"\"\"" + toExpression.get(arc) + "\"\"\",";
+        for (int p : this.outPlaces.get(T)) {
+            Pair<Integer, Integer> arcKey = new Pair<>(T, p);
+            result += "\"\"\"" + expressions.get(arcKey) + "\"\"\",";
         }
-        if (result.length()==0) return "[]";
-        return "[" + result.substring(0,result.length()-1) + "]";
+        return "[" + result.substring(0, result.length() - 1) + "]";
     }
 
     //get variable appearance position on input arc, with key as string of [P,T]
-    Map<String,List<List<String>>> getCurrentVariableBinding(int T){
-        Map<String,List<List<String>>> binding = new HashMap<>();
-        int[] inP = this.toInPlace.get(T);
-        for (int i=0; i<inP.length; i++) {
-            String arc = "[" + inP[i] + ", " + T + "]";
-            if (toVariable.containsKey(arc)) {
-                String[] var = toVariable.get(arc).split(",");
-                for (int j=0; j<var.length; j++) {
+    Map<String, List<List<String>>> getCurrentVariableBinding(int T) {
+        Map<String, List<List<String>>> binding = new HashMap<>();
+        int[] inP = this.inPlaces.get(T);
+        for (int i = 0; i < inP.length; i++) {
+
+            Pair<Integer, Integer> arcKey = new Pair<>(T, inP[i]);
+
+            if (variables.containsKey(arcKey)) {
+                String[] var = variables.get(arcKey).split(",");
+
+                for (int j = 0; j < var.length; j++) {
                     if (!binding.containsKey(var[j])) {
                         List<List<String>> index = new ArrayList<>();
-                        index.add(Arrays.asList(Integer.toString(i),Integer.toString(j)));
-                        binding.put(var[j],index);
-                    }
-                    else {
-                        binding.get(var[j]).add(Arrays.asList(Integer.toString(i),Integer.toString(j)));
+                        index.add(Arrays.asList(Integer.toString(i), Integer.toString(j)));
+                        binding.put(var[j], index);
+                    } else {
+                        binding.get(var[j]).add(Arrays.asList(Integer.toString(i), Integer.toString(j)));
                     }
                 }
             }
@@ -488,9 +636,9 @@ public class Petrinet implements Serializable{
     //data type of each Place
     String getBindingType(int T) {
         List<String> type = new ArrayList<>();
-        for (int inP: this.toInPlace.get(T)) {
+        for (int inP : this.inPlaces.get(T)) {
             //get type of fused token
-            String s = Arrays.toString(toColorSet.get(inP));
+            String s = Arrays.toString(colorSet.get(inP));
             type.add(s);
         }
         return type.toString();
@@ -500,114 +648,19 @@ public class Petrinet implements Serializable{
     List<List<Object>> getBindingValue(int T) {
         List<List<Object>> token = new ArrayList<>();
         List<List<Object>> value = new ArrayList<>();
-        for (int inP: this.toInPlace.get(T)) {
+        for (int inP : this.inPlaces.get(T)) {
             List<Object> Pi = new ArrayList<>();
-            for (List<String> o: toMarking.get(inP).elementSet()) {
+            for (List<String> o : markings.get(inP).elementSet()) {
                 Pi.add(o);
             }
             token.add(Pi);
         }
         ///send type and all tokens to guard
-        for (List<Object> z: Lists.cartesianProduct(token)) {
+        for (List<Object> z : Lists.cartesianProduct(token)) {
             value.add(z);
         }
         return value;
     }
-
-    /*parsing functions
-     *
-     *
-     *
-     */
-
-    //P <= T, foo.get(P).get(T) = variable
-    static Map<String, String> parseVariable(String[] V) {
-        Map<String, String> toVariable = new HashMap<>();
-        for (int i=0; i<V.length; i++) {
-            int position = countColonUtil(V[i]);
-            String index = Arrays.toString(V[i].substring(0,position).split(","));
-            String code = V[i].substring(position+1);
-            toVariable.put(index, code);
-        }
-        return toVariable;
-    }
-
-    //
-    static Map<String,String> parseExpression(String[] E){
-        Map<String, String> toExpression = new HashMap<>();
-        for (int i=0; i<E.length; i++) {
-            int position = countColonUtil(E[i]);
-            String index = Arrays.toString(E[i].substring(0,position).split(","));
-            String code = E[i].substring(position+1);
-            toExpression.put(index, code);
-        }
-        return toExpression;
-    }
-
-    Map<Integer, String[]> parseColorSet(String[] color){
-        Map<Integer, String[]> toColorSet = new HashMap<Integer, String[]>();
-        for (int i=0; i<color.length; i++) {
-            String[] c = color[i].split("\\*");
-            toColorSet.put(i, c);
-        }
-        return toColorSet;
-    }
-
-    List<Map<Integer,int[]>> parseTP(int[] TP) {
-        int T = 0;
-        int i = 0;
-        int in_len = 0;
-        int out_len = 0;
-        Map<Integer, int[]> toInPlace = new HashMap<Integer, int[]>();
-        Map<Integer, int[]> toOutPlace = new HashMap<Integer, int[]>();
-        List<Integer> temp = new ArrayList<>();
-
-        while(i < TP.length){
-            in_len = TP[i];
-            out_len = TP[i+1];
-            i += 2;
-
-            temp.clear();
-
-            for (int j=0; j<in_len; j++){
-                temp.add(TP[i+j]);
-            }
-            toInPlace.put(T,temp.stream().mapToInt(Integer::intValue).toArray());
-            i += in_len;
-
-            temp.clear();
-            for (int j=0; j<out_len; j++){
-                temp.add(TP[i+j]);
-            }
-            toOutPlace.put(T,temp.stream().mapToInt(Integer::intValue).toArray());
-            i += out_len;
-            T += 1;
-        }
-        return Arrays.asList(toInPlace,toOutPlace);
-
-    }
-
-    Map<Integer,String> parseGuard(String[] G) {
-        Map<Integer,String> toGuard = new HashMap<Integer, String>();
-        for (int i=0; i<G.length; i++) {
-            if (G[i].length() > 0) {
-                toGuard.put(i, G[i]);
-            }
-            else {
-                toGuard.put(i, "True");
-            }
-        }
-        return toGuard;
-    }
-
-    Map<Integer,Multiset<List<String>>> parseMarking(String[] M){
-        Map<Integer,Multiset<List<String>>> marking = new HashMap<Integer, Multiset<List<String>>>();
-        for (int i=0; i<M.length; i++) {
-            marking.put(i, stringToMultiset(M[i]));
-        }
-        return marking;
-    }
-
 
 
     /*Util functions
@@ -615,29 +668,29 @@ public class Petrinet implements Serializable{
      *
      *
      */
-    String formatVariableName(Map<String,List<List<String>>> binding,int level) {
+    String formatVariableName(Map<String, List<List<String>>> binding, int level) {
         String result = "";
         String indent = "";
         if (binding.isEmpty()) return "";
 
-        for (int i=0; i<level; i++) {
+        for (int i = 0; i < level; i++) {
             indent += "    ";
         }
 
-        for (String key: binding.keySet()) {
+        for (String key : binding.keySet()) {
             result += key + " = None\n" + indent;
         }
         return result;
     }
 
-    String formatVariableBinding(Map<String,List<List<String>>> binding) {
+    String formatVariableBinding(Map<String, List<List<String>>> binding) {
         String result = "";
-        if  (binding.isEmpty()) return "{}";
-        for (String key: binding.keySet()) {
+        if (binding.isEmpty()) return "{}";
+        for (String key : binding.keySet()) {
             result += "'" + key + "'" + ":";
             result += binding.get(key).toString() + ",";
         }
-        result = result.substring(0, result.length()-1);
+        result = result.substring(0, result.length() - 1);
         result = "{" + result + "}";
         return result;
     }
@@ -655,40 +708,29 @@ public class Petrinet implements Serializable{
     //		return result;
     //	}
 
-    static Multiset<List<String>> stringToMultiset(String s){
+    static Multiset<List<String>> stringToMultiset(String s) {
         Multiset<List<String>> MP = HashMultiset.create();
         if (s.length() == 0) {
             return MP;
         }
 
         s = s.replaceAll(" ", "");
-        s = s.replaceAll("],","]:");
+        s = s.replaceAll("],", "]:");
         String[] e = s.split(":");
-        for (int j=0; j<e.length; j++) {
+        for (int j = 0; j < e.length; j++) {
             int pos = e[j].indexOf('x');
             int n = 1;
-            if (pos>0) {
+            if (pos > 0) {
                 n = Integer.parseInt(e[j].substring(0, pos));
             }
-            List<String> data = Arrays.asList(e[j].substring(pos+2, e[j].length()-1).split(","));
+
+            List<String> data = Arrays.asList(e[j].substring(pos + 2, e[j].length() - 1).split(","));
             MP.add(data, n);
         }
         return MP;
     }
 
-
-    static int countColonUtil(String s) {
-        int count = 0;
-        for (int i=0; i<s.length(); i++) {
-            if (s.charAt(i) == ',')
-                count += 1;
-            if (count==2)
-                return i;
-        }
-        return -1;
-    }
-
-    static void print(String s) {
+    static void println(String s) {
         System.out.println(s);
     }
 
