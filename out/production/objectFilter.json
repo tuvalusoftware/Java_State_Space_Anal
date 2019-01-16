@@ -18,7 +18,7 @@
     ]
   ],
   "Guards": [
-    "age>=23",
+    "age>=17",
     "height>=1.7 and sex==True"
   ],
   "Markings": [

@@ -62,7 +62,7 @@ public class Petrinet implements Serializable {
             "%s\n" +
             "\n" +
             "#guard for current transition\n" +
-            "G = '%s'\n" +
+            "G = \"\"\"%s\"\"\"\n" +
             "\n" +
             "#expression on output arc\n" +
             "E = %s\n" +
@@ -451,21 +451,25 @@ public class Petrinet implements Serializable {
 
         for (int transitionId = 0; transitionId < expressions.length; transitionId++) {
             for (int j = 0; j < expressions[transitionId].length; j++) {
-
                 int inPlaceId = (Integer) expressions[transitionId][j][0];
-
                 Pair<Integer, Integer> key = new Pair<>(transitionId, inPlaceId);
-                result.put(key, (String) expressions[transitionId][j][1]);
+                if (!expressions[transitionId][j][1].equals("")){
+                    result.put(key, (String) expressions[transitionId][j][1]);
+                }
             }
         }
-
         return result;
     }
 
     private Map<Integer, String> parseGuard(String[] guards) {
         Map<Integer, String> result = new HashMap<>();
         for (int transitionId = 0; transitionId < guards.length; transitionId++) {
-            result.put(transitionId, guards[transitionId]);
+            if (guards[transitionId].equals("")) {
+                result.put(transitionId,"True");
+            }
+            else {
+                result.put(transitionId,guards[transitionId]);
+            }
         }
 
         return result;
@@ -686,8 +690,9 @@ public class Petrinet implements Serializable {
     }
 
     String formatVariableBinding(Map<String, List<List<String>>> binding) {
-        String result = "";
+        //empty then return
         if (binding.isEmpty()) return "{}";
+        String result = "";
         for (String key : binding.keySet()) {
             if (!key.equals("")) {
                 result += "'" + key + "'" + ":";

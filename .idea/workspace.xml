@@ -7,22 +7,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="02369b78-d086-41ee-9287-e04836346ce3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__org_javatuples_javatuples_1_2.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/artifacts/nam_nam_main_jar.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/artifacts/nam_nam_main_jar.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/4.10/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/taskHistory/taskHistory.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/4.10/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.10/taskHistory/taskHistory.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/nam_nam_main_jar.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/nam.nam.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/nam.nam.main.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/modules/nam.nam.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/nam.nam.test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/META-INF/MANIFEST.MF" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/artifacts/nam_nam_main_jar/statespace.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/.node.parquet.crc" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/.node.parquet.crc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/.arc.parquet.crc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/.node.parquet.crc" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/arc.parquet" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/Petrinet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/Petrinet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/node.parquet" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/node.parquet" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/test/classes/io/ferdon/statespace/AvroSchemaTest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/StateSpace.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/StateSpace.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/graphviz.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/node.parquet" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -46,22 +50,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/build.gradle">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="16" column="52" lean-forward="true" selection-start-line="16" selection-start-column="52" selection-end-line="16" selection-end-column="52" />
+            <state relative-caret-position="164">
+              <caret line="119" column="7" lean-forward="true" selection-start-line="119" selection-start-column="7" selection-end-line="119" selection-end-column="7" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+            <state relative-caret-position="269">
+              <caret line="692" selection-start-line="692" selection-end-line="692" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#26525#26526#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -79,12 +87,8 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>print</find>
       <find>print(schem</find>
-      <find>print(</find>
-      <find>fireablescript</find>
       <find>System</find>
-      <find>println</find>
       <find>ss</find>
       <find>System.</find>
       <find>system.</find>
@@ -93,6 +97,21 @@
       <find>Java 7</find>
       <find>carte</find>
       <find>avro</find>
+      <find>composeFire</find>
+      <find>parseGuard</find>
+      <find>Variable</find>
+      <find>fireablescript</find>
+      <find>getValue</find>
+      <find>ref</find>
+      <find>format</find>
+      <find>formatToken</find>
+      <find>generate</find>
+      <find>println</find>
+      <find>print</find>
+      <find>print(</find>
+      <find>expression</find>
+      <find>variableBinding</find>
+      <find>parseEx</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -104,11 +123,14 @@
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/arcSchema.java" />
         <option value="$PROJECT_DIR$/src/test/java/io/ferdon/statespace/AvroSchemaTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json" />
-        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" />
+        <option value="$PROJECT_DIR$/build.gradle" />
+        <option value="$PROJECT_DIR$/out/production/bpp.json" />
+        <option value="$PROJECT_DIR$/out/production/plus.json" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" />
+        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" />
+        <option value="$PROJECT_DIR$/out/production/output/graphviz.json" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" />
-        <option value="$PROJECT_DIR$/build.gradle" />
       </list>
     </option>
   </component>
@@ -124,12 +146,31 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="nam" type="b2602c69:ProjectViewProjectNode" />
               <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+              <item name="output" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="nam" type="b2602c69:ProjectViewProjectNode" />
@@ -161,7 +202,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -197,11 +237,11 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.Java_State_Space_Analysis [dependencies]">
+  <component name="RunManager" selected="Application.main">
     <configuration name="main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.main" />
       <module name="nam.nam.main" />
-      <option name="PROGRAM_PARAMETERS" value="analysis objectFilter.json node.parquet arc.parquet graphviz.json" />
+      <option name="PROGRAM_PARAMETERS" value="analysis bpp.json output/node.parquet output/arc.parquet output/graphviz.json" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="io.ferdon.statespace.*" />
@@ -286,8 +326,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.Java_State_Space_Analysis [dependencies]" />
         <item itemvalue="Application.main" />
+        <item itemvalue="Gradle.Java_State_Space_Analysis [dependencies]" />
         <item itemvalue="JUnit.AvroSchemaTest.createNodeSchema" />
         <item itemvalue="JUnit.AvroSchemaTest" />
         <item itemvalue="JUnit.AvroSchemaTest.placeSchema" />
@@ -358,7 +398,7 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23032904" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.23891273" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -367,22 +407,22 @@
       <window_info id="UI Designer" order="6" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49928468" visible="true" weight="0.32650602" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.2503536" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49928468" visible="true" weight="0.2759036" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.40963855" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32956153" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32956153" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.32891566" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5007153" side_tool="true" weight="0.32891566" />
-      <window_info anchor="bottom" id="Build" order="10" weight="0.2879518" />
+      <window_info anchor="bottom" id="Build" order="10" weight="0.28674698" />
       <window_info anchor="bottom" id="Messages" order="11" weight="0.32891566" />
       <window_info anchor="bottom" id="Docker" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Java Enterprise" order="13" weight="0.32956153" />
       <window_info anchor="bottom" id="JProfiler" order="14" />
       <window_info anchor="bottom" id="Database Changes" order="15" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.24964234" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Maven" order="3" />
       <window_info anchor="right" id="Gradle" order="4" />
@@ -430,6 +470,10 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="antWorkspaceConfiguration">
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/gradlew">
@@ -513,30 +557,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="14" column="22" selection-start-line="14" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1283">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" column="23" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.javatuples/javatuples/1.2/a7495f5370bdfcf46c6f3c6ed0badf52877aa467/javatuples-1.2-sources.jar!/org/javatuples/Pair.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
@@ -544,20 +564,103 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
+    <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
+        <state relative-caret-position="330">
+          <caret line="22" column="50" selection-start-line="22" selection-start-column="50" selection-end-line="22" selection-end-column="50" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/src.zip!/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="1966" selection-start-line="1966" selection-end-line="1966" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out/production/bpp.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="19" column="5" lean-forward="true" selection-start-line="19" selection-start-column="5" selection-end-line="19" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out/production/plus.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="855">
+          <caret line="59" column="6" lean-forward="true" selection-start-line="59" selection-start-column="6" selection-end-line="59" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.apache.parquet/parquet-hadoop/1.10.0/489893627c9974c0fdb4ad3461986f3c78ce645e/parquet-hadoop-1.10.0-sources.jar!/org/apache/parquet/hadoop/ParquetWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="298" selection-start-line="298" selection-end-line="298" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="80" column="38" selection-start-line="80" selection-start-column="38" selection-end-line="80" selection-end-column="38" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
+    <entry file="file://$PROJECT_DIR$/out/production/graphviz.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="52" lean-forward="true" selection-start-line="16" selection-start-column="52" selection-end-line="16" selection-end-column="52" />
+        <state>
+          <caret column="35" selection-start-column="35" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.python/jython-standalone/2.7.0/cdfb38bc6f8343bcf1d6accc2e1147e8e7b63b75/jython-standalone-2.7.0.jar!/org/python/core/PyList.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="155">
+          <caret line="852" selection-start-line="852" selection-end-line="852" />
+          <folding>
+            <element signature="e#24854#24855#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="248">
+          <caret line="249" column="66" selection-start-line="249" selection-start-column="66" selection-end-line="249" selection-end-column="66" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="119" column="7" lean-forward="true" selection-start-line="119" selection-start-column="7" selection-end-line="119" selection-end-column="7" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out/production/output/graphviz.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret selection-end-column="1301" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="269">
+          <caret line="692" selection-start-line="692" selection-end-line="692" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#26525#26526#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -572,7 +675,6 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
-                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>

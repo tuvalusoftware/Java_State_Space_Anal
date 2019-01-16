@@ -127,7 +127,7 @@ public class StateSpace {
         return result;
     }
 
-    void print(String s){
+    static void print(String s){
         System.out.println(s);
     }
 
@@ -261,7 +261,6 @@ public class StateSpace {
                     petriNet.put("id", key);
                     petriNet.put("P" + k, listToken[k]);
                 }
-
                 //  System.out.println(petriNet);
                 writer.write(petriNet);
             }

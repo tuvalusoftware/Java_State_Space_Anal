@@ -1,0 +1,86 @@
+{
+  "Expressions": [
+    [
+      [
+        1,
+        "\treturn []"
+      ]
+    ],
+    [
+      [
+        2,
+        "\treturn []"
+      ]
+    ],
+    [
+      [
+        3,
+        "\treturn []"
+      ]
+    ]
+  ],
+  "Guards": [
+    "",
+    "",
+    ""
+  ],
+  "Markings": [
+    "4x[]",
+    "",
+    "",
+    ""
+  ],
+  "T": 3,
+  "Variables": [
+    [
+      [
+        0,
+        ""
+      ]
+    ],
+    [
+      [
+        1,
+        ""
+      ]
+    ],
+    [[2,""]]
+  ],
+  "inPlace": [
+    [
+      0
+    ],
+    [
+      1
+    ],
+    [
+      2
+    ]
+  ],
+  "outPlace": [
+    [
+      1
+    ],
+    [
+      2
+    ],
+    [
+      3
+    ]
+  ],
+  "placeToColor": {
+    "0": "UNIT",
+    "1": "UNIT",
+    "2": "UNIT",
+    "3": "UNIT"
+  },
+  "placeToType": {
+    "0": "UNIT",
+    "1": "UNIT",
+    "2": "UNIT",
+    "3": "UNIT"
+  },
+  "typeToColor": {
+    "UNIT": "UNIT"
+  }
+}
