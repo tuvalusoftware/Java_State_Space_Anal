@@ -3,7 +3,7 @@ package io.ferdon.statespace;
 import java.io.*;
 import java.util.*;
 
-import javafx.util.Pair;
+import org.javatuples.Pair;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.python.util.PythonInterpreter;

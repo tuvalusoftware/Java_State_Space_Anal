@@ -18,6 +18,7 @@ dependencies {
     implementation 'org.json:json:20180130'
     implementation 'org.python:jython-standalone:2.7.0'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.3'
+    compile group: 'org.javatuples', name: 'javatuples', version: '1.2'
 
     implementation 'org.apache.parquet:parquet-avro:1.10.0'
     implementation 'org.apache.avro:avro-tools:1.8.2'

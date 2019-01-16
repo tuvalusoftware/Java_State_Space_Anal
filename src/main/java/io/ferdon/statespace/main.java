@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.avro.Schema;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -14,7 +16,7 @@ import java.util.Base64;
 public class main {
 
     public static void main(String[] args) {
-
+        Logger.getRootLogger().setLevel(Level.OFF);
         try{
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
@@ -133,7 +135,5 @@ public class main {
         oos.close();
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
-
-
 
 }
