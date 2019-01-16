@@ -9,71 +9,54 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+
 
 public class main {
 
     public static void main(String[] args) {
 
-//        try{
-//            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
-//
-////            String option = "analysis";
-////            String petrinetInput = "/Users/macos/Downloads/sign.json";
-////            String graphXOutput = "/Users/macos/Desktop/a.json";
-////            String graphVizOutput = "/Users/macos/Desktop/b.json";
-//
-//            String option = args[0];
-//            String petrinetInput = path + args[1];
-//
-//            print("option: " + option);
-//            print(petrinetInput);
-//
-//            PetrinetModel model = parseJson(petrinetInput);
-//            Petrinet net = new Petrinet(model);
-//
-//            switch(option){
-//                case "compile":
-//                    print(serialize(net));
-//                    break;
-//
-//                case "analysis":
-//                    String graphXOutput = path + args[2];
-//                    String graphVizOutput = path + args[3];
-//                    print(graphXOutput);
-//                    print(graphVizOutput);
-//                    try {
-//                        net.generateStateSpace();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    exportGraphXJson(net,graphXOutput);
-//                    exportGraphVizJson(net,graphVizOutput);
-//                    break;
-//            }
-//
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
-
-        String petrinetInput = "/Users/macos/Desktop/objectFilter.json";
-        PetrinetModel model = parseJson(petrinetInput);
-        Petrinet net = new Petrinet(model);
-
         try{
-            String nodeParquet = "/Users/macos/Desktop/node.parquet";
-            String arcParquet = "/Users/macos/Desktop/arc.parquet";
-            net.generateStateSpace();
-            AvroSchema aq = new AvroSchema();
-            Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
-            Schema arcSchema = aq.createArcSchema();
-            exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
+            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
+
+//            String option = "analysis";
+//            String petrinetInput = "/Users/macos/Downloads/sign.json";
+//            String graphXOutput = "/Users/macos/Desktop/a.json";
+//            String graphVizOutput = "/Users/macos/Desktop/b.json";
+
+            String option = args[0];
+            String petrinetInput = path + args[1];
+
+            print("option: " + option);
+            print(petrinetInput);
+
+            PetrinetModel model = parseJson(petrinetInput);
+            Petrinet net = new Petrinet(model);
+
+            switch(option){
+                case "analysis":
+                    String nodeParquet = path + args[2];
+                    String arcParquet = path + args[3];
+                    String graphVizOutput = path + args[4];
+                    print(nodeParquet);
+                    print(arcParquet);
+                    print(graphVizOutput);
+                    try {
+                        net.generateStateSpace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    AvroSchema aq = new AvroSchema();
+                    Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
+                    Schema arcSchema = aq.createArcSchema();
+
+                    exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
+                    exportGraphVizJson(net,graphVizOutput);
+                    break;
+            }
+
         } catch(Exception e){
             e.printStackTrace();
         }
-
-
     }
 
     static void print(String s) {

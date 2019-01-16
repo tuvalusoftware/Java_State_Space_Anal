@@ -1,0 +1,93 @@
+{
+  "Expressions": [
+    [
+      [
+        2,
+        "\treturn [name,age,sex,height]"
+      ]
+    ],
+    [
+      [
+        4,
+        "\treturn [label]"
+      ],
+      [
+        3,
+        "\treturn [name+label]"
+      ]
+    ]
+  ],
+  "Guards": [
+    "age>=23",
+    "height>=1.7 and sex==True"
+  ],
+  "Markings": [
+    "10x[]",
+    "['nam',17,True,1.72],['an',19,True,1.68],['my',13,False,1.55],['thuy',9,False,1.12],['quan',12,True,1.4],['nhi',8,False,1.2],['truong',23,True,2.0],['quy',28,True,1.78]",
+    "",
+    "",
+    "['-pass']"
+  ],
+  "T": 2,
+  "Variables": [
+    [
+      [
+        0,
+        ""
+      ],
+      [
+        1,
+        "name,age,sex,height"
+      ]
+    ],
+    [
+      [
+        4,
+        "label"
+      ],
+      [
+        2,
+        "name,age,sex,height"
+      ]
+    ]
+  ],
+  "inPlace": [
+    [
+      0,
+      1
+    ],
+    [
+      4,
+      2
+    ]
+  ],
+  "outPlace": [
+    [
+      2
+    ],
+    [
+      4,
+      3
+    ]
+  ],
+  "placeToColor": {
+    "0": "UNIT",
+    "1": "STRING*INT*BOOL*REAL",
+    "2": "STRING*INT*BOOL*REAL",
+    "3": "STRING",
+    "4": "STRING"
+  },
+  "placeToType": {
+    "0": "QUANTITY",
+    "1": "PERSON",
+    "2": "PERSON",
+    "3": "CANDIDATE",
+    "4": "LABEL"
+  },
+  "typeToColor": {
+    "CANDIDATE": "STRING",
+    "LABEL": "STRING",
+    "PERSON": "STRING*INT*BOOL*REAL",
+    "QUANTITY": "UNIT"
+  }
+}
