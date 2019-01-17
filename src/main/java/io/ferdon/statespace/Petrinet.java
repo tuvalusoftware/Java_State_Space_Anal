@@ -289,7 +289,6 @@ public class Petrinet implements Serializable {
                     boolean exist = false;
 
                     String script = composeExecuteScript(qualified,T,i);
-                    println(script);
                     pi.exec(script);
 
                     //tokens from input places to remove, tokens to add to output places
