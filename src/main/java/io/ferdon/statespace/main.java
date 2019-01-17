@@ -34,6 +34,7 @@ public class main {
             PetrinetModel model = parseJson(petrinetInput);
             Petrinet net = new Petrinet(model);
 
+
             switch(option){
                 case "analysis":
                     String nodeParquet = path + args[2];

@@ -1,0 +1,96 @@
+{
+  "Expressions": [
+    [
+      [
+        0, 
+        "\treturn [transferAsset,to]"
+      ]
+    ], 
+    [
+      [
+        0, 
+        "\treturn [property,to]"
+      ]
+    ], 
+    [
+      [
+        0, 
+        "\treturn"
+      ]
+    ]
+  ], 
+  "Guards": [
+    "(cmd=='transfer') and (transferAsset==property) and (fromP==transferOwner)", 
+    "(cmd=='add')", 
+    "(cmd=='remove') and (removeAsset==property) and (removeOwner==fromP)"
+  ], 
+  "Markings": [
+   	 "", 
+   	"['car','','Bob','add'],['tivi','','Alice','add'], ['laptop','','Emi','add'], ['laptop','Bob','Alice','transfer'],['car','Bob','Alice','transfer'],['laptop','Emi','Alice','transfer'],['tivi','Alice','','remove'],['car','Alice','','remove']" 
+	],	
+  "T": 3, 
+  "Variables": [
+    [
+      [
+        1, 
+        "property,fromP,to,cmd"
+      ], 
+      [
+        0, 
+        "transferAsset,transferOwner"
+      ]
+    ], 
+    [
+      [
+        1, 
+        "property,fromP,to,cmd"
+      ]
+    ], 
+    [
+      [
+        1, 
+        "property,fromP,to,cmd"
+      ], 
+      [
+        0, 
+        "removeAsset,removeOwner"
+      ]
+    ]
+  ], 
+  "inPlace": [
+    [
+      1, 
+      0
+    ], 
+    [
+      1
+    ], 
+    [
+      1, 
+      0
+    ]
+  ], 
+  "outPlace": [
+    [
+      0
+    ], 
+    [
+      0
+    ], 
+    [
+      0
+    ]
+  ], 
+  "placeToColor": {
+    "0": "STRING*STRING", 
+    "1": "STRING*STRING*STRING*STRING"
+  }, 
+  "placeToType": {
+    "0": "ASSET", 
+    "1": "ACTION"
+  }, 
+  "typeToColor": {
+    "ASSET": "STRING*STRING", 
+    "ACTION": "STRING*STRING*STRING*STRING"
+  }
+}

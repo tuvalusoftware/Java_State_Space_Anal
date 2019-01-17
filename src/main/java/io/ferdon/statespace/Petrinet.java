@@ -115,7 +115,9 @@ public class Petrinet implements Serializable {
             "result = []\n" +
             "for e in E:\n" +
             "    exec('def Ex():\\n' + e)\n" +
-            "    result.append(Ex())\n";
+            "    temp = Ex()\n" +
+            "    if Ex():\n" +
+            "        result.append(temp)\n";
 
 
     /**
@@ -287,6 +289,7 @@ public class Petrinet implements Serializable {
                     boolean exist = false;
 
                     String script = composeExecuteScript(qualified,T,i);
+                    println(script);
                     pi.exec(script);
 
                     //tokens from input places to remove, tokens to add to output places
@@ -453,6 +456,7 @@ public class Petrinet implements Serializable {
             for (int j = 0; j < expressions[transitionId].length; j++) {
                 int inPlaceId = (Integer) expressions[transitionId][j][0];
                 Pair<Integer, Integer> key = new Pair<>(transitionId, inPlaceId);
+                //only parse expression and variable if text != ""
                 if (!expressions[transitionId][j][1].equals("")){
                     result.put(key, (String) expressions[transitionId][j][1]);
                 }
