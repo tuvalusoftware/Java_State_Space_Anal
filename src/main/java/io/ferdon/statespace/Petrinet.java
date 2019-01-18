@@ -116,7 +116,7 @@ public class Petrinet implements Serializable {
             "for e in E:\n" +
             "    exec('def Ex():\\n' + e)\n" +
             "    temp = Ex()\n" +
-            "    if (Ex()!=None):\n" +
+            "    if (temp!=None):\n" +
             "        result.append(temp)\n";
 
 

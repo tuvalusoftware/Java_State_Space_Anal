@@ -7,12 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="02369b78-d086-41ee-9287-e04836346ce3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/Petrinet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/Petrinet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/marble.json" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/marble.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/output/.node.parquet.crc" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/output/.node.parquet.crc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/output/node.parquet" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/output/node.parquet" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
@@ -40,8 +34,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1256">
-              <caret line="17" column="16" lean-forward="true" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
+            <state relative-caret-position="2304">
+              <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -53,7 +47,7 @@
         <entry file="file://$PROJECT_DIR$/out/production/marble.json">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="450">
-              <caret line="30" column="9" lean-forward="true" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
+              <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
             </state>
           </provider>
         </entry>
@@ -61,7 +55,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="142">
+            <state relative-caret-position="375">
               <caret line="35" selection-start-line="35" selection-end-line="35" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -182,8 +176,8 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -377,8 +371,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.2639485" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26752505" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -631,27 +626,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/out/production/marble.json">
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="30" column="9" lean-forward="true" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
+        <state relative-caret-position="2304">
+          <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
+    <entry file="file://$PROJECT_DIR$/out/production/marble.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1256">
-          <caret line="17" column="16" lean-forward="true" selection-start-line="17" selection-start-column="16" selection-end-line="17" selection-end-column="16" />
+        <state relative-caret-position="450">
+          <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="375">
+          <caret line="35" selection-start-line="35" selection-end-line="35" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
