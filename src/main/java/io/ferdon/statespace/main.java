@@ -8,6 +8,7 @@ import org.apache.avro.Schema;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.omg.CORBA.INTERNAL;
 
 import java.io.*;
 import java.util.Base64;
@@ -18,13 +19,34 @@ import java.util.Map;
 public class main {
 
     public static void main(String[] args) {
-//        Interpreter interpreter = new Interpreter();
-//        Map<String, String> vars = new HashMap<>();
-//        interpreter.runCode("2 3 +", vars);
+        Interpreter interpreter = new Interpreter();
+        Map<String, String> vars = new HashMap<>();
+        interpreter.runCode("2 3 +", vars);
 
-        MyInterpreter1 a = new MyInterpreter1();
+//        MyInterpreter1 a = new MyInterpreter1();
+//
+//        Value b = new StringExpression("34");
+//        Value c = new StringExpression("4");
+//        ArithmeticValue q = new IntegerExpression("34");
+//
+//        ArithmeticValue d = ((StringExpression) b).append(c);
+//
+//
+//        System.out.println(d);
+//
+//        ArithmeticValue e = ((StringExpression) b).getInteger();
+//        ArithmeticValue f = ((StringExpression) c).getInteger();
+//        ArithmeticValue g = e.add(f);
+//        IntegerExpression h = new IntegerExpression(43);
+//        System.out.println(((IntegerExpression) q).isEqual(e));
+//
+//        System.out.println("E: " + e.getClass());
+//        System.out.println("H: " + h.getClass());
+//
+//        ArithmeticValue z = h.add(h);
 
-        MyInterpreter1.ArithmeticValue a = new MyInterpreter1.StringExpression("thing");
+
+//        System.out.println(g);
 
 //        Logger.getRootLogger().setLevel(Level.OFF);
 //        try{
