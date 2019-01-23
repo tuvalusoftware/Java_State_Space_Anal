@@ -11,55 +11,65 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class main {
 
     public static void main(String[] args) {
-        Logger.getRootLogger().setLevel(Level.OFF);
-        try{
-            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
+//        Interpreter interpreter = new Interpreter();
+//        Map<String, String> vars = new HashMap<>();
+//        interpreter.runCode("2 3 +", vars);
 
-//            String option = "analysis";
-//            String petrinetInput = "/Users/macos/Downloads/sign.json";
-//            String graphXOutput = "/Users/macos/Desktop/a.json";
-//            String graphVizOutput = "/Users/macos/Desktop/b.json";
+        MyInterpreter1 a = new MyInterpreter1();
 
-            String option = args[0];
-            String petrinetInput = path + args[1];
+        MyInterpreter1.ArithmeticValue a = new MyInterpreter1.StringExpression("thing");
 
-            print("option: " + option);
-            print(petrinetInput);
-
-            PetrinetModel model = parseJson(petrinetInput);
-            Petrinet net = new Petrinet(model);
-
-
-            switch(option){
-                case "analysis":
-                    String nodeParquet = path + args[2];
-                    String arcParquet = path + args[3];
-                    String graphVizOutput = path + args[4];
-                    print(nodeParquet);
-                    print(arcParquet);
-                    print(graphVizOutput);
-                    try {
-                        net.generateStateSpace();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    AvroSchema aq = new AvroSchema();
-                    Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
-                    Schema arcSchema = aq.createArcSchema();
-
-                    exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
-                    exportGraphVizJson(net,graphVizOutput);
-                    break;
-            }
-
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+//        Logger.getRootLogger().setLevel(Level.OFF);
+//        try{
+//            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
+//
+////            String option = "analysis";
+////            String petrinetInput = "/Users/macos/Downloads/sign.json";
+////            String graphXOutput = "/Users/macos/Desktop/a.json";
+////            String graphVizOutput = "/Users/macos/Desktop/b.json";
+//
+//            String option = args[0];
+//            String petrinetInput = path + args[1];
+//
+//            print("option: " + option);
+//            print(petrinetInput);
+//
+//            PetrinetModel model = parseJson(petrinetInput);
+//            Petrinet net = new Petrinet(model);
+//
+//
+//            switch(option){
+//                case "analysis":
+//                    String nodeParquet = path + args[2];
+//                    String arcParquet = path + args[3];
+//                    String graphVizOutput = path + args[4];
+//                    print(nodeParquet);
+//                    print(arcParquet);
+//                    print(graphVizOutput);
+//                    try {
+//                        net.generateStateSpace();
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                    AvroSchema aq = new AvroSchema();
+//                    Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
+//                    Schema arcSchema = aq.createArcSchema();
+//
+//                    exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
+//                    exportGraphVizJson(net,graphVizOutput);
+//                    break;
+//            }
+//
+//        } catch(Exception e){
+//            e.printStackTrace();
+//        }
     }
 
     static void print(String s) {
