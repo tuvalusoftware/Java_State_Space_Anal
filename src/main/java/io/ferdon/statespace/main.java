@@ -18,80 +18,52 @@ import java.util.Map;
 
 public class main {
 
-    public static void main(String[] args) {
-        Interpreter interpreter = new Interpreter();
-        Map<String, String> vars = new HashMap<>();
-        interpreter.runCode("2 3 +", vars);
+    public static void main(String[] args) throws Exception {
 
-//        MyInterpreter1 a = new MyInterpreter1();
-//
-//        Value b = new StringExpression("34");
-//        Value c = new StringExpression("4");
-//        ArithmeticValue q = new IntegerExpression("34");
-//
-//        ArithmeticValue d = ((StringExpression) b).append(c);
-//
-//
-//        System.out.println(d);
-//
-//        ArithmeticValue e = ((StringExpression) b).getInteger();
-//        ArithmeticValue f = ((StringExpression) c).getInteger();
-//        ArithmeticValue g = e.add(f);
-//        IntegerExpression h = new IntegerExpression(43);
-//        System.out.println(((IntegerExpression) q).isEqual(e));
-//
-//        System.out.println("E: " + e.getClass());
-//        System.out.println("H: " + h.getClass());
-//
-//        ArithmeticValue z = h.add(h);
+        Logger.getRootLogger().setLevel(Level.OFF);
+        try{
+            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
+
+//            String option = "analysis";
+//            String petrinetInput = "/Users/macos/Downloads/sign.json";
+//            String graphXOutput = "/Users/macos/Desktop/a.json";
+//            String graphVizOutput = "/Users/macos/Desktop/b.json";
+
+            String option = args[0];
+            String petrinetInput = path + args[1];
+
+            print("option: " + option);
+            print(petrinetInput);
+
+            PetrinetModel model = parseJson(petrinetInput);
+            Petrinet net = new Petrinet(model);
 
 
-//        System.out.println(g);
+            switch(option){
+                case "analysis":
+                    String nodeParquet = path + args[2];
+                    String arcParquet = path + args[3];
+                    String graphVizOutput = path + args[4];
+                    print(nodeParquet);
+                    print(arcParquet);
+                    print(graphVizOutput);
+                    try {
+                        net.generateStateSpace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    AvroSchema aq = new AvroSchema();
+                    Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
+                    Schema arcSchema = aq.createArcSchema();
 
-//        Logger.getRootLogger().setLevel(Level.OFF);
-//        try{
-//            String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
-//
-////            String option = "analysis";
-////            String petrinetInput = "/Users/macos/Downloads/sign.json";
-////            String graphXOutput = "/Users/macos/Desktop/a.json";
-////            String graphVizOutput = "/Users/macos/Desktop/b.json";
-//
-//            String option = args[0];
-//            String petrinetInput = path + args[1];
-//
-//            print("option: " + option);
-//            print(petrinetInput);
-//
-//            PetrinetModel model = parseJson(petrinetInput);
-//            Petrinet net = new Petrinet(model);
-//
-//
-//            switch(option){
-//                case "analysis":
-//                    String nodeParquet = path + args[2];
-//                    String arcParquet = path + args[3];
-//                    String graphVizOutput = path + args[4];
-//                    print(nodeParquet);
-//                    print(arcParquet);
-//                    print(graphVizOutput);
-//                    try {
-//                        net.generateStateSpace();
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    AvroSchema aq = new AvroSchema();
-//                    Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
-//                    Schema arcSchema = aq.createArcSchema();
-//
-//                    exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
-//                    exportGraphVizJson(net,graphVizOutput);
-//                    break;
-//            }
-//
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
+                    exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
+                    exportGraphVizJson(net,graphVizOutput);
+                    break;
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     static void print(String s) {
