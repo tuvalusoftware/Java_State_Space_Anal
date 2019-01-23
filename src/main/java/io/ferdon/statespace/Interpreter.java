@@ -1,6 +1,8 @@
 package io.ferdon.statespace;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.checkerframework.common.value.qual.StringVal;
+
 import java.util.*;
 
 class Interpreter {
@@ -15,14 +17,15 @@ class Interpreter {
 
     public enum OperationType {
         ADD, SUB, MUL, DIV, MOD,
-        AND, NOT, OR, XOR,
+        AND, NOT, OR, XOR,ISTRUE, ISFALSE,
         EQ, NEQ, GT, GTE, LT, LTE,
+        SUBSTR, APPEND, ISEMPTY, TRIM,
         IF
     }
 
     interface Value {
         int getInt();
-        double getDouble();
+        double getReal();
         boolean getBoolean();
         String getString();
 
@@ -43,15 +46,15 @@ class Interpreter {
         BooleanValue or(BooleanValue x);
         BooleanValue xor(BooleanValue x);
 
-        boolean isTrue();
-        boolean isFalse();
+        BooleanValue isTrue();
+        BooleanValue isFalse();
     }
 
     interface StringValue extends Value {
-        boolean isEmpty();
-        StringValue trim(StringValue x);
+        BooleanExpression isEmpty();
+        StringValue trim();
         StringValue append(StringValue x);
-        StringValue substr(int startPos, int endPos);
+        StringValue substr(IntegerExpression startPos, IntegerExpression endPos);
     }
 
     interface ComparableValue<T> {
@@ -78,7 +81,7 @@ class Interpreter {
             return value;
         }
 
-        public double getDouble() {
+        public double getReal() {
             return (double) value;
         }
 
@@ -144,7 +147,7 @@ class Interpreter {
         private double value;
 
         RealExpression(String x) {
-            value = Integer.parseInt(x);
+            value = Double.parseDouble(x);
         }
 
         RealExpression (double x) {
@@ -155,7 +158,7 @@ class Interpreter {
             return (int) value;
         }
 
-        public double getDouble() {
+        public double getReal() {
             return value;
         }
 
@@ -164,47 +167,47 @@ class Interpreter {
         public String getString() { return String.valueOf(value); }
 
         public ArithmeticValue add(ArithmeticValue x) {
-            return new RealExpression(this.value + x.getDouble());
+            return new RealExpression(this.value + x.getReal());
         }
 
         public ArithmeticValue sub(ArithmeticValue x) {
-            return new RealExpression(this.value - x.getDouble());
+            return new RealExpression(this.value - x.getReal());
         }
 
         public ArithmeticValue mul(ArithmeticValue x) {
-            return new RealExpression(this.value * x.getDouble());
+            return new RealExpression(this.value * x.getReal());
         }
 
         public ArithmeticValue div(ArithmeticValue x) {
-            return new RealExpression(this.value / x.getDouble());
+            return new RealExpression(this.value / x.getReal());
         }
 
         public ArithmeticValue mod(ArithmeticValue x) {
-            return new RealExpression(this.value % x.getDouble());
+            return new RealExpression(this.value % x.getReal());
         }
 
         public BooleanExpression isEqual(ArithmeticValue x) {
-            return new BooleanExpression(this.value == x.getDouble());
+            return new BooleanExpression(this.value == x.getReal());
         }
 
         public BooleanExpression isNotEqual(ArithmeticValue x) {
-            return new BooleanExpression(this.value != x.getDouble());
+            return new BooleanExpression(this.value != x.getReal());
         }
 
         public BooleanExpression isGreater(ArithmeticValue x) {
-            return new BooleanExpression(this.value > x.getDouble());
+            return new BooleanExpression(this.value > x.getReal());
         }
 
         public BooleanExpression isGreaterOrEqual(ArithmeticValue x) {
-            return new BooleanExpression(this.value >= x.getDouble());
+            return new BooleanExpression(this.value >= x.getReal());
         }
 
         public BooleanExpression isLess(ArithmeticValue x) {
-            return new BooleanExpression(this.value < x.getDouble());
+            return new BooleanExpression(this.value < x.getReal());
         }
 
         public BooleanExpression isLessOrEqual(ArithmeticValue x) {
-            return new BooleanExpression(this.value <= x.getDouble());
+            return new BooleanExpression(this.value <= x.getReal());
         }
 
         @Override
@@ -220,27 +223,29 @@ class Interpreter {
             value = x;
         }
 
-        public boolean isEmpty() {
-            return value.length() == 0;
+        public BooleanExpression isEmpty() {
+            return new BooleanExpression(value.length() - 2 == 0);
         }
 
-        public StringValue trim(StringValue x) {
-            return new StringExpression(value.trim());
+        public StringValue trim() {
+            return new StringExpression(value.substring(1, value.length() - 2).trim());
         }
 
         public StringValue append(StringValue x) {
-            return new StringExpression(value + x.getString());
+            String str1 = value.substring(0, value.length() - 1);
+            String str2 = x.getString().substring(1, value.length() - 2);
+            return new StringExpression(str1 + str2);
         }
 
-        public StringValue substr(int startPos, int endPos) {
-            return new StringExpression(value.substring(startPos, endPos));
+        public StringValue substr(IntegerExpression startPos, IntegerExpression endPos) {
+            return new StringExpression(value.substring(startPos.getInt(), endPos.getInt()));
         }
 
         public int getInt() {
             return Integer.parseInt(value);
         }
 
-        public double getDouble() {
+        public double getReal() {
             return Double.parseDouble(value);
         }
 
@@ -297,7 +302,7 @@ class Interpreter {
             return (value) ? 1 : 0;
         }
 
-        public double getDouble() {
+        public double getReal() {
             return (value) ? 1 : 0;
         }
 
@@ -325,12 +330,12 @@ class Interpreter {
             return new BooleanExpression(this.value ^ x.getBoolean());
         }
 
-        public boolean isTrue() {
-            return this.value;
+        public BooleanValue isTrue() {
+            return new BooleanExpression(this.value);
         }
 
-        public boolean isFalse() {
-            return !this.value;
+        public BooleanValue isFalse() {
+            return new BooleanExpression(!this.value);
         }
 
         public BooleanExpression isEqual(BooleanValue x) {
@@ -383,6 +388,13 @@ class Interpreter {
         operators.put("!", OperationType.NOT);
         operators.put("||", OperationType.OR);
         operators.put("^", OperationType.XOR);
+        operators.put("isTrue", OperationType.ISTRUE);
+        operators.put("isFalse", OperationType.ISFALSE);
+
+        operators.put("substr", OperationType.SUBSTR);
+        operators.put("append", OperationType.APPEND);
+        operators.put("isEmpty", OperationType.ISEMPTY);
+        operators.put("trim", OperationType.TRIM);
 
         operators.put("==", OperationType.EQ);
         operators.put("!=", OperationType.NEQ);
@@ -495,6 +507,39 @@ class Interpreter {
                     valueStack.push(arg2.xor(arg1));
                     break;
                 }
+                case ISTRUE: {
+                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                    valueStack.push(arg1.isTrue());
+                    break;
+                }
+                case ISFALSE: {
+                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                    valueStack.push(arg1.isFalse());
+                    break;
+                }
+                case SUBSTR: {
+                    IntegerExpression arg1 = (IntegerExpression) valueStack.pop();
+                    IntegerExpression arg2 = (IntegerExpression) valueStack.pop();
+                    StringValue arg3 = (StringValue) valueStack.pop();
+                    valueStack.push(arg3.substr(arg2, arg1));
+                    break;
+                }
+                case APPEND: {
+                    StringValue arg1 = (StringValue) valueStack.pop();
+                    StringValue arg2 = (StringValue) valueStack.pop();
+                    valueStack.push(arg2.append(arg1));
+                    break;
+                }
+                case ISEMPTY: {
+                    StringValue arg1 = (StringValue) valueStack.pop();
+                    valueStack.push(arg1.isEmpty());
+                    break;
+                }
+                case TRIM: {
+                    StringValue arg1 = (StringValue) valueStack.pop();
+                    valueStack.push(arg1.trim());
+                    break;
+                }
                 case EQ: {
                     ComparableValue arg1 = (ComparableValue) valueStack.pop();
                     ComparableValue arg2 = (ComparableValue) valueStack.pop();
@@ -535,7 +580,7 @@ class Interpreter {
                     BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
                     Value arg2 = (Value) valueStack.pop();
                     Value arg3 = (Value) valueStack.pop();
-                    if (arg1.isTrue()) {
+                    if (arg1.isTrue().getBoolean()) {
                         valueStack.push(arg2);
                     } else {
                         valueStack.push(arg3);
@@ -563,7 +608,10 @@ class Interpreter {
         switch (valueType) {
             case VARIABLE: {
                 String variableValue = variables.get(token);
-                ValueType variableValueType = getValueType(variableValue);
+                if (variableValue == null) {
+                    System.out.println("Variable name without value, set default to 0");
+                    variableValue = "0";
+                }
                 pushOperandToStack(variableValue);  /* change variable with value, so next time valueType != VARIABLE */
                 break;
             }
@@ -618,7 +666,7 @@ class Interpreter {
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
-        Interpreter.Value a = interpreter.interpret("15 7 1 1 + - / 3 * 2 1 1 / / -", vars);
+        Interpreter.Value a = interpreter.interpret("-1 1 +", vars);
         System.out.println(a.toString());
     }
 }
