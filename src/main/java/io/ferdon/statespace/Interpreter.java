@@ -418,7 +418,7 @@ class Interpreter {
      * @param token String
      * @return ValueType (INTEGER, BOOLEAN, ...), null if wrong token grammar
      */
-    private ValueType getValueType(String token) {
+    static public ValueType getValueType(String token) {
 
         if (token.matches("^([+-]?[1-9]\\d*|0)$")) {
             return ValueType.INTEGER;

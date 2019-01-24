@@ -122,13 +122,13 @@ public class Petrinet implements Serializable {
 
     /**
      * T: number of transitions
-     * toColorSet: map a place to its data type
-     * toInPlace: from a transition map to input places
-     * toOutPlace: from a transition map to output places
-     * toVariable: inPlace=>Transition forms an input arc index, on the arc we have variables. syntax: ...get(P).get(T)
-     * toExpression: Transition=>outPlace forms an output arc index, on the arc we have expression. syntax: ...get(P).get(T)
-     * toGuard: from transition map to its guard condition
-     * toMarking: from a place map to its marking
+     * ColorSet: map a place to its data type
+     * InPlace: from a transition map to input places
+     * OutPlace: from a transition map to output places
+     * Variable: inPlace=>Transition forms an input arc index, on the arc we have variables. syntax: ...get(P).get(T)
+     * Expression: Transition=>outPlace forms an output arc index, on the arc we have expression. syntax: ...get(P).get(T)
+     * Guard: from transition map to its guard condition
+     * Marking: from a place map to its marking
      */
     private int T;
     transient PythonInterpreter pi;
