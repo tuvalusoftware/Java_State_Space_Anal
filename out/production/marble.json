@@ -3,57 +3,57 @@
     [
       [
         0,
-        "\treturn [transferAsset,to]"
+        "\treturn [colour,level,toPerson]"
       ]
     ],
     [
       [
         0,
-        "\treturn [property,to]"
+        "\treturn [colour,level,toPerson]"
       ]
     ],
     [
       [
         0,
-        "\treturn []"
+        "\treturn"
       ]
     ]
   ],
   "Guards": [
-    "(cmd=='transfer') and (transferAsset==property) and (fromP==transferOwner)",
-    "(cmd=='add')",
-    "(cmd=='remove') and (removeAsset==property) and (removeOwner==fromP)"
+    "cmd=='transfer' and transferColour==colour and transferLevel==level and fromPerson==transferPerson",
+    "cmd=='add' and fromPerson==''",
+    "cmd=='remove' and toPerson=='' and removeColour==colour and removeLevel==level and removePerson==fromPerson"
   ],
   "Markings": [
     "",
-    "['car','','Bob','add'],['tivi','','Alice','add'], ['laptop','','Emi','add'], ['laptop','Bob','Alice','transfer'],['car','Bob','Alice','transfer'],['laptop','Emi','Alice','transfer'],['tivi','Alice','','remove'],['car','Alice','','remove']"
+    "['Yellow',3.5,'','Alice','add'],['Red',3.1,'','Bob','add'],['Blue',2.0,'','Emi','add'],['Blue',2.0,'Emi','Alice','transfer'],['Red',3.0,'Bob','Alice','transfer'],['Red',3.1,'Bob','Alice','transfer'],['Red',3.1,'Alice','','remove'],['Blue',2.0,'Alice','','remove']"
   ],
   "T": 3,
   "Variables": [
     [
       [
         1,
-        "property,fromP,to,cmd"
+        "colour,level,fromPerson,toPerson,cmd"
       ],
       [
         0,
-        "transferAsset,transferOwner"
+        "transferColour,transferLevel,transferPerson"
       ]
     ],
     [
       [
         1,
-        "property,fromP,to,cmd"
+        "colour,level,fromPerson,toPerson,cmd"
       ]
     ],
     [
       [
         1,
-        "property,fromP,to,cmd"
+        "colour,level,fromPerson,toPerson,cmd"
       ],
       [
         0,
-        "removeAsset,removeOwner"
+        "removeColour,removeLevel,removePerson"
       ]
     ]
   ],
@@ -82,15 +82,15 @@
     ]
   ],
   "placeToColor": {
-    "0": "STRING*STRING",
-    "1": "STRING*STRING*STRING*STRING"
+    "0": "STRING*REAL*STRING",
+    "1": "STRING*REAL*STRING*STRING*STRING"
   },
   "placeToType": {
     "0": "ASSET",
     "1": "ACTION"
   },
   "typeToColor": {
-    "ASSET": "STRING*STRING",
-    "ACTION": "STRING*STRING*STRING*STRING"
+    "ACTION": "STRING*REAL*STRING*STRING*STRING",
+    "ASSET": "STRING*REAL*STRING"
   }
 }

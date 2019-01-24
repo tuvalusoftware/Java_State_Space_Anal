@@ -116,7 +116,7 @@ public class Petrinet implements Serializable {
             "for e in E:\n" +
             "    exec('def Ex():\\n' + e)\n" +
             "    temp = Ex()\n" +
-            "    if Ex():\n" +
+            "    if (temp!=None):\n" +
             "        result.append(temp)\n";
 
 
@@ -513,9 +513,9 @@ public class Petrinet implements Serializable {
     String getStringMarking() {
         JSONObject obj = new JSONObject();
         for (int i = 0; i < markings.size(); i++) {
-            List<String> temp = new ArrayList<>();
+            JSONObject temp = new JSONObject();
             for (List<String> l : markings.get(i).elementSet()) {
-                temp.add(markings.get(i).count(l) + ": " + l.toString());
+                temp.put(l.toString(), Integer.toString(markings.get(i).count(l)));
             }
             obj.put(Integer.toString(i), temp);
         }
