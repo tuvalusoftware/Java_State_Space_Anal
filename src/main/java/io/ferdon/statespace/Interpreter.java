@@ -630,20 +630,17 @@ class Interpreter {
         }
     }
 
+
     /**
-     * Return a Value after running the expression
-     * @param expression String
-     * @param variables  Map: variable name ~> variable value
-     * @throws Exception throw exception when the grammar is not correct.
+     * Function that run the list of string tokens
+     * @param tokens list of string tokens
+     * @param variables map: variable name ~> variable value
      * @return Value
+     * @throws IllegalArgumentException
      */
-    public Value interpret(String expression, Map<String, String> variables) throws IllegalArgumentException {
+    public Value interpret(String[] tokens, Map<String, String> variables) throws IllegalArgumentException {
 
-        String rawExpression = StringEscapeUtils.escapeJava(expression);
         this.variables = variables;
-        this.valueStack.empty();
-
-        String[] tokens = rawExpression.split(" ");
         for (String token : tokens) {
             if (isOperatorToken(token)) {
                 doOperation(token);
@@ -655,11 +652,25 @@ class Interpreter {
         return (Value) valueStack.peek();
     }
 
+    /**
+     * Interface for run expression from String
+     * @param expression String
+     * @param variables map: variable name ~> variable value
+     * @return Value
+     */
+    public Value interpretFromString(String expression, Map<String, String> variables) {
+        String rawExpression = StringEscapeUtils.escapeJava(expression);
+        this.valueStack.empty();
+
+        String[] tokens = rawExpression.split(" ");
+        return interpret(tokens, variables);
+    }
+
     public static void main(String args[]) throws IllegalArgumentException {
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
-        Interpreter.Value a = interpreter.interpret("-1 1 +", vars);
+        Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
         System.out.println(a.toString());
     }
 }
