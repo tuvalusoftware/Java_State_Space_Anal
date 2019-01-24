@@ -1,7 +1,6 @@
 package io.ferdon.statespace;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.checkerframework.common.value.qual.StringVal;
 
 import java.util.*;
 
@@ -60,10 +59,10 @@ class Interpreter {
     interface ComparableValue<T> {
         BooleanExpression isEqual(T x);
         BooleanExpression isNotEqual(T x);
-        BooleanExpression isGreater(T x);
-        BooleanExpression isGreaterOrEqual(T x);
-        BooleanExpression isLess(T x);
-        BooleanExpression isLessOrEqual(T x);
+        BooleanExpression isGreater(T x) throws IllegalArgumentException;
+        BooleanExpression isGreaterOrEqual(T x) throws IllegalArgumentException;
+        BooleanExpression isLess(T x) throws IllegalArgumentException;
+        BooleanExpression isLessOrEqual(T x) throws IllegalArgumentException;
     }
 
     class IntegerExpression implements ArithmeticValue, ComparableValue<ArithmeticValue> {
@@ -220,21 +219,20 @@ class Interpreter {
         private String value;
 
         StringExpression(String x) {
-            value = x;
+            int len = x.length();
+            value = x.replace("'", "");
         }
 
         public BooleanExpression isEmpty() {
-            return new BooleanExpression(value.length() - 2 == 0);
+            return new BooleanExpression(value.length() == 0);
         }
 
         public StringValue trim() {
-            return new StringExpression(value.substring(1, value.length() - 2).trim());
+            return new StringExpression(value.trim());
         }
 
         public StringValue append(StringValue x) {
-            String str1 = value.substring(0, value.length() - 1);
-            String str2 = x.getString().substring(1, value.length() - 2);
-            return new StringExpression(str1 + str2);
+            return new StringExpression(value + x.getString());
         }
 
         public StringValue substr(IntegerExpression startPos, IntegerExpression endPos) {
@@ -265,20 +263,20 @@ class Interpreter {
             return new BooleanExpression(!this.value.equals(x.getString()));
         }
 
-        public BooleanExpression isGreater(StringValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isGreater(StringValue x) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isGreaterOrEqual(StringValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isGreaterOrEqual(StringValue x) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isLess(StringValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isLess(StringValue x) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isLessOrEqual(StringValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isLessOrEqual(StringValue x) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
         @Override
@@ -346,20 +344,20 @@ class Interpreter {
             return new BooleanExpression(this.value != x.getBoolean());
         }
 
-        public BooleanExpression isGreater(BooleanValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isGreater(BooleanValue x)throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isGreaterOrEqual(BooleanValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isGreaterOrEqual(BooleanValue x)throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isLess(BooleanValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isLess(BooleanValue x) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isLessOrEqual(BooleanValue x) {
-            return new BooleanExpression(false);
+        public BooleanExpression isLessOrEqual(BooleanValue x) throws UnsupportedOperationException {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
         @Override
@@ -450,148 +448,143 @@ class Interpreter {
      * push result back to stack after finish
      * @param token String
      */
-    private void doOperation(String token) throws ClassCastException {
-        try {
-            OperationType operationType = getOperationType(token);
-            switch (operationType) {
-                case ADD: {
-                    ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
-                    ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
-                    valueStack.push(arg2.add(arg1));
-                    break;
-                }
-                case SUB: {
-                    ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
-                    ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
-                    valueStack.push(arg2.sub(arg1));
-                    break;
-                }
-                case MUL: {
-                    ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
-                    ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
-                    valueStack.push(arg2.mul(arg1));
-                    break;
-                }
-                case DIV: {
-                    ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
-                    ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
-                    valueStack.push(arg2.div(arg1));
-                    break;
-                }
-                case MOD: {
-                    ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
-                    ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
-                    valueStack.push(arg2.mod(arg1));
-                    break;
-                }
-                case AND: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
-                    valueStack.push(arg2.and(arg1));
-                    break;
-                }
-                case NOT: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    valueStack.push(arg1.not());
-                    break;
-                }
-                case OR: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
-                    valueStack.push(arg2.or(arg1));
-                    break;
-                }
-                case XOR: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
-                    valueStack.push(arg2.xor(arg1));
-                    break;
-                }
-                case ISTRUE: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    valueStack.push(arg1.isTrue());
-                    break;
-                }
-                case ISFALSE: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    valueStack.push(arg1.isFalse());
-                    break;
-                }
-                case SUBSTR: {
-                    IntegerExpression arg1 = (IntegerExpression) valueStack.pop();
-                    IntegerExpression arg2 = (IntegerExpression) valueStack.pop();
-                    StringValue arg3 = (StringValue) valueStack.pop();
-                    valueStack.push(arg3.substr(arg2, arg1));
-                    break;
-                }
-                case APPEND: {
-                    StringValue arg1 = (StringValue) valueStack.pop();
-                    StringValue arg2 = (StringValue) valueStack.pop();
-                    valueStack.push(arg2.append(arg1));
-                    break;
-                }
-                case ISEMPTY: {
-                    StringValue arg1 = (StringValue) valueStack.pop();
-                    valueStack.push(arg1.isEmpty());
-                    break;
-                }
-                case TRIM: {
-                    StringValue arg1 = (StringValue) valueStack.pop();
-                    valueStack.push(arg1.trim());
-                    break;
-                }
-                case EQ: {
-                    ComparableValue arg1 = (ComparableValue) valueStack.pop();
-                    ComparableValue arg2 = (ComparableValue) valueStack.pop();
-                    valueStack.push(arg2.isEqual(arg1));
-                    break;
-                }
-                case NEQ: {
-                    ComparableValue arg1 = (ComparableValue) valueStack.pop();
-                    ComparableValue arg2 = (ComparableValue) valueStack.pop();
-                    valueStack.push(arg2.isNotEqual(arg1));
-                    break;
-                }
-                case GT: {
-                    ComparableValue arg1 = (ComparableValue) valueStack.pop();
-                    ComparableValue arg2 = (ComparableValue) valueStack.pop();
-                    valueStack.push(arg2.isGreater(arg1));
-                    break;
-                }
-                case GTE: {
-                    ComparableValue arg1 = (ComparableValue) valueStack.pop();
-                    ComparableValue arg2 = (ComparableValue) valueStack.pop();
-                    valueStack.push(arg2.isGreaterOrEqual(arg1));
-                    break;
-                }
-                case LT: {
-                    ComparableValue arg1 = (ComparableValue) valueStack.pop();
-                    ComparableValue arg2 = (ComparableValue) valueStack.pop();
-                    valueStack.push(arg2.isLess(arg1));
-                    break;
-                }
-                case LTE: {
-                    ComparableValue arg1 = (ComparableValue) valueStack.pop();
-                    ComparableValue arg2 = (ComparableValue) valueStack.pop();
-                    valueStack.push(arg2.isLessOrEqual(arg1));
-                    break;
-                }
-                case IF: {
-                    BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
-                    Value arg2 = (Value) valueStack.pop();
-                    Value arg3 = (Value) valueStack.pop();
-                    if (arg1.isTrue().getBoolean()) {
-                        valueStack.push(arg2);
-                    } else {
-                        valueStack.push(arg3);
-                    }
-                    break;
-                }
+    private void doOperation(String token) throws ClassCastException, IllegalArgumentException {
+
+        OperationType operationType = getOperationType(token);
+        switch (operationType) {
+            case ADD: {
+                ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
+                ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
+                valueStack.push(arg2.add(arg1));
+                break;
             }
-        }
-        catch (ClassCastException e) {
-            System.out.println("Wrong expression: \n\t" + e);
-            System.exit(0);
+            case SUB: {
+                ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
+                ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
+                valueStack.push(arg2.sub(arg1));
+                break;
+            }
+            case MUL: {
+                ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
+                ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
+                valueStack.push(arg2.mul(arg1));
+                break;
+            }
+            case DIV: {
+                ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
+                ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
+                valueStack.push(arg2.div(arg1));
+                break;
+            }
+            case MOD: {
+                ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
+                ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
+                valueStack.push(arg2.mod(arg1));
+                break;
+            }
+            case AND: {
+                BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
+                valueStack.push(arg2.and(arg1));
+                break;
+            }
+            case NOT: {
+                BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                valueStack.push(arg1.not());
+                break;
+            }
+            case OR: {
+                BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
+                valueStack.push(arg2.or(arg1));
+                break;
+            }
+            case XOR: {
+                BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
+                valueStack.push(arg2.xor(arg1));
+                break;
+            }
+            case ISTRUE: {
+                BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                valueStack.push(arg1.isTrue());
+                break;
+            }
+            case ISFALSE: {
+                BooleanExpression arg1 = (BooleanExpression) valueStack.pop();
+                valueStack.push(arg1.isFalse());
+                break;
+            }
+            case SUBSTR: {
+                IntegerExpression arg1 = (IntegerExpression) valueStack.pop();
+                IntegerExpression arg2 = (IntegerExpression) valueStack.pop();
+                StringValue arg3 = (StringValue) valueStack.pop();
+                valueStack.push(arg3.substr(arg2, arg1));
+                break;
+            }
+            case APPEND: {
+                StringValue arg1 = (StringValue) valueStack.pop();
+                StringValue arg2 = (StringValue) valueStack.pop();
+                valueStack.push(arg2.append(arg1));
+                break;
+            }
+            case ISEMPTY: {
+                StringValue arg1 = (StringValue) valueStack.pop();
+                valueStack.push(arg1.isEmpty());
+                break;
+            }
+            case TRIM: {
+                StringValue arg1 = (StringValue) valueStack.pop();
+                valueStack.push(arg1.trim());
+                break;
+            }
+            case EQ: {
+                ComparableValue arg1 = (ComparableValue) valueStack.pop();
+                ComparableValue arg2 = (ComparableValue) valueStack.pop();
+                valueStack.push(arg2.isEqual(arg1));
+                break;
+            }
+            case NEQ: {
+                ComparableValue arg1 = (ComparableValue) valueStack.pop();
+                ComparableValue arg2 = (ComparableValue) valueStack.pop();
+                valueStack.push(arg2.isNotEqual(arg1));
+                break;
+            }
+            case GT: {
+                ComparableValue arg1 = (ComparableValue) valueStack.pop();
+                ComparableValue arg2 = (ComparableValue) valueStack.pop();
+                valueStack.push(arg2.isGreater(arg1));
+                break;
+            }
+            case GTE: {
+                ComparableValue arg1 = (ComparableValue) valueStack.pop();
+                ComparableValue arg2 = (ComparableValue) valueStack.pop();
+                valueStack.push(arg2.isGreaterOrEqual(arg1));
+                break;
+            }
+            case LT: {
+                ComparableValue arg1 = (ComparableValue) valueStack.pop();
+                ComparableValue arg2 = (ComparableValue) valueStack.pop();
+                valueStack.push(arg2.isLess(arg1));
+                break;
+            }
+            case LTE: {
+                ComparableValue arg1 = (ComparableValue) valueStack.pop();
+                ComparableValue arg2 = (ComparableValue) valueStack.pop();
+                valueStack.push(arg2.isLessOrEqual(arg1));
+                break;
+            }
+            case IF: {
+                Value arg1 = (Value) valueStack.pop();
+                Value arg2 = (Value) valueStack.pop();
+                BooleanExpression arg3 = (BooleanExpression) valueStack.pop();
+                if (arg3.isTrue().getBoolean()) {
+                    valueStack.push(arg2);
+                } else {
+                    valueStack.push(arg1);
+                }
+                break;
+            }
         }
     }
 
@@ -600,10 +593,10 @@ class Interpreter {
      * @param token String
      * @throws Exception token's grammar is wrong
      */
-    private void pushOperandToStack(String token) throws Exception {
+    private void pushOperandToStack(String token) throws IllegalArgumentException {
 
         ValueType valueType = getValueType(token);
-        if (valueType == null) throw new Exception("Syntax Error");
+        if (valueType == null) throw new IllegalArgumentException("Syntax Error");
 
         switch (valueType) {
             case VARIABLE: {
@@ -644,7 +637,7 @@ class Interpreter {
      * @throws Exception throw exception when the grammar is not correct.
      * @return Value
      */
-    public Value interpret(String expression, Map<String, String> variables) throws Exception {
+    public Value interpret(String expression, Map<String, String> variables) throws IllegalArgumentException {
 
         String rawExpression = StringEscapeUtils.escapeJava(expression);
         this.variables = variables;
@@ -662,7 +655,7 @@ class Interpreter {
         return (Value) valueStack.peek();
     }
 
-    public static void main(String args[]) throws Exception {
+    public static void main(String args[]) throws IllegalArgumentException {
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
