@@ -4,10 +4,7 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import org.javatuples.Pair;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PetriNet01 {
 
@@ -66,13 +63,16 @@ public class PetriNet01 {
     private Map<Integer, String[]> typeColor;
     private Map<Integer, int[]> inPlaces;
     private Map<Integer, int[]> outPlaces;
+    private Map<Integer, int[]> inTrans;
+    private Map<Integer, int[]> outTrans;
     private Map<Pair<Integer, Integer>, String[]> variables;
     private Map<Integer, String> guards;
     private Map<Pair<Integer, Integer>, String[]> expressions;
     private Map<Integer, Multiset<Token>> markings;
     private Interpreter interpreter;
+    private Map<Integer, List<String>> bindings;
+    private Set<Integer> fireableTrans;
 
-    private Map<Integer, List<Token>> markingsList;
 
     /**
      * Info: components ID currently is integer index (0, 1, 2, ...), use map to make it able to change to arbitrary ID type later
@@ -87,7 +87,8 @@ public class PetriNet01 {
      * @param markings     map placeID ~> Multiset<Token>
      * @param guards       map transitionID ~> String expression
      * @param expressions  map (transitionID, out placeID) ~> String[] expression
-     * @param variables    map (transition, placeID) ~> String[] variable's names
+     * @param variables    map (transitionID, placeID) ~> String[] variable's names
+     *        bindings     map (transitionID, ...) ~> binding (List of variable's values)
      */
     public PetriNet01(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
                       String[] guards, Object[][][] expressions, Object[][][] variables) {
@@ -96,11 +97,15 @@ public class PetriNet01 {
         this.placeColor = parsePlaceColorInput(placeToColor);
         this.inPlaces = parsePlaceInput(inPlace);
         this.outPlaces = parsePlaceInput(outPlace);
+        this.inTrans = parseTranInput(inPlaces);
+        this.outTrans = parseTranInput(outPlaces);
         this.markings = parseMarkingInput(markings);
         this.variables = parseEdgeInput(variables);
         this.guards = parseGuardInput(guards);
         this.expressions = parseEdgeInput(expressions);
         this.interpreter = new Interpreter();
+        this.bindings = new HashMap<>();
+        this.fireableTrans = new HashSet<>();
     }
 
     public PetriNet01(PetrinetModel model) {
@@ -113,6 +118,8 @@ public class PetriNet01 {
         this.guards = parseGuardInput(model.Guards);
         this.expressions = parseEdgeInput(model.Expressions);
         this.interpreter = new Interpreter();
+        this.bindings = new HashMap<>();
+        this.fireableTrans = new HashSet<>();
     }
 
     private Map<Integer, String[]> parsePlaceColorInput(Map<String, String> placeToColor) {
@@ -130,6 +137,27 @@ public class PetriNet01 {
         Map<Integer, int[]> result = new HashMap<>();
         for (int tranID = 0; tranID < trans.length; tranID++) {
             result.put(tranID, trans[tranID]);
+        }
+
+        return result;
+    }
+
+    private Map<Integer, int[]> parseTranInput(Map<Integer, int[]> places) {
+        Map<Integer, int[]> result = new HashMap<>();
+
+        Map<Integer, List<Integer>> tmpResult = new HashMap<>();
+        for(int tranID: places.keySet()) {
+            for(int placeID: places.get(tranID)) {
+                if (!tmpResult.containsKey(placeID)) {
+                    tmpResult.put(placeID, new ArrayList<>());
+                }
+                tmpResult.get(placeID).add(tranID);
+            }
+        }
+
+        for(int placeID: tmpResult.keySet()) {
+            int[] tmpData = new int[tmpResult.get(placeID).size()];
+            result.put(placeID, tmpData);
         }
 
         return result;
@@ -176,6 +204,14 @@ public class PetriNet01 {
         return outPlaces.get(tranID);
     }
 
+    public int[] getInTrans(int placeID) {
+        return inTrans.get(placeID);
+    }
+
+    public int[] getOutTrans(int placeID) {
+        return outTrans.get(placeID);
+    }
+
     /**
      * Remove token with key in a place
      * @param placeID ID of place
@@ -209,15 +245,26 @@ public class PetriNet01 {
     }
 
     /**
-     * Execute a transition with variable binding as a map
+     * variables:
+     * - decide the value of input arc
+     * - it's like a guard, the binding must be match between places
+     * infos:
+     * - there are multiple value to match for transition
+     * - each tuple of tokens from places generate a new state of petrinet
+     * - the out arcs change the value of variable to create new token
+     * - there are multiple transition can fire at the same time
+     * so the state of the petri net is very complex
+     */
+
+    /**
+     * Execute a transition with variable binding (Map)
      * This function will automatically update the state of Petri net.
      * @param tranID id of the transition need to execute
      * @param token token that makes transition fireable: map placeID ~> Token
      */
     public void executeTranstion(int tranID, Token token) {
 
-        int[] inPlaces = getInPlaces(tranID);
-        int[] outPlaces = getOutPlaces(tranID);
+
 
         /* create binding map: (String) variable name ~> (String) variable value */
         String[] varNames = variables.get(new Pair<>(tranID, inPlaces[0]));
@@ -226,8 +273,49 @@ public class PetriNet01 {
             binding.put(varNames[i], token.getStringElementAt(i));
         }
 
-        Interpreter.Value res = interpreter.interpretFromString(guards.get(tranID), binding);
-        if (res.getBoolean()) {  /* guard is correct */
+        Interpreter.Value guardResult = interpreter.interpretFromString(guards.get(tranID), binding);
+        if (guardResult.getBoolean()) {
+            for(int inPlaceID: inPlaces) removeToken(inPlaceID, token, 1);
+            for(int outPlaceID: outPlaces) addToken(outPlaceID, token, 1);
+        }
+    }
+
+    private void updateFireableTransitions(int tranID) {
+
+        /* find transition need to be updated when 'tranID' is fired */
+        int[] inPlaces = getInPlaces(tranID);
+        int[] outPlaces = getOutPlaces(tranID);
+
+        /* update new binding into each affected transition */
+        for(int inPlaceID: inPlaces) {
+            for(int affectedTranID: getOutTrans(inPlaceID)) {
+                updateFireableBinding(affectedTranID);
+            }
+        }
+    }
+
+    private void updateStateWhenFire(int tranID, Map<String, String> binding) {
+        int[] inPlaces = getInPlaces(tranID);
+        int[] outPlaces = getOutPlaces(tranID);
+
+        for(int inPlaceID: inPlaces) {
+            Token token = createToken(inPlaceID, binding);
+            removeToken(inPlaceID, token, 1);
+        }
+
+        for(int outPlaceID: outPlaces) {
+            Token token = createToken(outPlaceID, binding);
+            removeToken(outPlaceID, token, 1);
+        }
+    }
+
+    public void executeTransition01(int tranID, Map<String, String> binding) {
+        Interpreter.Value guardResult = interpreter.interpretFromString(guards.get(tranID), binding);
+        if (guardResult.getBoolean()) {
+
+            updateFireableTransitions(tranID);
+            updateStateWhenFire(tranID, binding);
+
             for(int inPlaceID: inPlaces) removeToken(inPlaceID, token, 1);
             for(int outPlaceID: outPlaces) addToken(outPlaceID, token, 1);
         }

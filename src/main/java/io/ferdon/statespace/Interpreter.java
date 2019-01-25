@@ -1,6 +1,8 @@
 package io.ferdon.statespace;
 
+import javafx.util.Pair;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.javatuples.Triplet;
 
 import java.util.*;
 
@@ -672,5 +674,23 @@ class Interpreter {
         vars.put("a", "2");
         Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
         System.out.println(a.toString());
+
+        Map<Object, String> test = new HashMap<>();
+        List<String> c = new ArrayList<>();
+        List<String> b = new ArrayList<>();
+
+        c.add("qaz");
+        c.add("123");
+
+        b.add("123");
+        b.add("qaz");
+
+        System.out.println(c.hashCode());
+        System.out.println(b.hashCode());
+
+        test.put(c, "c");  test.put(b, "b");
+
+        System.out.println(test.get(c));
+        System.out.println(test.get(b));
     }
 }
