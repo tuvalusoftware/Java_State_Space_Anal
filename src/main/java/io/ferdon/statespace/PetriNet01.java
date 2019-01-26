@@ -22,6 +22,10 @@ public class PetriNet01 {
             }
         }
 
+        Token(List<String> x) {
+            values = x;
+        }
+
         String get(int index) {
             return values.get(index);
         }
@@ -44,6 +48,22 @@ public class PetriNet01 {
 
         Map<Integer, Token> getBindingInfo() {
             return values;
+        }
+
+        Map<String, String> getStringMapping(int tranID) {
+            Map<String, String> vars = new HashMap<>();
+
+            for(int placeID: values.keySet()) {
+                Token token = values.get(placeID);
+                Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
+                int valueIndex = 0;
+
+                for(String varName: variables.get(varKey)) {
+                    vars.put(varName, token.get(valueIndex));
+                }
+            }
+
+            return vars;
         }
     }
 
@@ -299,19 +319,7 @@ public class PetriNet01 {
     }
 
     private boolean passGuard(int tranID, Binding b) {
-        Map<String, String> vars = new HashMap<>();
-        Map<Integer, Token> bindInfo = b.getBindingInfo();
-
-        for(int placeID: bindInfo.keySet()) {
-            Token token = bindInfo.get(placeID);
-            Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
-            int valueIndex = 0;
-
-            for(String varName: variables.get(varKey)) {
-                vars.put(varName, token.get(valueIndex));
-            }
-        }
-
+        Map<String, String> vars = b.getStringMapping(tranID);
         Interpreter.Value isPass = interpreter.interpretFromString(guards.get(tranID), vars);
         return isPass.getBoolean();
     }
@@ -343,6 +351,21 @@ public class PetriNet01 {
         }
     }
 
+    private Token runExpression(int tranID, int placeID, Binding binding) {
+
+        List<String> result = new ArrayList<>();
+
+        String[] exps = expressions.get(new Pair<>(tranID, placeID));
+        Map<String, String> vars = binding.getStringMapping(tranID);
+
+        for(String statement: exps) {
+            Interpreter.Value res = interpreter.interpretFromString(statement, vars);
+            result.add(res.getString());
+        }
+
+        return new Token(result);
+    }
+
     public void executeTransition(int tranID, Binding fireableBinding) {
 
         if (!canFire(tranID, fireableBinding, false)) return;
@@ -355,7 +378,8 @@ public class PetriNet01 {
         }
 
         for(int placeID: outputPlaces) {
-            addToken(placeID, fireableBinding.getToken(placeID), 1);
+            Token newToken = runExpression(tranID, placeID, fireableBinding);
+            addToken(placeID, newToken, 1);
         }
     }
 }
