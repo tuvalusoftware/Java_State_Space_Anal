@@ -18,7 +18,7 @@ class Interpreter {
 
     public enum OperationType {
         ADD, SUB, MUL, DIV, MOD,
-        AND, NOT, OR, XOR,ISTRUE, ISFALSE,
+        AND, NOT, OR, XOR, ISTRUE, ISFALSE,
         EQ, NEQ, GT, GTE, LT, LTE,
         SUBSTR, APPEND, ISEMPTY, TRIM,
         IF
@@ -26,8 +26,11 @@ class Interpreter {
 
     interface Value {
         int getInt();
+
         double getReal();
+
         boolean getBoolean();
+
         String getString();
 
         String toString();
@@ -35,35 +38,51 @@ class Interpreter {
 
     interface ArithmeticValue extends Value {
         ArithmeticValue add(ArithmeticValue x);
+
         ArithmeticValue sub(ArithmeticValue x);
+
         ArithmeticValue mul(ArithmeticValue x);
+
         ArithmeticValue div(ArithmeticValue x);
+
         ArithmeticValue mod(ArithmeticValue x);
     }
 
     interface BooleanValue extends Value {
         BooleanValue and(BooleanValue x);
+
         BooleanValue not();
+
         BooleanValue or(BooleanValue x);
+
         BooleanValue xor(BooleanValue x);
 
         BooleanValue isTrue();
+
         BooleanValue isFalse();
     }
 
     interface StringValue extends Value {
         BooleanExpression isEmpty();
+
         StringValue trim();
+
         StringValue append(StringValue x);
+
         StringValue substr(IntegerExpression startPos, IntegerExpression endPos);
     }
 
     interface ComparableValue<T> {
         BooleanExpression isEqual(T x);
+
         BooleanExpression isNotEqual(T x);
+
         BooleanExpression isGreater(T x) throws IllegalArgumentException;
+
         BooleanExpression isGreaterOrEqual(T x) throws IllegalArgumentException;
+
         BooleanExpression isLess(T x) throws IllegalArgumentException;
+
         BooleanExpression isLessOrEqual(T x) throws IllegalArgumentException;
     }
 
@@ -116,11 +135,11 @@ class Interpreter {
 
         public BooleanExpression isEqual(ArithmeticValue x) {
             return new BooleanExpression(this.value == x.getInt());
-        };
+        }
 
         public BooleanExpression isNotEqual(ArithmeticValue x) {
             return new BooleanExpression(this.value != x.getInt());
-        };
+        }
 
         public BooleanExpression isGreater(ArithmeticValue x) {
             return new BooleanExpression(this.value > x.getInt());
@@ -151,7 +170,7 @@ class Interpreter {
             value = Double.parseDouble(x);
         }
 
-        RealExpression (double x) {
+        RealExpression(double x) {
             value = x;
         }
 
@@ -163,9 +182,13 @@ class Interpreter {
             return value;
         }
 
-        public boolean getBoolean() { return value != 0.000; }
+        public boolean getBoolean() {
+            return value != 0.000;
+        }
 
-        public String getString() { return String.valueOf(value); }
+        public String getString() {
+            return String.valueOf(value);
+        }
 
         public ArithmeticValue add(ArithmeticValue x) {
             return new RealExpression(this.value + x.getReal());
@@ -346,11 +369,11 @@ class Interpreter {
             return new BooleanExpression(this.value != x.getBoolean());
         }
 
-        public BooleanExpression isGreater(BooleanValue x)throws UnsupportedOperationException {
+        public BooleanExpression isGreater(BooleanValue x) throws UnsupportedOperationException {
             throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public BooleanExpression isGreaterOrEqual(BooleanValue x)throws UnsupportedOperationException {
+        public BooleanExpression isGreaterOrEqual(BooleanValue x) throws UnsupportedOperationException {
             throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
@@ -369,10 +392,10 @@ class Interpreter {
     }
 
     /*
-    * operator: operation name ~> operationType
-    * variables: variable name ~> variable value
-    * valueStack: stack for store postfix operands
-    * */
+     * operator: operation name ~> operationType
+     * variables: variable name ~> variable value
+     * valueStack: stack for store postfix operands
+     * */
     private static Map<String, OperationType> operators = new HashMap<>();
     private Map<String, String> variables = new HashMap<>();
     private Stack<Object> valueStack = new Stack<>();
@@ -406,7 +429,6 @@ class Interpreter {
     }
 
 
-
     private boolean isOperatorToken(String token) {
         return operators.containsKey(token);
     }
@@ -417,6 +439,7 @@ class Interpreter {
 
     /**
      * Return ValueType of a String token by defined regex
+     *
      * @param token String
      * @return ValueType (INTEGER, BOOLEAN, ...), null if wrong token grammar
      */
@@ -448,6 +471,7 @@ class Interpreter {
     /**
      * Receive String token and convert to operator, do operation with arguments popped from stack,
      * push result back to stack after finish
+     *
      * @param token String
      */
     private void doOperation(String token) throws ClassCastException, IllegalArgumentException {
@@ -592,6 +616,7 @@ class Interpreter {
 
     /**
      * Receive String token and convert to suitable type, push to stack, wait for doing operation
+     *
      * @param token String
      * @throws Exception token's grammar is wrong
      */
@@ -635,7 +660,8 @@ class Interpreter {
 
     /**
      * Function that run the list of string tokens
-     * @param tokens list of string tokens
+     *
+     * @param tokens    list of string tokens
      * @param variables map: variable name ~> variable value
      * @return Value
      * @throws IllegalArgumentException
@@ -656,8 +682,9 @@ class Interpreter {
 
     /**
      * Interface for run expression from String
+     *
      * @param expression String
-     * @param variables map: variable name ~> variable value
+     * @param variables  map: variable name ~> variable value
      * @return Value
      */
     public Value interpretFromString(String expression, Map<String, String> variables) {
@@ -675,22 +702,7 @@ class Interpreter {
         Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
         System.out.println(a.toString());
 
-        Map<Object, String> test = new HashMap<>();
-        List<String> c = new ArrayList<>();
         List<String> b = new ArrayList<>();
-
-        c.add("qaz");
-        c.add("123");
-
-        b.add("123");
-        b.add("qaz");
-
-        System.out.println(c.hashCode());
-        System.out.println(b.hashCode());
-
-        test.put(c, "c");  test.put(b, "b");
-
-        System.out.println(test.get(c));
-        System.out.println(test.get(b));
+        List<String> c = new ArrayList<>();
     }
 }

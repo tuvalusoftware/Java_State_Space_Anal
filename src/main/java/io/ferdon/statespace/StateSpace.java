@@ -185,7 +185,7 @@ public class StateSpace {
             for (String key : arcTransition.keySet()) {
                 JSONObject object = new JSONObject("{\"arc\":" + key + "}");
                 JSONArray array = object.getJSONArray("arc");
-                //System.out.println(array.get(0));
+                //System.out.println(array.getToken(0));
                 record.put("src", array.get(0));
                 record.put("dst", array.get(1));
                 record.put("transition", arcTransition.get(key));

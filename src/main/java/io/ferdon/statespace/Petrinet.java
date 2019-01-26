@@ -14,7 +14,7 @@ import com.google.common.collect.*;
 /* This class initialize a petrinet object
  * Functions are sorted intp 4 types:
  * initializer/parser functions
- * get functions
+ * getToken functions
  * set functions
  * Util functions
  */
@@ -28,13 +28,13 @@ import com.google.common.collect.*;
 
 /* Algorithm:
  * loop through transitions with T, for each transition t:
- * 		get input places, for each input place p:
- *			get marking of it
+ * 		getToken input places, for each input place p:
+ *			getToken marking of it
  *			add this marking to a list L
  *			if one of input place is empty then break, this transition is not fireable
  *		generate permutations base on the list L
- *		get variable binding, guard, expression (not used) then compose the fireable script
- *		execute fireable script and get the qualified transitions
+ *		getToken variable binding, guard, expression (not used) then compose the fireable script
+ *		execute fireable script and getToken the qualified transitions
  *
  * Read the qualified and pick a transition, token to execute
  * Compose execute script and run it
@@ -43,7 +43,7 @@ import com.google.common.collect.*;
 
 /* Driver code:
  * while(true):
- * 	get fireable
+ * 	getToken fireable
  * 	randomly select a transition and its qualified token
  * 	break if no firable transition OR no qualified token in a fireable transition
  * 	execute and update marking
@@ -69,7 +69,7 @@ public class Petrinet implements Serializable {
             "\n" +
             "qualified = []\n" +
             "\n" +
-            "#get qualified tokens\n" +
+            "#getToken qualified tokens\n" +
             "for token in input:\n" +
             "    #flag to check if all variable assignments are valid\n" +
             "    flag = True\n" +
@@ -125,8 +125,8 @@ public class Petrinet implements Serializable {
      * ColorSet: map a place to its data type
      * InPlace: from a transition map to input places
      * OutPlace: from a transition map to output places
-     * Variable: inPlace=>Transition forms an input arc index, on the arc we have variables. syntax: ...get(P).get(T)
-     * Expression: Transition=>outPlace forms an output arc index, on the arc we have expression. syntax: ...get(P).get(T)
+     * Variable: inPlace=>Transition forms an input arc index, on the arc we have variables. syntax: ...getToken(P).getToken(T)
+     * Expression: Transition=>outPlace forms an output arc index, on the arc we have expression. syntax: ...getToken(P).getToken(T)
      * Guard: from transition map to its guard condition
      * Marking: from a place map to its marking
      */
@@ -365,7 +365,7 @@ public class Petrinet implements Serializable {
     }
 
 
-    /*custom get function
+    /*custom getToken function
      *
      *
      *
@@ -504,7 +504,7 @@ public class Petrinet implements Serializable {
         }
     }
 
-    /*get functions
+    /*getToken functions
      *
      *
      *
@@ -581,7 +581,7 @@ public class Petrinet implements Serializable {
         Map<String, List<List<String>>> obj = getCurrentVariableBinding(selectTransition);
         String binding = formatVariableBinding(obj);
         String varname = formatVariableName(obj, 0);
-        //get expression
+        //getToken expression
         String expression = getCurrentExpression(selectTransition);
         return String.format(executeScript, selection, binding, varname, expression);
     }
@@ -590,14 +590,14 @@ public class Petrinet implements Serializable {
     //compose script to find fireable transition
     String composeFireableScript(int T) {
         String token = getBindingValue(T).toString();
-        //get binding variable
+        //getToken binding variable
         Map<String, List<List<String>>> obj = getCurrentVariableBinding(T);
         String binding = formatVariableBinding(obj);
         String varname1 = formatVariableName(obj, 0);
         String varname2 = formatVariableName(obj, 1);
-        //get guard
+        //getToken guard
         String guard = guards.get(T);
-        //get expression
+        //getToken expression
         String expression = getCurrentExpression(T);
 
         //compose the jython script to calculate fireable transition
@@ -615,7 +615,7 @@ public class Petrinet implements Serializable {
         return "[" + result.substring(0, result.length() - 1) + "]";
     }
 
-    //get variable appearance position on input arc, with key as string of [P,T]
+    //getToken variable appearance position on input arc, with key as string of [P,T]
     Map<String, List<List<String>>> getCurrentVariableBinding(int T) {
         Map<String, List<List<String>>> binding = new HashMap<>();
         int[] inP = this.inPlaces.get(T);
@@ -644,14 +644,14 @@ public class Petrinet implements Serializable {
     String getBindingType(int T) {
         List<String> type = new ArrayList<>();
         for (int inP : this.inPlaces.get(T)) {
-            //get type of fused token
+            //getToken type of fused token
             String s = Arrays.toString(colorSet.get(inP));
             type.add(s);
         }
         return type.toString();
     }
 
-    //get all permutations between input places tokens
+    //getToken all permutations between input places tokens
     List<List<Object>> getBindingValue(int T) {
         List<List<Object>> token = new ArrayList<>();
         List<List<Object>> value = new ArrayList<>();
