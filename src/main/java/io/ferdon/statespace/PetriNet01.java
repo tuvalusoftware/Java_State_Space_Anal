@@ -26,6 +26,10 @@ public class PetriNet01 {
             values = x;
         }
 
+        Token(String[] x) {
+            for(String s: x) values.add(s);
+        }
+
         String get(int index) {
             return values.get(index);
         }
@@ -113,8 +117,7 @@ public class PetriNet01 {
         this.expressions = parseEdgeInput(expressions);
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
-
-
+        initializeBindinds();
     }
 
     public PetriNet01(PetrinetModel model) {
@@ -128,6 +131,8 @@ public class PetriNet01 {
         this.expressions = parseEdgeInput(model.Expressions);
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
+        initializeBindinds();
+
     }
 
     private Map<Integer, String[]> parsePlaceColorInput(Map<String, String> placeToColor) {
@@ -219,6 +224,16 @@ public class PetriNet01 {
         return result;
     }
 
+    private void initializeBindinds() {
+
+        for(int placeID: markings.keySet()) {
+            Multiset<Token> tokens = markings.get(placeID);
+            for(Token token : tokens) {
+                addToken(placeID, token, tokens.count(token));
+            }
+        }
+    }
+
     public int[] getInPlaces(int tranID) {
         return inPlaces.get(tranID);
     }
@@ -273,7 +288,16 @@ public class PetriNet01 {
     }
 
     private List<Token> getTokensList(int placeID) {
-        return new ArrayList<>(markings.get(placeID).elementSet());
+
+        Multiset<Token> tokens = markings.get(placeID);
+        List<Token> result = new ArrayList<>();
+
+        for(Token token: tokens) {
+            int num = tokens.count(token);
+            for(int i = 0; i < num; i++) result.add(token);
+        }
+
+        return result;
     }
 
     private void removeBinding(int tranID, Binding binding) {

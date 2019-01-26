@@ -1,5 +1,8 @@
 package io.ferdon.statespace;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import javafx.util.Pair;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.javatuples.Triplet;
@@ -702,7 +705,15 @@ class Interpreter {
         Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
         System.out.println(a.toString());
 
-        List<String> b = new ArrayList<>();
-        List<String> c = new ArrayList<>();
+        Multiset<String> b = HashMultiset.create();
+        b.add("t");
+        b.add("t");
+        b.add("t");
+
+        String[] d = {"1"};
+        List<String> c = new ArrayList<String>(b.toArray(d));
+        for(String t: c) {
+            System.out.println(t);
+        }
     }
 }
