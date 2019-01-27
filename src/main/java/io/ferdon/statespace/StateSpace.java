@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import io.ferdon.statespace.PetriNet01.Token;
+import io.ferdon.statespace.Petrinet.Token;
 
 
 class StateSpace {
@@ -38,26 +38,15 @@ class StateSpace {
         }
     }
 
-    private long T;
     private long P;
-    private int[] TP;
     private int numState;
     private Map<Integer, State> nodes = new HashMap<>();
     private Map<Integer, Set<Integer>> edges = new HashMap<>();
     private Map<Pair<Integer, Integer>, Integer> firedTransitions = new HashMap<>();  //[src,dst] -> arc data
 
-    StateSpace() {
+    StateSpace(int numPlaces) {
         numState = 0;
-    }
-
-    StateSpace(int[] TP, long T, long P, Map<Integer, Map<Integer, Multiset<List<String>>>> nodes,
-               Map<Integer, Set<Integer>> edges, Map<String, Integer> firedTransitions){
-//        this.TP = TP;
-//        this.T = T;
-//        this.P = P;
-//        this.nodes = nodes;
-//        this.edges = edges;
-//        this.firedTransitions = firedTransitions;
+        P = numPlaces;
     }
 
     int addState(Map<Integer, Multiset<Token>> s) {
@@ -85,27 +74,27 @@ class StateSpace {
 
     JSONObject getGraphVizJson(){
         JSONObject obj = new JSONObject();
-        JSONObject nodeObj = new JSONObject();
-        JSONObject arcObj = new JSONObject();
-
-
-        obj.put("TP",TP);
-
-        for (int key: nodes.keySet()){
-            String s = "";
-            for (int k: nodes.get(key).getKeySet()){
-                s += nodes.get(key).get(k).size() + ", ";
-            }
-            nodeObj.put(key+"",key + "\\n" + s);
-        }
-
-        for (int key: edges.keySet()){
-            arcObj.put(key+"", edges.get(key));
-        }
-
-        obj.put("nodes",nodeObj);
-        obj.put("arc",arcObj);
-
+//        JSONObject nodeObj = new JSONObject();
+//        JSONObject arcObj = new JSONObject();
+//
+//
+//        obj.put("TP",TP);
+//
+//        for (int key: nodes.keySet()){
+//            String s = "";
+//            for (int k: nodes.get(key).getKeySet()){
+//                s += nodes.get(key).get(k).size() + ", ";
+//            }
+//            nodeObj.put(key+"",key + "\\n" + s);
+//        }
+//
+//        for (int key: edges.keySet()){
+//            arcObj.put(key+"", edges.get(key));
+//        }
+//
+//        obj.put("nodes",nodeObj);
+//        obj.put("arc",arcObj);
+//
         return obj;
     }
 

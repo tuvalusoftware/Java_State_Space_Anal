@@ -1,261 +1,151 @@
 package io.ferdon.statespace;
 
+import com.google.common.collect.*;
+import org.javatuples.Pair;
+import io.ferdon.statespace.StateSpace.State;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.util.*;
 
-import org.javatuples.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.python.util.PythonInterpreter;
+import static io.ferdon.statespace.main.parseJson;
 
-import com.google.common.collect.*;
+public class Petrinet {
 
+    class Token {
+        private List<String> values = new ArrayList<>();
 
-/* This class initialize a petrinet object
- * Functions are sorted intp 4 types:
- * initializer/parser functions
- * getToken functions
- * set functions
- * Util functions
- */
+        Token(String x) {
+            String[] rawData = x.substring(1, x.length() - 1).split(",");
+            for (String a : rawData) {
+                a = a.trim();
+                if (a.charAt(0) == '\'' && a.charAt(a.length() - 1) == '\'') {
+                    values.add(a.substring(1, a.length() - 1));
+                } else {
+                    values.add(a);
+                }
+            }
+        }
 
-/* What does this class do?
- * Store data of a petrinet
- * Compose jython script to find fireable transitions
- * Choose and execute a selected fireable transition and token
- * Update new data to petrinet
- */
+        Token(List<String> x) {
+            values = x;
+        }
 
-/* Algorithm:
- * loop through transitions with T, for each transition t:
- * 		getToken input places, for each input place p:
- *			getToken marking of it
- *			add this marking to a list L
- *			if one of input place is empty then break, this transition is not fireable
- *		generate permutations base on the list L
- *		getToken variable binding, guard, expression (not used) then compose the fireable script
- *		execute fireable script and getToken the qualified transitions
- *
- * Read the qualified and pick a transition, token to execute
- * Compose execute script and run it
- * read the result and update the marking (remove from input, add to output)
- */
+        Token(String[] x) {
+            values.addAll(Arrays.asList(x));
+        }
 
-/* Driver code:
- * while(true):
- * 	getToken fireable
- * 	randomly select a transition and its qualified token
- * 	break if no firable transition OR no qualified token in a fireable transition
- * 	execute and update marking
- */
-
-public class Petrinet implements Serializable {
-    //to see an example of fireable script, print composeFireableScript()
-    static String fireableScript = "import random\n" +
-            "\n" +
-            "#T => input places => all unique tokens of each input places => concat to create this list\n" +
-            "input = %s\n" +
-            "\n" +
-            "#T => input places => inArc Variables string inArc[T][index P] => if in hashmap then add [T,index P] else create new key and add\n" +
-            "variable = %s\n" +
-            "#loop through keys in Variables and generate place holders\n" +
-            "%s\n" +
-            "\n" +
-            "#guard for current transition\n" +
-            "G = \"\"\"%s\"\"\"\n" +
-            "\n" +
-            "#expression on output arc\n" +
-            "E = %s\n" +
-            "\n" +
-            "qualified = []\n" +
-            "\n" +
-            "#getToken qualified tokens\n" +
-            "for token in input:\n" +
-            "    #flag to check if all variable assignments are valid\n" +
-            "    flag = True\n" +
-            "    %s\n" +
-            "    for key in variable:\n" +
-            "        for index in variable[key]:\n" +
-            "            p,i = index\n" +
-            "            if globals()[key] == None:\n" +
-            "                globals()[key] = token[p][i]\n" +
-            "            else:\n" +
-            "                if globals()[key] != token[p][i]:\n" +
-            "                    flag = False\n" +
-            "                    break\n" +
-            "        if not flag:\n" +
-            "            break\n" +
-            "    #if all Variables are valid then check the guard\n" +
-            "    if flag:\n" +
-            "        #guard condition\n" +
-            "        if eval(G):\n" +
-            "            qualified.append(token)\n";
-
-
-    //to see an example of execute script, print composeExecuteScript()
-    static String executeScript = "import random\n" +
-            "\n" +
-            "#T => input places => all unique tokens of each input places => concat to create this list\n" +
-            "qualified = %s\n" +
-            "\n" +
-            "#T => input places => inArc Variables string inArc[T][index P] => if in hashmap then add [T,index P] else create new key and add\n" +
-            "variable = %s\n" +
-            "#loop through keys in Variables and generate place holders\n" +
-            "%s\n" +
-            "\n" +
-            "#expression on output arc\n" +
-            "E = %s\n" +
-            "\n" +
-            "#assign variable again, just pick the first value of their apprearance\n" +
-            "for key in variable:\n" +
-            "    p,i = variable[key][0]\n" +
-            "    globals()[key] = qualified[p][i]\n" +
-            "\n" +
-            "#execute expression and store result tokens\n" +
-            "result = []\n" +
-            "for e in E:\n" +
-            "    exec('def Ex():\\n' + e)\n" +
-            "    temp = Ex()\n" +
-            "    if (temp!=None):\n" +
-            "        result.append(temp)\n";
-
+        String get(int index) {
+            return values.get(index);
+        }
+    }
 
     /**
-     * T: number of transitions
-     * ColorSet: map a place to its data type
-     * InPlace: from a transition map to input places
-     * OutPlace: from a transition map to output places
-     * Variable: inPlace=>Transition forms an input arc index, on the arc we have variables. syntax: ...getToken(P).getToken(T)
-     * Expression: Transition=>outPlace forms an output arc index, on the arc we have expression. syntax: ...getToken(P).getToken(T)
-     * Guard: from transition map to its guard condition
-     * Marking: from a place map to its marking
+     * Binding: map from placeID ~> Token
+     * One binding (of a transition) contains the list of tokens
      */
-    private int T;
-    transient PythonInterpreter pi;
-    private int[] TP;
-    private Map<Integer, String[]> colorSet = new HashMap<>();
-    private Map<Integer, int[]> inPlaces = new HashMap<>();
-    private Map<Integer, int[]> outPlaces = new HashMap<>();
-    private Map<Pair<Integer, Integer>, String> variables = new HashMap<>();
-    private Map<Integer,String> guards = new HashMap<>();
-    private Map<Pair<Integer, Integer>, String> expressions = new HashMap<>();
-    private Map<Integer,Multiset<List<String>>> markings = new HashMap<>();
+    class Binding {
+        private Map<Integer, Token> values;
 
-    //state space data
+        Binding(Map<Integer, Token> bindInfo) {
+            values = bindInfo;
+        }
+
+        Token getToken(int placeID) {
+            return values.get(placeID);
+        }
+
+        Map<String, String> getStringMapping(int tranID) {
+            Map<String, String> vars = new HashMap<>();
+
+            for (int placeID : values.keySet()) {
+                Token token = values.get(placeID);
+                Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
+                int valueIndex = 0;
+
+                for (String varName : variables.get(varKey)) {
+                    vars.put(varName, token.get(valueIndex));
+                }
+            }
+
+            return vars;
+        }
+    }
+
+    private int numTransitions;
+    private int numPlaces;
+    private Map<Integer, String[]> placeColor;
+    private Map<Integer, String> placeType;
+    private Map<Integer, String[]> typeColor;
+    private Map<Integer, int[]> inPlaces;
+    private Map<Integer, int[]> outPlaces;
+    private Map<Integer, int[]> inTrans;
+    private Map<Integer, int[]> outTrans;
+    private Map<Pair<Integer, Integer>, String[]> variables;
+    private Map<Pair<Integer, Integer>, String[]> expressions;
+    private Map<Integer, String> guards;
+    private Map<Integer, Multiset<Token>> markings;
+    private Interpreter interpreter;
+    private Map<Integer, Multiset<Binding>> bindings;
     transient StateSpace ss;
 
-    public PythonInterpreter getPi() {
-        return pi;
-    }
-
-    public void setPi(PythonInterpreter pi) {
-        this.pi = pi;
-    }
-
     /**
-     * Constructor
+     * Info: components ID currently is integer index (0, 1, 2, ...), use map to make it able to change to arbitrary ID type later
+     * Constructors
+     * - Read from Petri Net model
+     * - Read from input data
+     *
+     * @param T            number of transitions
+     * @param placeToColor map placeID ~> String[] types
+     * @param outPlace     map transitionID ~> int[] input placeIDs
+     * @param inPlace      map transitionID ~> int[] input placeIDs
+     * @param markings     map placeID ~> Multiset(Token)
+     * @param guards       map transitionID ~> String expression
+     * @param expressions  map (transitionID, out placeID) ~> String[] expression
+     * @param variables    map (transitionID, placeID) ~> String[] variable's names
+     *                     bindings     map (transitionID, Token) ~> List of binding, each binding is a compound token
      */
     public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
-                    String[] guards, Object[][][] expressions, Object[][][] variables) {
+                      String[] guards, Object[][][] expressions, Object[][][] variables) {
 
-        this.pi = new PythonInterpreter();
-        this.T = T;
-        this.colorSet = parseColorSet(placeToColor);
-        this.TP = parseTP(inPlace, outPlace);
-        this.inPlaces = parsePlace(inPlace);
-        this.outPlaces = parsePlace(outPlace);
-        this.markings = parseMarking(markings);
-        this.variables = parseExpression(variables);
-        this.guards = parseGuard(guards);
-        this.expressions = parseExpression(expressions);
+        this.numTransitions = T;
+        this.placeColor = parsePlaceColorInput(placeToColor);
+        this.inPlaces = parsePlaceInput(inPlace);
+        this.outPlaces = parsePlaceInput(outPlace);
+        this.inTrans = parseTranInput(outPlaces);
+        this.outTrans = parseTranInput(inPlaces);
+        this.markings = parseMarkingInput(markings);
+        this.variables = parseEdgeInput(variables);
+        this.guards = parseGuardInput(guards);
+        this.expressions = parseEdgeInput(expressions);
+        this.interpreter = new Interpreter();
+        this.bindings = new HashMap<>();
+        this.numPlaces = this.markings.size();
+        this.ss = new StateSpace(numPlaces);
+        initializeBindinds();
     }
 
-    public Petrinet(PetrinetModel model){
-        this.T = model.T;
-        this.TP = parseTP(model.inPlace, model.outPlace);
-        this.pi = new PythonInterpreter();
-        this.colorSet = parseColorSet(model.placeToColor);
-        this.inPlaces = parsePlace(model.inPlace);
-        this.outPlaces = parsePlace(model.outPlace);
-        this.markings = parseMarking(model.Markings);
-        this.variables = parseExpression(model.Variables);
-        this.guards = parseGuard(model.Guards);
-        this.expressions = parseExpression(model.Expressions);
+    public Petrinet(PetrinetModel model) {
+        this.numTransitions = model.T;
+        this.placeColor = parsePlaceColorInput(model.placeToColor);
+        this.inPlaces = parsePlaceInput(model.inPlace);
+        this.outPlaces = parsePlaceInput(model.outPlace);
+        this.inTrans = parseTranInput(outPlaces);
+        this.outTrans = parseTranInput(inPlaces);
+        this.markings = parseMarkingInput(model.Markings);
+        this.variables = parseEdgeInput(model.Variables);
+        this.guards = parseGuardInput(model.Guards);
+        this.expressions = parseEdgeInput(model.Expressions);
+        this.interpreter = new Interpreter();
+        this.bindings = new HashMap<>();
+        this.numPlaces = this.markings.size();
+        this.ss = new StateSpace(numPlaces);
+        initializeBindinds();
+
     }
 
-    public int getT() {
-        return T;
-    }
+    private Map<Integer, String[]> parsePlaceColorInput(Map<String, String> placeToColor) {
 
-    public void setT(int t) {
-        T = t;
-    }
-
-    public int[] getTP() {
-        return TP;
-    }
-
-    public void setTP(int[] TP) {
-        this.TP = TP;
-    }
-
-    public Map<Integer, String[]> getColorSet() {
-        return colorSet;
-    }
-
-    public void setColorSet(Map<Integer, String[]> colorSet) {
-        this.colorSet = colorSet;
-    }
-
-    public Map<Integer, int[]> getInPlaces() {
-        return inPlaces;
-    }
-
-    public void setInPlaces(Map<Integer, int[]> inPlaces) {
-        this.inPlaces = inPlaces;
-    }
-
-    public Map<Integer, int[]> getOutPlaces() {
-        return outPlaces;
-    }
-
-    public void setOutPlaces(Map<Integer, int[]> outPlaces) {
-        this.outPlaces = outPlaces;
-    }
-
-    public Map<Pair<Integer, Integer>, String> getVariables() {
-        return variables;
-    }
-
-    public void setVariables(Map<Pair<Integer, Integer>, String> variables) {
-        this.variables = variables;
-    }
-
-    public Map<Integer, String> getGuards() {
-        return guards;
-    }
-
-    public void setGuards(Map<Integer, String> guards) {
-        this.guards = guards;
-    }
-
-    public Map<Pair<Integer, Integer>, String> getExpressions() {
-        return expressions;
-    }
-
-    public void setExpressions(Map<Pair<Integer, Integer>, String> expressions) {
-        this.expressions = expressions;
-    }
-
-    public Map<Integer, Multiset<List<String>>> getMarkings() {
-        return markings;
-    }
-
-    public void setMarkings(Map<Integer, Multiset<List<String>>> markings) {
-        this.markings = markings;
-    }
-
-    private Map<Integer, String[]> parseColorSet(Map<String, String> placeToColor) {
         Map<Integer, String[]> result = new HashMap<>();
         for (String key : placeToColor.keySet()) {
             String[] c = placeToColor.get(key).split("\\*");
@@ -264,486 +154,366 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    void  generateStateSpace() throws IOException, ClassNotFoundException{
-        Map<Integer,Multiset<List<String>>> ref = markings;
-        Queue<Map<Integer,Multiset<List<String>>>> queue = new LinkedList<>();
-        Queue<Integer> index = new LinkedList<>();
-        //state space result
-        Map<Integer,Map<Integer,Multiset<List<String>>>> node = new HashMap<>();
-        Map<Integer,Set<Integer>> outArc = new HashMap<>();
-        Map<String, Integer> arcTransition = new HashMap<>();
+    private Map<Integer, int[]> parsePlaceInput(int[][] trans) {
 
-        //init
-        int id = 0;
-        queue.add(ref);
-        index.add(0);
-        node.put(0,ref);
-
-        while(queue.size()>0){
-            markings = queue.remove();
-            int parentID = index.remove();
-            Map<Integer,List<List<List<Object>>>> qualified = getFireable();
-            for (int T: qualified.keySet()){
-                for (int i=0; i<qualified.get(T).size(); i++){
-                    ref = copyMarking();
-                    boolean exist = false;
-
-                    String script = composeExecuteScript(qualified,T,i);
-                    pi.exec(script);
-
-                    //tokens from input places to remove, tokens to add to output places
-                    List<List<String>> add = formatToken((List<List<Object>>) pi.get("result"));
-                    List<List<String>> remove = formatToken(qualified.get(T).get(i));
-
-                    if(add.isEmpty()) break;
-
-                    //loop through input places to remove
-                    int[] inPlace = inPlaces.get(T);
-                    for (int j=0; j<remove.size(); j++) {
-                        ref.get(inPlace[j]).remove(remove.get(j));
-                    }
-                    //loop through out places to add
-                    int[] outPlace = outPlaces.get(T);
-                    for (int j=0; j<add.size(); j++) {
-                        ref.get(outPlace[j]).add(add.get(j));
-                    }
-
-                    //now ref is a child marking
-                    //check if marking is fresh
-                    int existID = 0;
-                    for (int key: node.keySet()){
-                        if (node.get(key).equals(ref)){
-                            exist = true;
-                            existID = key;
-                            break;
-                        }
-                    }
-
-                    //add this state to queue & index, update both node and arc
-                    if (!exist){
-                        //new state so we increase id
-                        id += 1;
-                        queue.add(ref);
-                        index.add(id);
-
-                        //add to state space
-                        node.put(id,ref);
-
-                        //update arcs
-                        if (outArc.containsKey(parentID)){
-                            outArc.get(parentID).add(id);
-                        }
-                        else{
-                            Set<Integer> temp = new HashSet<>();
-                            temp.add(id);
-                            outArc.put(parentID,temp);
-                        }
-
-                        //add new arc transition
-                        arcTransition.put("[" + parentID + ", " + id +"]",T);
-                    }
-                    //if exist then only update new arc
-                    else {
-                        //out arc
-                        if (outArc.containsKey(parentID)) {
-                            outArc.get(parentID).add(existID);
-                        } else {
-                            Set<Integer> temp = new HashSet<>();
-                            temp.add(existID);
-                            outArc.put(parentID, temp);
-                        }
-
-                        //add new arc transition
-                        arcTransition.put("[" + parentID + ", " + existID +"]",T);
-                    }
-
-                }
-            }
+        Map<Integer, int[]> result = new HashMap<>();
+        for (int tranID = 0; tranID < trans.length; tranID++) {
+            result.put(tranID, trans[tranID]);
         }
-        //init state space object in petrinet
-        ss = new StateSpace(TP,T,markings.size(),node,outArc,arcTransition);
+
+        return result;
     }
 
+    private Map<Integer, int[]> parseTranInput(Map<Integer, int[]> places) {
+        Map<Integer, int[]> result = new HashMap<>();
 
-    /*custom getToken function
+        Map<Integer, List<Integer>> tmpResult = new HashMap<>();
+        for (int tranID : places.keySet()) {
+            for (int placeID : places.get(tranID)) {
+                if (!tmpResult.containsKey(placeID)) {
+                    tmpResult.put(placeID, new ArrayList<>());
+                }
+                tmpResult.get(placeID).add(tranID);
+            }
+        }
+
+        for (int placeID : tmpResult.keySet()) {
+            int[] tmpData = new int[tmpResult.get(placeID).size()];
+            result.put(placeID, tmpData);
+        }
+
+        return result;
+    }
+
+    private Map<Pair<Integer, Integer>, String[]> parseEdgeInput(Object[][][] trans) {
+
+        Map<Pair<Integer, Integer>, String[]> result = new HashMap<>();
+        for (int i = 0; i < trans.length; i++) {
+            for (int j = 0; j < trans[i].length; j++) {
+                int inPlaceID = (Integer) trans[i][j][0];
+                Pair<Integer, Integer> key = new Pair<>(i, inPlaceID);
+                String[] value = String.valueOf(trans[i][j][1]).split(",");
+                result.put(key, value);
+            }
+        }
+
+        return result;
+    }
+
+    private Map<Integer, String> parseGuardInput(String[] guards) {
+
+        Map<Integer, String> result = new HashMap<>();
+        for (int tranID = 0; tranID < guards.length; tranID++) {
+            result.put(tranID, guards[tranID]);
+        }
+        return result;
+    }
+
+    private Map<Integer, Multiset<Token>> parseMarkingInput(String[] markings) {
+
+        Map<Integer, Multiset<Token>> result = new HashMap<>();
+        for (int i = 0; i < markings.length; i++) {
+
+            Multiset<Token> marking = HashMultiset.create();
+            String s = markings[i];
+            if (s.isEmpty()) {
+                result.put(i, marking);
+                continue;
+            }
+
+            String[] e = s.split("]");
+            for (String t : e) {
+                int mulPos = t.indexOf('x');
+                int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos)) : 1;
+                String rawData = t.substring(t.indexOf('[') + 1);
+                Token token = new Token(rawData);
+                marking.add(token, num);
+            }
+
+            result.put(i, marking);
+        }
+
+        return result;
+    }
+
+    private void initializeBindinds() {
+
+        for (int placeID : markings.keySet()) {
+            Multiset<Token> tokens = markings.get(placeID);
+            for (Token token : tokens) {
+                addToken(placeID, token, tokens.count(token));
+            }
+        }
+    }
+
+    public int[] getInPlaces(int tranID) {
+        return inPlaces.get(tranID);
+    }
+
+    public int[] getOutPlaces(int tranID) {
+        return outPlaces.get(tranID);
+    }
+
+    public int[] getInTrans(int placeID) {
+        return inTrans.get(placeID);
+    }
+
+    public int[] getOutTrans(int placeID) {
+        return outTrans.get(placeID);
+    }
+
+    public int getPlaceNum() {
+        return numPlaces;
+    }
+
+    public int getTransitionNum() {
+        return numTransitions;
+    }
+
+    public boolean canFire(int tranID, Binding b, boolean recheck) {
+        if (recheck && !passGuard(tranID, b)) return false;
+        return bindings.get(tranID).contains(b);
+    }
+
+    /**
+     * create all possible bindings that can be making from places
      *
-     *
-     *
+     * @param placeMarkings map: placeID ~> List of Tokens in that place
+     * @return a list of all possible bindings that can created
      */
-    JSONObject getGraphXSchema(){
-        JSONObject obj = new JSONObject();
-        obj.put("id",1000);
-        for (int p: colorSet.keySet()){
-            JSONArray arr = new JSONArray();
-            JSONObject token = new JSONObject();
-            for (int i=0; i<colorSet.get(p).length; i++){
-                switch(colorSet.get(p)[i]){
-                    case "STRING":
-                        token.put("m" + i,"string_holder");
-                        break;
-                    case "INT":
-                        token.put("m" + i,5);
-                        break;
-                    case "BOOL":
-                        token.put("m" + i,true);
-                        break;
-                    case "DOUBLE":
-                        token.put("m" + i,3.14);
-                        break;
-                    //treat UNIT token as  place with single integer token
-                    case "UNIT":
-                        token.put("m" + i,5);
-                        break;
+    private List<Binding> createAllPossibleBinding(Map<Integer, List<Token>> placeMarkings) {
+
+        List<List<Token>> tokensWrapper = new ArrayList<>();
+        List<Integer> placeIDs = new ArrayList<>();
+
+        for (int placeID : placeMarkings.keySet()) {
+            tokensWrapper.add(placeMarkings.get(placeID));
+            placeIDs.add(placeID);
+        }
+
+        List<List<Token>> permutatedTokens = Lists.cartesianProduct(tokensWrapper);
+
+        List<Binding> result = new ArrayList<>();
+        for (List<Token> tokens : permutatedTokens) {
+
+            Map<Integer, Token> bindInfo = new HashMap<>();
+            for (int id = 0; id < tokens.size(); id++) {
+                bindInfo.put(placeIDs.get(id), tokens.get(id));
+            }
+
+            Binding b = new Binding(bindInfo);
+            result.add(b);
+        }
+
+        return result;
+    }
+
+    private List<Token> getTokensList(int placeID) {
+
+        Multiset<Token> tokens = markings.get(placeID);
+        List<Token> result = new ArrayList<>();
+
+        for (Token token : tokens) {
+            result.add(token);
+        }
+
+        return result;
+    }
+
+    private void removeBinding(int tranID, Binding binding) {
+        bindings.get(tranID).add(binding);
+    }
+
+    private void addBinding(int tranID, Binding binding) {
+        bindings.get(tranID).remove(binding);
+    }
+
+    /**
+     * Generate affected binginds when add/remove token from a place
+     *
+     * @param affectedPlaceID the placeID that token be added or removed
+     * @param token           the token that be added or removed
+     * @param num             number of tokens that be added or removed
+     * @return a map: transitionID ~> List of new Bindings (add token), out-of-dated Bindings (remove token)
+     */
+    private Map<Integer, List<Binding>> generateAffectedBindings(int affectedPlaceID, Token token, int num) {
+
+        Map<Integer, List<Binding>> result = new HashMap<>();
+        int[] outputTrans = getOutTrans(affectedPlaceID);
+
+        for (int affectedTranID : outputTrans) {
+            int[] inputPlaces = getInPlaces(affectedTranID);
+            Map<Integer, List<Token>> placeMarkings = new HashMap<>();
+
+            List<Token> newTokens = new ArrayList<>();
+            for (int i = 0; i < num; i++) {
+                newTokens.add(token);
+            }
+            placeMarkings.put(affectedPlaceID, newTokens);
+
+            for (int otherPlaceID : inputPlaces) {
+                if (otherPlaceID != affectedPlaceID) {
+                    placeMarkings.put(otherPlaceID, getTokensList(otherPlaceID));
                 }
             }
-            arr.put(token);
-            obj.put("P"+p,arr);
+            List<Binding> allBindings = createAllPossibleBinding(placeMarkings);
+            result.put(affectedPlaceID, allBindings);
         }
+
+        return result;
+    }
+
+    private boolean passGuard(int tranID, Binding b) {
+        Map<String, String> vars = b.getStringMapping(tranID);
+        Interpreter.Value isPass = interpreter.interpretFromString(guards.get(tranID), vars);
+        return isPass.getBoolean();
+    }
+
+    public void removeToken(int placeID, Token token, int num) {
+
+        Map<Integer, List<Binding>> oldBindings;
+        oldBindings = generateAffectedBindings(placeID, token, num);
+        markings.get(placeID).remove(token);
+
+        for (int affectedTranID : oldBindings.keySet()) {
+            for (Binding b : oldBindings.get(affectedTranID)) {
+                removeBinding(affectedTranID, b);
+            }
+        }
+    }
+
+    public void addToken(int placeID, Token token, int num) {
+
+        Map<Integer, List<Binding>> newBindings;
+        newBindings = generateAffectedBindings(placeID, token, num);
+        markings.get(placeID).add(token);
+
+        for (int affectedTranID : newBindings.keySet()) {
+            for (Binding b : newBindings.get(affectedTranID)) {
+                if (!passGuard(affectedTranID, b)) continue;
+                addBinding(affectedTranID, b);
+            }
+        }
+    }
+
+    private Token runExpression(int tranID, int placeID, Binding binding) {
+
+        List<String> result = new ArrayList<>();
+
+        String[] exps = expressions.get(new Pair<>(tranID, placeID));
+        Map<String, String> vars = binding.getStringMapping(tranID);
+
+        for (String statement : exps) {
+            Interpreter.Value res = interpreter.interpretFromString(statement, vars);
+            result.add(res.getString());
+        }
+
+        return new Token(result);
+    }
+
+    public void executeTransition(int tranID, Binding fireableBinding) {
+
+        if (!canFire(tranID, fireableBinding, false)) return;
+
+        int[] inputPlaces = getInPlaces(tranID);
+        int[] outputPlaces = getOutPlaces(tranID);
+
+        for (int placeID : inputPlaces) {
+            removeToken(placeID, fireableBinding.getToken(placeID), 1);
+        }
+
+        for (int placeID : outputPlaces) {
+            Token newToken = runExpression(tranID, placeID, fireableBinding);
+            addToken(placeID, newToken, 1);
+        }
+    }
+
+    public void generateStateSpace() throws IOException, ClassNotFoundException {
+
+        Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
+        Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
+        Map<Map<Integer, Multiset<Token>>, Integer> visitedState = new HashMap<>();
+
+        markingQueue.add(markings);
+        bindingQueue.add(bindings);
+        visitedState.put(markings, 1);
+
+        while (!markingQueue.isEmpty()) {
+            Map<Integer, Multiset<Token>> parentState = new HashMap<>(markingQueue.remove());
+            Map<Integer, Multiset<Binding>> parentBindings = new HashMap<>(bindingQueue.remove());
+            int parentStateID = visitedState.get(parentState);
+
+            for (int tranID : parentBindings.keySet()) {
+                markings = new HashMap<>(parentState);
+                bindings = new HashMap<>(parentBindings);
+
+                Multiset<Binding> fireableBindings = parentBindings.get(tranID);
+                for (Binding b : fireableBindings) {
+                    executeTransition(tranID, b);
+
+                    Map<Integer, Multiset<Token>> nextState = new HashMap<>(markings);
+                    Map<Integer, Multiset<Binding>> nextBinding = new HashMap<>(bindings);
+
+                    Integer childStateID = visitedState.get(markings);
+                    if (childStateID == null) {     /* new state */
+                        childStateID = ss.addState(nextState);
+                        visitedState.put(nextState, childStateID);
+                        markingQueue.add(nextState);
+                        bindingQueue.add(nextBinding);
+                    }
+                    ss.addEdge(parentStateID, childStateID, tranID);
+                }
+            }
+        }
+    }
+
+    JSONObject getGraphVizJson() {
+        JSONObject obj = new JSONObject();
+        JSONObject nodeObj = new JSONObject();
+        JSONObject arcObj = new JSONObject();
+
+
+        int[][] inputPlaces = new int[numTransitions][];
+        for(int tranID: inPlaces.keySet()) {
+            int[] places = inPlaces.get(tranID);
+            inputPlaces[tranID] = places;
+        }
+
+        int[][] outputPlaces = new int[numTransitions][];
+        for(int tranID: inPlaces.keySet()) {
+            int[] places = inPlaces.get(tranID);
+            outputPlaces[tranID] = places;
+        }
+
+        obj.put("inPlaces", inputPlaces);
+        obj.put("outPlaces", outputPlaces);
+
+        Map<Integer, State> nodes = ss.getNodes();
+        for (int key : nodes.keySet()) {
+            StringBuilder s = new StringBuilder();
+            for (int k : nodes.get(key).getKeySet()) {
+                s.append(nodes.get(key).get(k).size());
+                s.append( ", ");
+            }
+            nodeObj.put(key + "", key + "\\n" + s.toString());
+        }
+
+        Map<Integer, Set<Integer>> edges = ss.getEdges();
+        for (int key : edges.keySet()) {
+            arcObj.put(key + "", edges.get(key));
+        }
+
+        obj.put("nodes", nodeObj);
+        obj.put("arc", arcObj);
+
         return obj;
     }
 
-    Map<Integer,Multiset<List<String>>> copyMarking() throws IOException,ClassNotFoundException{
-        // Serialize to byte[]
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        new ObjectOutputStream(os).writeObject(this.markings);
-        byte[] buf = os.toByteArray();
+    public static void main(String[] args) {
+        String option = "analysis";
+        String petrinetInput = "/Users/thethongngu/Desktop/test.json";
 
-        //deserialize to object
-        ByteArrayInputStream is = new ByteArrayInputStream(buf);
-        return (Map<Integer,Multiset<List<String>>>) new ObjectInputStream(is).readObject();
+        PetrinetModel model = parseJson(petrinetInput);
+        PetriNet01 net = new PetriNet01(model);
     }
-
-    private int[] parseTP(int[][] inPlace, int[][] outPlace) {
-        List<Integer> result = new ArrayList<>();
-        for (int i = 0; i < T; i++) {
-            result.add(inPlace[i].length);
-            result.add(outPlace[i].length);
-            for (int j = 0; j < inPlace[i].length; j++) {
-                result.add(inPlace[i][j]);
-            }
-            for (int j = 0; j < outPlace[i].length; j++) {
-                result.add(outPlace[i][j]);
-            }
-        }
-
-        return result.stream().mapToInt(i -> i).toArray();
-    }
-
-    private Map<Integer, int[]> parsePlace(int[][] places) {
-        Map<Integer, int[]> result = new HashMap<>();
-
-        for (int i = 0; i < places.length; i++) {
-            result.put(i, places[i]);
-        }
-
-        return result;
-    }
-
-    private Map<Integer, Multiset<List<String>>> parseMarking(String[] markings) {
-        Map<Integer, Multiset<List<String>>> result = new HashMap<>();
-        for (int i = 0; i < markings.length; i++) {
-            result.put(i, stringToMultiset(markings[i]));
-        }
-
-        return result;
-    }
-
-    private Map<Pair<Integer, Integer>, String> parseExpression(Object[][][] expressions) {
-        Map<Pair<Integer, Integer>, String> result = new HashMap<>();
-
-        for (int transitionId = 0; transitionId < expressions.length; transitionId++) {
-            for (int j = 0; j < expressions[transitionId].length; j++) {
-                int inPlaceId = (Integer) expressions[transitionId][j][0];
-                Pair<Integer, Integer> key = new Pair<>(transitionId, inPlaceId);
-                //only parse expression and variable if text != ""
-                if (!expressions[transitionId][j][1].equals("")){
-                    result.put(key, (String) expressions[transitionId][j][1]);
-                }
-            }
-        }
-        return result;
-    }
-
-    private Map<Integer, String> parseGuard(String[] guards) {
-        Map<Integer, String> result = new HashMap<>();
-        for (int transitionId = 0; transitionId < guards.length; transitionId++) {
-            if (guards[transitionId].equals("")) {
-                result.put(transitionId,"True");
-            }
-            else {
-                result.put(transitionId,guards[transitionId]);
-            }
-        }
-
-        return result;
-    }
-
-    /*set functions
-     *
-     *
-     *
-     */
-    //send script to jython and read current marking - result marking of this execution
-    void executeTransition(Map<Integer, List<List<List<Object>>>> qualified, int selectTransition, int selectToken) {
-        String script = composeExecuteScript(qualified, selectTransition, selectToken);
-        pi.exec(script);
-
-        //tokens from input places to remove, tokens to add to output places
-        List<List<String>> add = formatToken((List<List<Object>>) pi.get("result"));
-        List<List<String>> remove = formatToken(qualified.get(selectTransition).get(selectToken));
-
-        //loop through input places to remove
-        int[] inPlace = inPlaces.get(selectTransition);
-        for (int i = 0; i < remove.size(); i++) {
-            markings.get(inPlace[i]).remove(remove.get(i));
-        }
-        //loop through out places to add
-        int[] outPlace = outPlaces.get(selectTransition);
-        for (int i = 0; i < add.size(); i++) {
-            markings.get(outPlace[i]).add(add.get(i));
-        }
-    }
-
-    /*getToken functions
-     *
-     *
-     *
-     */
-
-    String getStringMarking() {
-        JSONObject obj = new JSONObject();
-        for (int i = 0; i < markings.size(); i++) {
-            JSONObject temp = new JSONObject();
-            for (List<String> l : markings.get(i).elementSet()) {
-                temp.put(l.toString(), Integer.toString(markings.get(i).count(l)));
-            }
-            obj.put(Integer.toString(i), temp);
-        }
-        return obj.toString();
-    }
-
-    //format token to string from jython script
-    List<List<String>> formatToken(List<List<Object>> token) {
-        List<List<String>> result = new ArrayList<>();
-        for (List<Object> a : token) {
-            List<String> temp = new ArrayList<>();
-            //edge case with unit token
-            if (a.size() == 0) {
-                result.add(Arrays.asList(""));
-            } else {
-                for (Object b : a) {
-                    if (b instanceof java.lang.Integer) {
-                        temp.add(Integer.toString((int) b));
-                    } else if (b instanceof java.lang.Double) {
-                        temp.add(Double.toString((double) b));
-                    } else if (b instanceof java.lang.Boolean) {
-                        if (b.toString() == "true") {
-                            temp.add("True");
-                        } else {
-                            temp.add("False");
-                        }
-                    } else {
-                        temp.add("'" + b.toString() + "'");
-                    }
-                }
-                result.add(temp);
-            }
-        }
-        return result;
-    }
-
-    //calculate fireable transition of current marking
-    Map<Integer, List<List<List<Object>>>> getFireable() {
-        Map<Integer, List<List<List<Object>>>> result = new HashMap<>();
-        for (int t = 0; t < T; t++) {
-            boolean flag = true;
-            for (int p : inPlaces.get(t)) {
-                if (markings.get(p).size() == 0) {
-                    flag = false;
-                    break;
-                }
-            }
-            if (flag) {
-                String script = composeFireableScript(t);
-                pi.exec(script);
-                List<List<List<Object>>> qualified = (List<List<List<Object>>>) pi.get("qualified");
-                if (qualified.size() > 0) {
-                    result.put(t, qualified);
-                }
-            }
-        }
-        return result;
-    }
-
-    //compose script to execute selected transition, token
-    String composeExecuteScript(Map<Integer, List<List<List<Object>>>> qualified, int selectTransition, int selectToken) {
-        String selection = qualified.get(selectTransition).get(selectToken).toString();
-        Map<String, List<List<String>>> obj = getCurrentVariableBinding(selectTransition);
-        String binding = formatVariableBinding(obj);
-        String varname = formatVariableName(obj, 0);
-        //getToken expression
-        String expression = getCurrentExpression(selectTransition);
-        return String.format(executeScript, selection, binding, varname, expression);
-    }
-
-
-    //compose script to find fireable transition
-    String composeFireableScript(int T) {
-        String token = getBindingValue(T).toString();
-        //getToken binding variable
-        Map<String, List<List<String>>> obj = getCurrentVariableBinding(T);
-        String binding = formatVariableBinding(obj);
-        String varname1 = formatVariableName(obj, 0);
-        String varname2 = formatVariableName(obj, 1);
-        //getToken guard
-        String guard = guards.get(T);
-        //getToken expression
-        String expression = getCurrentExpression(T);
-
-        //compose the jython script to calculate fireable transition
-        //can change the approach to compile=>put in variable to improve performance
-        return String.format(fireableScript, token, binding, varname1, guard, expression, varname2);
-    }
-
-    //from transition map to Expressions on output arc
-    String getCurrentExpression(int T) {
-        String result = "";
-        for (int p : this.outPlaces.get(T)) {
-            Pair<Integer, Integer> arcKey = new Pair<>(T, p);
-            result += "\"\"\"" + expressions.get(arcKey) + "\"\"\",";
-        }
-        return "[" + result.substring(0, result.length() - 1) + "]";
-    }
-
-    //getToken variable appearance position on input arc, with key as string of [P,T]
-    Map<String, List<List<String>>> getCurrentVariableBinding(int T) {
-        Map<String, List<List<String>>> binding = new HashMap<>();
-        int[] inP = this.inPlaces.get(T);
-        for (int i = 0; i < inP.length; i++) {
-
-            Pair<Integer, Integer> arcKey = new Pair<>(T, inP[i]);
-
-            if (variables.containsKey(arcKey)) {
-                String[] var = variables.get(arcKey).split(",");
-
-                for (int j = 0; j < var.length; j++) {
-                    if (!binding.containsKey(var[j])) {
-                        List<List<String>> index = new ArrayList<>();
-                        index.add(Arrays.asList(Integer.toString(i), Integer.toString(j)));
-                        binding.put(var[j], index);
-                    } else {
-                        binding.get(var[j]).add(Arrays.asList(Integer.toString(i), Integer.toString(j)));
-                    }
-                }
-            }
-        }
-        return binding;
-    }
-
-    //data type of each Place
-    String getBindingType(int T) {
-        List<String> type = new ArrayList<>();
-        for (int inP : this.inPlaces.get(T)) {
-            //getToken type of fused token
-            String s = Arrays.toString(colorSet.get(inP));
-            type.add(s);
-        }
-        return type.toString();
-    }
-
-    //getToken all permutations between input places tokens
-    List<List<Object>> getBindingValue(int T) {
-        List<List<Object>> token = new ArrayList<>();
-        List<List<Object>> value = new ArrayList<>();
-        for (int inP : this.inPlaces.get(T)) {
-            List<Object> Pi = new ArrayList<>();
-            for (List<String> o : markings.get(inP).elementSet()) {
-                Pi.add(o);
-            }
-            token.add(Pi);
-        }
-        ///send type and all tokens to guard
-        for (List<Object> z : Lists.cartesianProduct(token)) {
-            value.add(z);
-        }
-        return value;
-    }
-
-
-    /*Util functions
-     *
-     *
-     *
-     */
-    String formatVariableName(Map<String, List<List<String>>> binding, int level) {
-        String result = "";
-        String indent = "";
-        if (binding.isEmpty()) return "";
-
-        for (int i = 0; i < level; i++) {
-            indent += "    ";
-        }
-
-        for (String key : binding.keySet()) {
-            if (!key.equals("")) {
-                result += key + " = None\n" + indent;
-            }
-        }
-        return result;
-    }
-
-    String formatVariableBinding(Map<String, List<List<String>>> binding) {
-        //empty then return
-        if (binding.isEmpty()) return "{}";
-        String result = "";
-        for (String key : binding.keySet()) {
-            if (!key.equals("")) {
-                result += "'" + key + "'" + ":";
-                result += binding.get(key).toString() + ",";
-            }
-        }
-        result = result.substring(0, result.length() - 1);
-        result = "{" + result + "}";
-        return result;
-    }
-
-    //	List<String> flatten(List<Object> z) {
-    //		List<String> result = new ArrayList<>();
-    //		LinkedList<Object> stack = new LinkedList<>(z);
-    //		while (!stack.isEmpty()) {
-    //			Object e = stack.pop();
-    //			if (e instanceof List<?>)
-    //				stack.addAll(0, (List<?>)e);
-    //			else
-    //				result.add((String) e);
-    //		}
-    //		return result;
-    //	}
-
-    static Multiset<List<String>> stringToMultiset(String s) {
-        Multiset<List<String>> MP = HashMultiset.create();
-        if (s.length() == 0) {
-            return MP;
-        }
-
-        s = s.replaceAll(" ", "");
-        s = s.replaceAll("],", "]:");
-        String[] e = s.split(":");
-        for (int j = 0; j < e.length; j++) {
-            int pos = e[j].indexOf('x');
-            int n = 1;
-            if (pos > 0) {
-                n = Integer.parseInt(e[j].substring(0, pos));
-            }
-
-            List<String> data = Arrays.asList(e[j].substring(pos + 2, e[j].length() - 1).split(","));
-            MP.add(data, n);
-        }
-        return MP;
-    }
-
-    static void println(String s) {
-        System.out.println(s);
-    }
-
 }

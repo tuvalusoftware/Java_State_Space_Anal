@@ -12,7 +12,7 @@ import static io.ferdon.statespace.main.parseJson;
 
 public class PetriNet01 {
 
-    class Token implements Cloneable {
+    class Token {
         private List<String> values = new ArrayList<>();
 
         Token(String x) {
@@ -32,16 +32,11 @@ public class PetriNet01 {
         }
 
         Token(String[] x) {
-            for (String s : x) values.add(s);
+            values.addAll(Arrays.asList(x));
         }
 
         String get(int index) {
             return values.get(index);
-        }
-
-        @Override
-        protected Object clone() throws CloneNotSupportedException {
-            return super.clone();
         }
     }
 
@@ -49,7 +44,7 @@ public class PetriNet01 {
      * Binding: map from placeID ~> Token
      * One binding (of a transition) contains the list of tokens
      */
-    class Binding implements Cloneable {
+    class Binding {
         private Map<Integer, Token> values;
 
         Binding(Map<Integer, Token> bindInfo) {
@@ -58,10 +53,6 @@ public class PetriNet01 {
 
         Token getToken(int placeID) {
             return values.get(placeID);
-        }
-
-        Map<Integer, Token> getBindingInfo() {
-            return values;
         }
 
         Map<String, String> getStringMapping(int tranID) {
@@ -78,11 +69,6 @@ public class PetriNet01 {
             }
 
             return vars;
-        }
-
-        @Override
-        protected Object clone() throws CloneNotSupportedException {
-            return super.clone();
         }
     }
 
@@ -113,7 +99,7 @@ public class PetriNet01 {
      * @param placeToColor map placeID ~> String[] types
      * @param outPlace     map transitionID ~> int[] input placeIDs
      * @param inPlace      map transitionID ~> int[] input placeIDs
-     * @param markings     map placeID ~> Multiset<Token>
+     * @param markings     map placeID ~> Multiset(Token)
      * @param guards       map transitionID ~> String expression
      * @param expressions  map (transitionID, out placeID) ~> String[] expression
      * @param variables    map (transitionID, placeID) ~> String[] variable's names
@@ -134,8 +120,8 @@ public class PetriNet01 {
         this.expressions = parseEdgeInput(expressions);
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
-        this.ss = new StateSpace();
         this.numPlaces = this.markings.size();
+        this.ss = new StateSpace(numPlaces);
         initializeBindinds();
     }
 
@@ -152,8 +138,8 @@ public class PetriNet01 {
         this.expressions = parseEdgeInput(model.Expressions);
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
-        this.ss = new StateSpace();
         this.numPlaces = this.markings.size();
+        this.ss = new StateSpace(numPlaces);
         initializeBindinds();
 
     }
@@ -442,44 +428,44 @@ public class PetriNet01 {
         }
     }
 
-    public void generateStateSpace() throws IOException, ClassNotFoundException {
-
-        Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
-        Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
-        Map<Map<Integer, Multiset<Token>>, Integer> visitedState = new HashMap<>();
-
-        markingQueue.add(markings);
-        bindingQueue.add(bindings);
-        visitedState.put(markings, 1);
-
-        while (!markingQueue.isEmpty()) {
-            Map<Integer, Multiset<Token>> parentState = new HashMap<>(markingQueue.remove());
-            Map<Integer, Multiset<Binding>> parentBindings = new HashMap<>(bindingQueue.remove());
-            int parentStateID = visitedState.get(parentState);
-
-            for (int tranID : parentBindings.keySet()) {
-                markings = new HashMap<>(parentState);
-                bindings = new HashMap<>(parentBindings);
-
-                Multiset<Binding> fireableBindings = parentBindings.get(tranID);
-                for (Binding b : fireableBindings) {
-                    executeTransition(tranID, b);
-
-                    Map<Integer, Multiset<Token>> nextState = new HashMap<>(markings);
-                    Map<Integer, Multiset<Binding>> nextBinding = new HashMap<>(bindings);
-
-                    Integer childStateID = visitedState.get(markings);
-                    if (childStateID == null) {     /* new state */
-                        childStateID = ss.addState(nextState);
-                        visitedState.put(nextState, childStateID);
-                        markingQueue.add(nextState);
-                        bindingQueue.add(nextBinding);
-                    }
-                    ss.addEdge(parentStateID, childStateID, tranID);
-                }
-            }
-        }
-    }
+//    public void generateStateSpace() throws IOException, ClassNotFoundException {
+//
+//        Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
+//        Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
+//        Map<Map<Integer, Multiset<Token>>, Integer> visitedState = new HashMap<>();
+//
+//        markingQueue.add(markings);
+//        bindingQueue.add(bindings);
+//        visitedState.put(markings, 1);
+//
+//        while (!markingQueue.isEmpty()) {
+//            Map<Integer, Multiset<Token>> parentState = new HashMap<>(markingQueue.remove());
+//            Map<Integer, Multiset<Binding>> parentBindings = new HashMap<>(bindingQueue.remove());
+//            int parentStateID = visitedState.get(parentState);
+//
+//            for (int tranID : parentBindings.keySet()) {
+//                markings = new HashMap<>(parentState);
+//                bindings = new HashMap<>(parentBindings);
+//
+//                Multiset<Binding> fireableBindings = parentBindings.get(tranID);
+//                for (Binding b : fireableBindings) {
+//                    executeTransition(tranID, b);
+//
+//                    Map<Integer, Multiset<Token>> nextState = new HashMap<>(markings);
+//                    Map<Integer, Multiset<Binding>> nextBinding = new HashMap<>(bindings);
+//
+//                    Integer childStateID = visitedState.get(markings);
+//                    if (childStateID == null) {     /* new state */
+//                        childStateID = ss.addState(nextState);
+//                        visitedState.put(nextState, childStateID);
+//                        markingQueue.add(nextState);
+//                        bindingQueue.add(nextBinding);
+//                    }
+//                    ss.addEdge(parentStateID, childStateID, tranID);
+//                }
+//            }
+//        }
+//    }
 
     JSONObject getGraphVizJson() {
         JSONObject obj = new JSONObject();
