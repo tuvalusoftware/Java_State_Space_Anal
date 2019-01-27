@@ -8,12 +8,9 @@ import org.apache.avro.Schema;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
-import org.omg.CORBA.INTERNAL;
 
 import java.io.*;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class main {
@@ -86,22 +83,6 @@ public class main {
         return null;
     }
 
-    public static void exportGraphXJson(Petrinet net, String fileName){
-        JSONObject obj = new JSONObject();
-        obj.put("graph",net.ss.getGraphXJson());
-        obj.put("schema",net.getGraphXSchema());
-
-        //write to file
-        try{
-            FileOutputStream outputStream = new FileOutputStream(fileName);
-            byte[] strToBytes = obj.toString().getBytes();
-            outputStream.write(strToBytes);
-            outputStream.close();
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
     public static void exportGraphVizJson(Petrinet net, String fileName){
         JSONObject obj = net.ss.getGraphVizJson();
         //write to file
@@ -117,13 +98,9 @@ public class main {
 
     public static void exportGraphXParquet(Petrinet net, Schema nodeSchema, Schema arcSchema, String nodeParquet, String arcParquet) {
         net.ss.parquetWriteNode(nodeSchema, nodeParquet);
-        net.ss.parqueWriteArc(arcSchema, arcParquet);
+        net.ss.parquetWriteArc(arcSchema, arcParquet);
     }
 
-    //*********serialize/deserialize functions*********
-    //*
-    //*
-    //*
     private static Object deSerialize( String s ) throws IOException, ClassNotFoundException {
         byte [] data = Base64.getDecoder().decode( s );
         ObjectInputStream ois = new ObjectInputStream(

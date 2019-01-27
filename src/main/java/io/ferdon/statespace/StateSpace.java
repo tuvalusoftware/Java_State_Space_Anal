@@ -20,13 +20,21 @@ import java.util.*;
 import io.ferdon.statespace.PetriNet01.Token;
 
 
-public class StateSpace {
+class StateSpace {
 
     class State {
         Map<Integer, Multiset<Token>> state;
 
         State(Map<Integer, Multiset<Token>> x) {
             state = x;
+        }
+
+        Multiset<Token> get(int placeID) {
+            return state.get(placeID);
+        }
+
+        Set<Integer> getKeySet() {
+            return state.keySet();
         }
     }
 
@@ -44,12 +52,12 @@ public class StateSpace {
 
     StateSpace(int[] TP, long T, long P, Map<Integer, Map<Integer, Multiset<List<String>>>> nodes,
                Map<Integer, Set<Integer>> edges, Map<String, Integer> firedTransitions){
-        this.TP = TP;
-        this.T = T;
-        this.P = P;
-        this.nodes = nodes;
-        this.edges = edges;
-        this.firedTransitions = firedTransitions;
+//        this.TP = TP;
+//        this.T = T;
+//        this.P = P;
+//        this.nodes = nodes;
+//        this.edges = edges;
+//        this.firedTransitions = firedTransitions;
     }
 
     int addState(Map<Integer, Multiset<Token>> s) {
@@ -67,15 +75,25 @@ public class StateSpace {
         firedTransitions.put(new Pair<>(parentID, childID), firedTranID);
     }
 
+    Map<Integer, State> getNodes() {
+        return nodes;
+    }
+
+    Map<Integer, Set<Integer>> getEdges() {
+        return edges;
+    }
+
     JSONObject getGraphVizJson(){
         JSONObject obj = new JSONObject();
         JSONObject nodeObj = new JSONObject();
         JSONObject arcObj = new JSONObject();
+
+
         obj.put("TP",TP);
 
         for (int key: nodes.keySet()){
             String s = "";
-            for (int k: nodes.get(key).keySet()){
+            for (int k: nodes.get(key).getKeySet()){
                 s += nodes.get(key).get(k).size() + ", ";
             }
             nodeObj.put(key+"",key + "\\n" + s);
@@ -86,39 +104,6 @@ public class StateSpace {
         }
 
         obj.put("nodes",nodeObj);
-        obj.put("arc",arcObj);
-
-        return obj;
-    }
-
-    JSONObject getGraphXJson(){
-        JSONObject obj = new JSONObject();
-        JSONArray nodeArray = new JSONArray();
-        JSONObject arcObj = new JSONObject();
-        obj.put("T",T);
-        obj.put("P",P);
-        for (int key: nodes.keySet()){
-            JSONObject marking = new JSONObject();
-            marking.put("id",Integer.toString(key));
-            for (int k = 0; k< nodes.get(key).keySet().size(); k++){
-                //the inside is empty means this is a UNIT token
-                //put in the size of whole place as integer
-                if (nodes.get(key).get(k).elementSet().toString().equals("[[]]")){
-                    marking.put("P"+k,"[[" + nodes.get(key).get(k).size() + "]]");
-                }
-                //put token detail in
-                else{
-                    marking.put("P"+k,Arrays.toString(nodes.get(key).get(k).toArray()));
-                }
-            }
-            nodeArray.put(marking);
-        }
-
-        for (String key: firedTransitions.keySet()){
-            arcObj.put(key, firedTransitions.get(key));
-        }
-
-        obj.put("nodes",nodeArray);
         obj.put("arc",arcObj);
 
         return obj;
@@ -156,16 +141,12 @@ public class StateSpace {
         return result;
     }
 
-    static void print(String s){
-        System.out.println(s);
-    }
-
-    public static String getType(String ty) {
-        String s[] = ty.split("_");
+    private static String getType(String ty) {
+        String[] s = ty.split("_");
         return s[0];
     }
 
-    public static Object getValue(String input, String type) {
+    private static Object getValue(String input, String type) {
         type = getType(type);
         if (type.equals("int")) {
             return Integer.parseInt(input);
@@ -183,8 +164,7 @@ public class StateSpace {
         return null;
     }
 
-
-    ParquetWriter<GenericRecord> parquetWriter(String outputFile, Schema schema) {
+    private ParquetWriter<GenericRecord> parquetWriter(String outputFile, Schema schema) {
         ParquetWriter<GenericRecord> writer = null;
         try {
             writer = AvroParquetWriter.
@@ -203,21 +183,18 @@ public class StateSpace {
         return  writer;
     }
 
-    //write Arc in parquet format.
-    void parqueWriteArc(Schema schema, String outputFile) {
+    /* write Arc in parquet format */
+    void parquetWriteArc(Schema schema, String outputFile) {
         GenericRecord record = null;
         try {
             record = new GenericData.Record(schema);
             File t = new File(outputFile);
             t.delete();
             ParquetWriter<GenericRecord> writer = parquetWriter(outputFile, schema);
-            for (String key : firedTransitions.keySet()) {
-                JSONObject object = new JSONObject("{\"arc\":" + key + "}");
-                JSONArray array = object.getJSONArray("arc");
-                //System.out.println(array.getToken(0));
-                record.put("src", array.get(0));
-                record.put("dst", array.get(1));
-                record.put("transition", firedTransitions.get(key));
+            for (Pair<Integer, Integer> edge : firedTransitions.keySet()) {
+                record.put("src", edge.getValue0());
+                record.put("dst", edge.getValue1());
+                record.put("transition", firedTransitions.get(edge));
                 writer.write(record);
             }
             writer.close();
@@ -227,7 +204,8 @@ public class StateSpace {
 
 
     }
-    //write Node in parquet format.
+
+    /* write Node in parquet format */
     void parquetWriteNode(Schema schema, String outputFile) {
         Schema listTokenSchema[] = new Schema[(int) P]; // schema of listTokenace = list of Token
         Schema tokenSchema[] = new Schema[(int) P]; // schema of token in listTokenace i-th.

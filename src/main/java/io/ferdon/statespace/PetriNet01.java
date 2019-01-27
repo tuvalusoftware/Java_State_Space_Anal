@@ -3,6 +3,8 @@ package io.ferdon.statespace;
 import com.google.common.collect.*;
 import org.javatuples.Pair;
 import io.ferdon.statespace.StateSpace.State;
+import org.json.JSONObject;
+
 import java.io.*;
 import java.util.*;
 
@@ -30,7 +32,7 @@ public class PetriNet01 {
         }
 
         Token(String[] x) {
-            for(String s: x) values.add(s);
+            for (String s : x) values.add(s);
         }
 
         String get(int index) {
@@ -65,12 +67,12 @@ public class PetriNet01 {
         Map<String, String> getStringMapping(int tranID) {
             Map<String, String> vars = new HashMap<>();
 
-            for(int placeID: values.keySet()) {
+            for (int placeID : values.keySet()) {
                 Token token = values.get(placeID);
                 Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
                 int valueIndex = 0;
 
-                for(String varName: variables.get(varKey)) {
+                for (String varName : variables.get(varKey)) {
                     vars.put(varName, token.get(valueIndex));
                 }
             }
@@ -84,7 +86,8 @@ public class PetriNet01 {
         }
     }
 
-    private int T;
+    private int numTransitions;
+    private int numPlaces;
     private Map<Integer, String[]> placeColor;
     private Map<Integer, String> placeType;
     private Map<Integer, String[]> typeColor;
@@ -119,7 +122,7 @@ public class PetriNet01 {
     public PetriNet01(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
                       String[] guards, Object[][][] expressions, Object[][][] variables) {
 
-        this.T = T;
+        this.numTransitions = T;
         this.placeColor = parsePlaceColorInput(placeToColor);
         this.inPlaces = parsePlaceInput(inPlace);
         this.outPlaces = parsePlaceInput(outPlace);
@@ -132,11 +135,12 @@ public class PetriNet01 {
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
         this.ss = new StateSpace();
+        this.numPlaces = this.markings.size();
         initializeBindinds();
     }
 
     public PetriNet01(PetrinetModel model) {
-        this.T = model.T;
+        this.numTransitions = model.T;
         this.placeColor = parsePlaceColorInput(model.placeToColor);
         this.inPlaces = parsePlaceInput(model.inPlace);
         this.outPlaces = parsePlaceInput(model.outPlace);
@@ -149,6 +153,7 @@ public class PetriNet01 {
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
         this.ss = new StateSpace();
+        this.numPlaces = this.markings.size();
         initializeBindinds();
 
     }
@@ -231,7 +236,7 @@ public class PetriNet01 {
             }
 
             String[] e = s.split("]");
-            for(String t: e) {
+            for (String t : e) {
                 int mulPos = t.indexOf('x');
                 int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos)) : 1;
                 String rawData = t.substring(t.indexOf('[') + 1);
@@ -247,9 +252,9 @@ public class PetriNet01 {
 
     private void initializeBindinds() {
 
-        for(int placeID: markings.keySet()) {
+        for (int placeID : markings.keySet()) {
             Multiset<Token> tokens = markings.get(placeID);
-            for(Token token : tokens) {
+            for (Token token : tokens) {
                 addToken(placeID, token, tokens.count(token));
             }
         }
@@ -271,6 +276,14 @@ public class PetriNet01 {
         return outTrans.get(placeID);
     }
 
+    public int getPlaceNum() {
+        return numPlaces;
+    }
+
+    public int getTransitionNum() {
+       return numTransitions;
+    }
+
     public boolean canFire(int tranID, Binding b, boolean recheck) {
         if (recheck && !passGuard(tranID, b)) return false;
         return bindings.get(tranID).contains(b);
@@ -278,6 +291,7 @@ public class PetriNet01 {
 
     /**
      * create all possible bindings that can be making from places
+     *
      * @param placeMarkings map: placeID ~> List of Tokens in that place
      * @return a list of all possible bindings that can created
      */
@@ -286,7 +300,7 @@ public class PetriNet01 {
         List<List<Token>> tokensWrapper = new ArrayList<>();
         List<Integer> placeIDs = new ArrayList<>();
 
-        for(int placeID: placeMarkings.keySet()) {
+        for (int placeID : placeMarkings.keySet()) {
             tokensWrapper.add(placeMarkings.get(placeID));
             placeIDs.add(placeID);
         }
@@ -294,10 +308,10 @@ public class PetriNet01 {
         List<List<Token>> permutatedTokens = Lists.cartesianProduct(tokensWrapper);
 
         List<Binding> result = new ArrayList<>();
-        for(List<Token> tokens: permutatedTokens) {
+        for (List<Token> tokens : permutatedTokens) {
 
             Map<Integer, Token> bindInfo = new HashMap<>();
-            for(int id = 0; id < tokens.size(); id++) {
+            for (int id = 0; id < tokens.size(); id++) {
                 bindInfo.put(placeIDs.get(id), tokens.get(id));
             }
 
@@ -313,7 +327,7 @@ public class PetriNet01 {
         Multiset<Token> tokens = markings.get(placeID);
         List<Token> result = new ArrayList<>();
 
-        for(Token token: tokens) {
+        for (Token token : tokens) {
             result.add(token);
         }
 
@@ -330,9 +344,10 @@ public class PetriNet01 {
 
     /**
      * Generate affected binginds when add/remove token from a place
+     *
      * @param affectedPlaceID the placeID that token be added or removed
-     * @param token the token that be added or removed
-     * @param num number of tokens that be added or removed
+     * @param token           the token that be added or removed
+     * @param num             number of tokens that be added or removed
      * @return a map: transitionID ~> List of new Bindings (add token), out-of-dated Bindings (remove token)
      */
     private Map<Integer, List<Binding>> generateAffectedBindings(int affectedPlaceID, Token token, int num) {
@@ -340,17 +355,17 @@ public class PetriNet01 {
         Map<Integer, List<Binding>> result = new HashMap<>();
         int[] outputTrans = getOutTrans(affectedPlaceID);
 
-        for(int affectedTranID: outputTrans) {
+        for (int affectedTranID : outputTrans) {
             int[] inputPlaces = getInPlaces(affectedTranID);
             Map<Integer, List<Token>> placeMarkings = new HashMap<>();
 
             List<Token> newTokens = new ArrayList<>();
-            for(int i = 0; i < num; i++) {
+            for (int i = 0; i < num; i++) {
                 newTokens.add(token);
             }
             placeMarkings.put(affectedPlaceID, newTokens);
 
-            for(int otherPlaceID: inputPlaces) {
+            for (int otherPlaceID : inputPlaces) {
                 if (otherPlaceID != affectedPlaceID) {
                     placeMarkings.put(otherPlaceID, getTokensList(otherPlaceID));
                 }
@@ -374,8 +389,8 @@ public class PetriNet01 {
         oldBindings = generateAffectedBindings(placeID, token, num);
         markings.get(placeID).remove(token);
 
-        for(int affectedTranID: oldBindings.keySet()) {
-            for(Binding b: oldBindings.get(affectedTranID)) {
+        for (int affectedTranID : oldBindings.keySet()) {
+            for (Binding b : oldBindings.get(affectedTranID)) {
                 removeBinding(affectedTranID, b);
             }
         }
@@ -387,8 +402,8 @@ public class PetriNet01 {
         newBindings = generateAffectedBindings(placeID, token, num);
         markings.get(placeID).add(token);
 
-        for(int affectedTranID: newBindings.keySet()) {
-            for(Binding b: newBindings.get(affectedTranID)) {
+        for (int affectedTranID : newBindings.keySet()) {
+            for (Binding b : newBindings.get(affectedTranID)) {
                 if (!passGuard(affectedTranID, b)) continue;
                 addBinding(affectedTranID, b);
             }
@@ -402,7 +417,7 @@ public class PetriNet01 {
         String[] exps = expressions.get(new Pair<>(tranID, placeID));
         Map<String, String> vars = binding.getStringMapping(tranID);
 
-        for(String statement: exps) {
+        for (String statement : exps) {
             Interpreter.Value res = interpreter.interpretFromString(statement, vars);
             result.add(res.getString());
         }
@@ -417,11 +432,11 @@ public class PetriNet01 {
         int[] inputPlaces = getInPlaces(tranID);
         int[] outputPlaces = getOutPlaces(tranID);
 
-        for(int placeID: inputPlaces) {
+        for (int placeID : inputPlaces) {
             removeToken(placeID, fireableBinding.getToken(placeID), 1);
         }
 
-        for(int placeID: outputPlaces) {
+        for (int placeID : outputPlaces) {
             Token newToken = runExpression(tranID, placeID, fireableBinding);
             addToken(placeID, newToken, 1);
         }
@@ -442,12 +457,12 @@ public class PetriNet01 {
             Map<Integer, Multiset<Binding>> parentBindings = new HashMap<>(bindingQueue.remove());
             int parentStateID = visitedState.get(parentState);
 
-            for(int tranID: parentBindings.keySet()) {
+            for (int tranID : parentBindings.keySet()) {
                 markings = new HashMap<>(parentState);
                 bindings = new HashMap<>(parentBindings);
 
-                Multiset<Binding> fireableBindings= parentBindings.get(tranID);
-                for(Binding b: fireableBindings) {
+                Multiset<Binding> fireableBindings = parentBindings.get(tranID);
+                for (Binding b : fireableBindings) {
                     executeTransition(tranID, b);
 
                     Map<Integer, Multiset<Token>> nextState = new HashMap<>(markings);
@@ -464,6 +479,48 @@ public class PetriNet01 {
                 }
             }
         }
+    }
+
+    JSONObject getGraphVizJson() {
+        JSONObject obj = new JSONObject();
+        JSONObject nodeObj = new JSONObject();
+        JSONObject arcObj = new JSONObject();
+
+
+        int[][] inputPlaces = new int[numTransitions][];
+        for(int tranID: inPlaces.keySet()) {
+            int[] places = inPlaces.get(tranID);
+            inputPlaces[tranID] = places;
+        }
+
+        int[][] outputPlaces = new int[numTransitions][];
+        for(int tranID: inPlaces.keySet()) {
+            int[] places = inPlaces.get(tranID);
+            outputPlaces[tranID] = places;
+        }
+
+        obj.put("inPlaces", inputPlaces);
+        obj.put("outPlaces", outputPlaces);
+
+        Map<Integer, State> nodes = ss.getNodes();
+        for (int key : nodes.keySet()) {
+            StringBuilder s = new StringBuilder();
+            for (int k : nodes.get(key).getKeySet()) {
+                s.append(nodes.get(key).get(k).size());
+                s.append( ", ");
+            }
+            nodeObj.put(key + "", key + "\\n" + s.toString());
+        }
+
+        Map<Integer, Set<Integer>> edges = ss.getEdges();
+        for (int key : edges.keySet()) {
+            arcObj.put(key + "", edges.get(key));
+        }
+
+        obj.put("nodes", nodeObj);
+        obj.put("arc", arcObj);
+
+        return obj;
     }
 
     public static void main(String[] args) {
