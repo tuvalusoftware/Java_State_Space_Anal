@@ -4,6 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import javafx.util.Pair;
+import jnr.ffi.annotations.In;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.javatuples.Triplet;
 
@@ -709,5 +710,15 @@ class Interpreter {
         b.add("t");
         b.add("t");
         b.add("t");
+
+        for(String t: b.elementSet()) {
+            System.out.println(t);
+        }
+
+//        Map<Integer, Integer> f = new HashMap<>();
+//        f.put(1, 1);
+//        Map<Integer, Integer> b = new HashMap<>(f);
+//        b.put(1, 3);
+//        System.out.println(f.get(1));
     }
 }

@@ -2,14 +2,15 @@ package io.ferdon.statespace;
 
 import com.google.common.collect.*;
 import org.javatuples.Pair;
-
+import io.ferdon.statespace.StateSpace.State;
+import java.io.*;
 import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
 
 public class PetriNet01 {
 
-    class Token {
+    class Token implements Cloneable {
         private List<String> values = new ArrayList<>();
 
         Token(String x) {
@@ -35,13 +36,18 @@ public class PetriNet01 {
         String get(int index) {
             return values.get(index);
         }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     /**
      * Binding: map from placeID ~> Token
      * One binding (of a transition) contains the list of tokens
      */
-    class Binding {
+    class Binding implements Cloneable {
         private Map<Integer, Token> values;
 
         Binding(Map<Integer, Token> bindInfo) {
@@ -71,6 +77,11 @@ public class PetriNet01 {
 
             return vars;
         }
+
+        @Override
+        protected Object clone() throws CloneNotSupportedException {
+            return super.clone();
+        }
     }
 
     private int T;
@@ -87,6 +98,7 @@ public class PetriNet01 {
     private Map<Integer, Multiset<Token>> markings;
     private Interpreter interpreter;
     private Map<Integer, Multiset<Binding>> bindings;
+    private transient StateSpace ss;
 
     /**
      * Info: components ID currently is integer index (0, 1, 2, ...), use map to make it able to change to arbitrary ID type later
@@ -119,6 +131,7 @@ public class PetriNet01 {
         this.expressions = parseEdgeInput(expressions);
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
+        this.ss = new StateSpace();
         initializeBindinds();
     }
 
@@ -135,6 +148,7 @@ public class PetriNet01 {
         this.expressions = parseEdgeInput(model.Expressions);
         this.interpreter = new Interpreter();
         this.bindings = new HashMap<>();
+        this.ss = new StateSpace();
         initializeBindinds();
 
     }
@@ -300,8 +314,7 @@ public class PetriNet01 {
         List<Token> result = new ArrayList<>();
 
         for(Token token: tokens) {
-            int num = tokens.count(token);
-            for(int i = 0; i < num; i++) result.add(token);
+            result.add(token);
         }
 
         return result;
@@ -414,9 +427,43 @@ public class PetriNet01 {
         }
     }
 
-    public void generateStateSpace() {
-//        Queue<PetriNet01> queue = new LinkedList<>();
-//        Set<>
+    public void generateStateSpace() throws IOException, ClassNotFoundException {
+
+        Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
+        Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
+        Map<Map<Integer, Multiset<Token>>, Integer> visitedState = new HashMap<>();
+
+        markingQueue.add(markings);
+        bindingQueue.add(bindings);
+        visitedState.put(markings, 1);
+
+        while (!markingQueue.isEmpty()) {
+            Map<Integer, Multiset<Token>> parentState = new HashMap<>(markingQueue.remove());
+            Map<Integer, Multiset<Binding>> parentBindings = new HashMap<>(bindingQueue.remove());
+            int parentStateID = visitedState.get(parentState);
+
+            for(int tranID: parentBindings.keySet()) {
+                markings = new HashMap<>(parentState);
+                bindings = new HashMap<>(parentBindings);
+
+                Multiset<Binding> fireableBindings= parentBindings.get(tranID);
+                for(Binding b: fireableBindings) {
+                    executeTransition(tranID, b);
+
+                    Map<Integer, Multiset<Token>> nextState = new HashMap<>(markings);
+                    Map<Integer, Multiset<Binding>> nextBinding = new HashMap<>(bindings);
+
+                    Integer childStateID = visitedState.get(markings);
+                    if (childStateID == null) {     /* new state */
+                        childStateID = ss.addState(nextState);
+                        visitedState.put(nextState, childStateID);
+                        markingQueue.add(nextState);
+                        bindingQueue.add(nextBinding);
+                    }
+                    ss.addEdge(parentStateID, childStateID, tranID);
+                }
+            }
+        }
     }
 
     public static void main(String[] args) {
