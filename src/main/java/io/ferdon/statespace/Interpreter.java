@@ -709,11 +709,5 @@ class Interpreter {
         b.add("t");
         b.add("t");
         b.add("t");
-
-        String[] d = {"1"};
-        List<String> c = new ArrayList<String>(b.toArray(d));
-        for(String t: c) {
-            System.out.println(t);
-        }
     }
 }

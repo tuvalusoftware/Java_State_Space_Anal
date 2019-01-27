@@ -5,6 +5,8 @@ import org.javatuples.Pair;
 
 import java.util.*;
 
+import static io.ferdon.statespace.main.parseJson;
+
 public class PetriNet01 {
 
     class Token {
@@ -109,8 +111,8 @@ public class PetriNet01 {
         this.placeColor = parsePlaceColorInput(placeToColor);
         this.inPlaces = parsePlaceInput(inPlace);
         this.outPlaces = parsePlaceInput(outPlace);
-        this.inTrans = parseTranInput(inPlaces);
-        this.outTrans = parseTranInput(outPlaces);
+        this.inTrans = parseTranInput(outPlaces);
+        this.outTrans = parseTranInput(inPlaces);
         this.markings = parseMarkingInput(markings);
         this.variables = parseEdgeInput(variables);
         this.guards = parseGuardInput(guards);
@@ -125,6 +127,8 @@ public class PetriNet01 {
         this.placeColor = parsePlaceColorInput(model.placeToColor);
         this.inPlaces = parsePlaceInput(model.inPlace);
         this.outPlaces = parsePlaceInput(model.outPlace);
+        this.inTrans = parseTranInput(outPlaces);
+        this.outTrans = parseTranInput(inPlaces);
         this.markings = parseMarkingInput(model.Markings);
         this.variables = parseEdgeInput(model.Variables);
         this.guards = parseGuardInput(model.Guards);
@@ -206,15 +210,18 @@ public class PetriNet01 {
         for (int i = 0; i < markings.length; i++) {
 
             Multiset<Token> marking = HashMultiset.create();
-            String[] tokens;
             String s = markings[i];
+            if (s.isEmpty()) {
+                result.put(i, marking);
+                continue;
+            }
 
             String[] e = s.split("]");
             for(String t: e) {
                 int mulPos = t.indexOf('x');
-                int num = Integer.parseInt(t.substring(0, mulPos));
-                String[] tokenData = t.substring(t.indexOf('[')).split(",");
-                Token token = new Token(tokenData);
+                int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos)) : 1;
+                String rawData = t.substring(t.indexOf('[') + 1);
+                Token token = new Token(rawData);
                 marking.add(token, num);
             }
 
@@ -405,5 +412,18 @@ public class PetriNet01 {
             Token newToken = runExpression(tranID, placeID, fireableBinding);
             addToken(placeID, newToken, 1);
         }
+    }
+
+    public void generateStateSpace() {
+//        Queue<PetriNet01> queue = new LinkedList<>();
+//        Set<>
+    }
+
+    public static void main(String[] args) {
+        String option = "analysis";
+        String petrinetInput = "/Users/thethongngu/Desktop/test.json";
+
+        PetrinetModel model = parseJson(petrinetInput);
+        PetriNet01 net = new PetriNet01(model);
     }
 }
