@@ -57,7 +57,7 @@ class StateSpace {
     private Map<String, Integer> stateIDs;
     private Map<Integer, State> nodes = new HashMap<>();
     private Map<Integer, Set<Integer>> edges = new HashMap<>();
-    private Map<Pair<Integer, Integer>, Integer> firedTransitions = new HashMap<>();  //[src,dst] -> arc data
+    private Map<Pair<Integer, Integer>, Integer> firedTransitions = new HashMap<>();  /* [src,dst] ~> arc data  */
 
     StateSpace(int numPlaces) {
         numState = 0;
@@ -68,13 +68,14 @@ class StateSpace {
     int addState(Map<Integer, Multiset<Token>> s) {
         numState += 1;
         State state = new State(s);
+        System.out.println(String.format("New state: %s ~> %s", numState, state.toString()));
         nodes.put(numState, state);
         stateIDs.put(state.toString(), numState);
-//        System.out.println(state.toString());
         return numState;
     }
 
     Integer getState(Map<Integer, Multiset<Token>> s) {
+
         State state = new State(s);
         return stateIDs.get(state.toString());
     }

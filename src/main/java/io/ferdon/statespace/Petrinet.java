@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static io.ferdon.statespace.main.parseJson;
 
@@ -21,11 +20,6 @@ public class Petrinet implements Serializable {
             String[] rawData = x.split(",");
             for (String a : rawData) {
                 values.add(a.trim());
-//                if (a.charAt(0) == '\'' && a.charAt(a.length() - 1) == '\'') {
-//                    values.add(a.substring(1, a.length() - 1));
-//                } else {
-//                    values.add(a);
-//                }
             }
         }
 
@@ -187,8 +181,6 @@ public class Petrinet implements Serializable {
 
     private int numTransitions;
     private int numPlaces;
-    private int numTokens;
-    private int numBindings;
     private Map<Integer, String[]> placeColor;
     private Map<Integer, String> placeType;
     private Map<Integer, String[]> typeColor;
@@ -223,11 +215,9 @@ public class Petrinet implements Serializable {
      *        inTrans      map
      */
     public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
-                    String[] guards, Object[][][] expressions, Object[][][] variables)  throws IOException, ClassNotFoundException  {
+                    String[] guards, Object[][][] expressions, Object[][][] variables) {
 
         this.numTransitions = T;
-        this.numTokens = 0;
-        this.numBindings = 0;
         this.placeColor = parsePlaceColorInput(placeToColor);
         this.inPlaces = parsePlaceInput(inPlace);
         this.outPlaces = parsePlaceInput(outPlace);
@@ -244,10 +234,8 @@ public class Petrinet implements Serializable {
         initializeBindinds();
     }
 
-    public Petrinet(PetrinetModel model)  throws IOException, ClassNotFoundException {
+    public Petrinet(PetrinetModel model) {
         this.numTransitions = model.T;
-        this.numTokens = 0;
-        this.numBindings = 0;
         this.placeColor = parsePlaceColorInput(model.placeToColor);
         this.inPlaces = parsePlaceInput(model.inPlace);
         this.outPlaces = parsePlaceInput(model.outPlace);
@@ -373,7 +361,7 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    private void initializeBindinds() throws IOException, ClassNotFoundException {
+    private void initializeBindinds() {
 
         /* reset marking for new bindings */
 
@@ -612,7 +600,6 @@ public class Petrinet implements Serializable {
 
         Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
         Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
-        Map<Map<Integer, Multiset<Token>>, Integer> visitedState = new HashMap<>();
 
         markingQueue.add(markings);
         bindingQueue.add(bindings);
