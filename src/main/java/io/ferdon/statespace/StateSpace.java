@@ -36,23 +36,47 @@ class StateSpace {
         Set<Integer> getKeySet() {
             return state.keySet();
         }
+
+        @Override
+        public String toString() {
+            StringBuilder s = new StringBuilder();
+            for(int i : state.keySet()) {
+                s.append(i);
+                s.append("->[");
+                for(Token token: state.get(i)) {
+                    s.append(token.toString());
+                }
+                s.append("]");
+            }
+            return s.toString();
+        }
     }
 
     private long P;
     private int numState;
+    private Map<String, Integer> stateIDs;
     private Map<Integer, State> nodes = new HashMap<>();
     private Map<Integer, Set<Integer>> edges = new HashMap<>();
     private Map<Pair<Integer, Integer>, Integer> firedTransitions = new HashMap<>();  //[src,dst] -> arc data
 
     StateSpace(int numPlaces) {
         numState = 0;
+        stateIDs = new HashMap<>();
         P = numPlaces;
     }
 
     int addState(Map<Integer, Multiset<Token>> s) {
         numState += 1;
-        nodes.put(numState, new State(s));
+        State state = new State(s);
+        nodes.put(numState, state);
+        stateIDs.put(state.toString(), numState);
+//        System.out.println(state.toString());
         return numState;
+    }
+
+    Integer getState(Map<Integer, Multiset<Token>> s) {
+        State state = new State(s);
+        return stateIDs.get(state.toString());
     }
 
     void addEdge(int parentID, int childID, int firedTranID) {

@@ -8,9 +8,10 @@ import jnr.ffi.annotations.In;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.javatuples.Triplet;
 
+import java.io.Serializable;
 import java.util.*;
 
-class Interpreter {
+class Interpreter implements Serializable {
 
     public enum ValueType {
         STRING,
@@ -681,7 +682,7 @@ class Interpreter {
             }
         }
 
-        return (Value) valueStack.peek();
+        return (Value) valueStack.pop();
     }
 
     /**
@@ -692,7 +693,9 @@ class Interpreter {
      * @return Value
      */
     public Value interpretFromString(String expression, Map<String, String> variables) {
-        String rawExpression = StringEscapeUtils.escapeJava(expression);
+        if (expression.isEmpty()) throw new IllegalArgumentException();
+
+        String rawExpression = StringEscapeUtils.escapeJava(expression).trim();
         this.valueStack.empty();
 
         String[] tokens = rawExpression.split(" ");
@@ -706,19 +709,32 @@ class Interpreter {
         Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
         System.out.println(a.toString());
 
-        Multiset<String> b = HashMultiset.create();
-        b.add("t");
-        b.add("t");
-        b.add("t");
-
-        for(String t: b.elementSet()) {
-            System.out.println(t);
-        }
+//        Multiset<String> b = HashMultiset.create();
+//        b.add("t");
+//        b.add("t");
+//        b.add("t");
+//
+//        for(String t: b.elementSet()) {
+//            System.out.println(t);
+//        }
 
 //        Map<Integer, Integer> f = new HashMap<>();
+//        Map<Integer, Integer> b = new HashMap<>();
+//
 //        f.put(1, 1);
-//        Map<Integer, Integer> b = new HashMap<>(f);
-//        b.put(1, 3);
-//        System.out.println(f.get(1));
+//        b.put(1, 1);
+//
+//        System.out.println("1232".hashCode());
+//        System.out.println(f.hashCode());
+//        System.out.println(b.hashCode());
+//        System.out.println(f.equals(b));
+
+        StringBuilder t = new StringBuilder();
+        StringBuilder e = new StringBuilder();
+        t.append("t");
+        e.append("t");
+
+        System.out.println(t.toString().hashCode());
+        System.out.println(e.toString().hashCode());
     }
 }
