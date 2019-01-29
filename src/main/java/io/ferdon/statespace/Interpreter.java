@@ -633,10 +633,7 @@ class Interpreter implements Serializable {
         switch (valueType) {
             case VARIABLE: {
                 String variableValue = variables.get(token);
-                if (variableValue == null) {
-                    System.out.println("Variable name without value, set default to 0");
-                    variableValue = "0";
-                }
+                if (variableValue == null) throw new IllegalArgumentException("Variable's values are not provided");
                 pushOperandToStack(variableValue);  /* change variable with value, so next time valueType != VARIABLE */
                 break;
             }
@@ -729,12 +726,13 @@ class Interpreter implements Serializable {
 //        System.out.println(b.hashCode());
 //        System.out.println(f.equals(b));
 
-        StringBuilder t = new StringBuilder();
-        StringBuilder e = new StringBuilder();
-        t.append("t");
-        e.append("t");
+        List<String> t = new ArrayList<>();
+        t.add("thong");
+        List<String> b = t;
+        t.add("tam");
 
-        System.out.println(t.toString().hashCode());
-        System.out.println(e.toString().hashCode());
+        String aa = "asfasd";
+
+        System.out.println(b.size());
     }
 }

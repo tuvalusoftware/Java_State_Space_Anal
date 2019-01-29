@@ -55,7 +55,7 @@ public class Petrinet implements Serializable {
                 return (values.size() > otherToken.size()) ? 1 : -1;
             }
 
-            for(int i = 0 ; i < values.size(); i++) {
+            for (int i = 0; i < values.size(); i++) {
                 if (values.get(i).equals(otherToken.get(i))) continue;
                 return (values.get(i).compareTo(otherToken.get(i)) > 0) ? 1 : -1;
             }
@@ -71,7 +71,7 @@ public class Petrinet implements Serializable {
 
             if (values.size() != otherValues.size()) return false;
 
-            for(int i = 0; i < values.size(); i++) {
+            for (int i = 0; i < values.size(); i++) {
                 if (!values.get(i).equals(otherValues.get(i))) return false;
             }
 
@@ -81,7 +81,7 @@ public class Petrinet implements Serializable {
         @Override
         public int hashCode() {
             StringBuilder t = new StringBuilder();
-            for(String x: values) {
+            for (String x : values) {
                 t.append(x);
                 t.append('+');
             }
@@ -92,7 +92,7 @@ public class Petrinet implements Serializable {
         @Override
         public String toString() {
             StringBuilder t = new StringBuilder();
-            for(String x: values) {
+            for (String x : values) {
                 t.append(x);
                 t.append('+');
             }
@@ -113,7 +113,7 @@ public class Petrinet implements Serializable {
 
         Binding(Binding b) {
             Map<Integer, Token> bValues = b.getValues();
-            for(int placeID: bValues.keySet()) {
+            for (int placeID : bValues.keySet()) {
                 values.put(placeID, new Token(bValues.get(placeID)));
             }
         }
@@ -147,7 +147,7 @@ public class Petrinet implements Serializable {
         @Override
         public int hashCode() {
             int result = 37;
-            for(int tranID: values.keySet()) {
+            for (int tranID : values.keySet()) {
                 result += 37 * values.get(tranID).hashCode();
             }
 //            System.out.println("test hashcode: " + values.toString() + " -> " + result);
@@ -159,7 +159,7 @@ public class Petrinet implements Serializable {
             Binding otherBinding = (Binding) obj;
             Map<Integer, Token> otherInfo = otherBinding.getValues();
 
-            for(int placeID: values.keySet()) {
+            for (int placeID : values.keySet()) {
                 if (!otherInfo.containsKey(placeID)) return false;
                 if (!otherInfo.get(placeID).equals(values.get(placeID))) return false;
             }
@@ -171,7 +171,7 @@ public class Petrinet implements Serializable {
         public String toString() {
             String s = "";
             s += "\n------------------\n";
-            for(int tranID: values.keySet()) {
+            for (int tranID : values.keySet()) {
                 s += tranID + " ~~~> " + values.get(tranID);
                 s += '\n';
             }
@@ -210,9 +210,9 @@ public class Petrinet implements Serializable {
      * @param guards       map transitionID ~> String expression
      * @param expressions  map (transitionID, out placeID) ~> String[] expression
      * @param variables    map (transitionID, placeID) ~> String[] variable's names
-     *        bindings     map (transitionID, Token) ~> List of binding, each binding is a compound token
-     *        outTrans     map
-     *        inTrans      map
+     *                     bindings     map (transitionID, Token) ~> List of binding, each binding is a compound token
+     *                     outTrans     map
+     *                     inTrans      map
      */
     public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
                     String[] guards, Object[][][] expressions, Object[][][] variables) {
@@ -289,7 +289,7 @@ public class Petrinet implements Serializable {
         for (int placeID : tmpResult.keySet()) {
             int[] tmpData = new int[tmpResult.get(placeID).size()];
 
-            for(int i = 0; i < tmpResult.get(placeID).size(); i++) {
+            for (int i = 0; i < tmpResult.get(placeID).size(); i++) {
                 tmpData[i] = tmpResult.get(placeID).get(i);
             }
 
@@ -384,9 +384,9 @@ public class Petrinet implements Serializable {
 
         Map<Integer, Multiset<Token>> result = new HashMap<>();
 
-        for(int placeID: o.keySet()) {
+        for (int placeID : o.keySet()) {
             Multiset<Token> copiedSet = TreeMultiset.create();
-            for(Token token: o.get(placeID)) {
+            for (Token token : o.get(placeID)) {
                 copiedSet.add(new Token(token));
             }
             result.put(placeID, copiedSet);
@@ -399,9 +399,9 @@ public class Petrinet implements Serializable {
 
         Map<Integer, Multiset<Binding>> result = new HashMap<>();
 
-        for(int placeID: o.keySet()) {
+        for (int placeID : o.keySet()) {
             Multiset<Binding> copiedSet = HashMultiset.create();
-            for(Binding b: o.get(placeID)) {
+            for (Binding b : o.get(placeID)) {
                 copiedSet.add(new Binding(b));
             }
             result.put(placeID, copiedSet);
@@ -616,7 +616,6 @@ public class Petrinet implements Serializable {
                 for (Binding b : fireableBindings) {
                     markings = cloneMarking(parentState);
                     bindings = cloneBinding(parentBindings);
-//                    System.out.println(b.toString());
                     executeTransition(tranID, b);
 
                     Integer childStateID = ss.getState(markings);
@@ -675,7 +674,7 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         String option = "analysis";
-        String petrinetInput = "/Users/thethongngu/Desktop/Guards.json";
+        String petrinetInput = "/Users/thethongngu/Desktop/emptyInputPlace.json";
 
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);

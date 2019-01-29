@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+
 import io.ferdon.statespace.Petrinet.Token;
 
 
@@ -40,10 +41,10 @@ class StateSpace {
         @Override
         public String toString() {
             StringBuilder s = new StringBuilder();
-            for(int i : state.keySet()) {
+            for (int i : state.keySet()) {
                 s.append(i);
                 s.append("->[");
-                for(Token token: state.get(i)) {
+                for (Token token : state.get(i)) {
                     s.append(token.toString());
                 }
                 s.append("]");
@@ -97,57 +98,31 @@ class StateSpace {
         return edges;
     }
 
-    JSONObject getGraphVizJson(){
-        JSONObject obj = new JSONObject();
-//        JSONObject nodeObj = new JSONObject();
-//        JSONObject arcObj = new JSONObject();
-//
-//
-//        obj.put("TP",TP);
-//
-//        for (int key: nodes.keySet()){
-//            String s = "";
-//            for (int k: nodes.get(key).getKeySet()){
-//                s += nodes.get(key).get(k).size() + ", ";
-//            }
-//            nodeObj.put(key+"",key + "\\n" + s);
-//        }
-//
-//        for (int key: edges.keySet()){
-//            arcObj.put(key+"", edges.get(key));
-//        }
-//
-//        obj.put("nodes",nodeObj);
-//        obj.put("arc",arcObj);
-//
-        return obj;
-    }
-
-    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath){
+    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath) {
 
         List<Integer> path = new ArrayList<>();
-        for (int i: inPath){
+        for (int i : inPath) {
             path.add(i);
         }
         path.add(start);
 
-        if (start == end){
+        if (start == end) {
             List<List<Integer>> temp = new ArrayList<>();
             temp.add(path);
             return temp;
         }
 
-        if (!edges.containsKey(start)){
+        if (!edges.containsKey(start)) {
             List<List<Integer>> temp = new ArrayList<>();
             return temp;
         }
 
         List<List<Integer>> result = new ArrayList<>();
 
-        for (int n: edges.get(start)){
-            if (!path.contains(n)){
+        for (int n : edges.get(start)) {
+            if (!path.contains(n)) {
                 List<List<Integer>> newPaths = allPathsBetween(n, end, path);
-                for (List<Integer> p: newPaths){
+                for (List<Integer> p : newPaths) {
                     result.add(p);
                 }
             }
@@ -194,7 +169,7 @@ class StateSpace {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  writer;
+        return writer;
     }
 
     /* write Arc in parquet format */

@@ -18,7 +18,7 @@ public class main {
     public static void main(String[] args) throws Exception {
 
         Logger.getRootLogger().setLevel(Level.OFF);
-        try{
+        try {
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
 //            String option = "analysis";
@@ -29,6 +29,9 @@ public class main {
             String option = args[0];
             String petrinetInput = path + args[1];
 
+            option = "analysis";
+            petrinetInput = "/Users/thethongngu/Desktop/Guards.json";
+
             print("option: " + option);
             print(petrinetInput);
 
@@ -36,7 +39,7 @@ public class main {
             Petrinet net = new Petrinet(model);
 
 
-            switch(option){
+            switch (option) {
                 case "analysis":
                     String nodeParquet = path + args[2];
                     String arcParquet = path + args[3];
@@ -50,15 +53,15 @@ public class main {
                         e.printStackTrace();
                     }
                     AvroSchema aq = new AvroSchema();
-                    Schema nodeSchema  = aq.createNodeSchema(petrinetInput);
+                    Schema nodeSchema = aq.createNodeSchema(petrinetInput);
                     Schema arcSchema = aq.createArcSchema();
 
                     exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
-                    exportGraphVizJson(net,graphVizOutput);
+                    exportGraphVizJson(net, graphVizOutput);
                     break;
             }
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -67,7 +70,7 @@ public class main {
         System.out.println(s);
     }
 
-    public static PetrinetModel parseJson(String filename){
+    public static PetrinetModel parseJson(String filename) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         try {
@@ -83,15 +86,15 @@ public class main {
         return null;
     }
 
-    public static void exportGraphVizJson(Petrinet net, String fileName){
-        JSONObject obj = net.ss.getGraphVizJson();
+    public static void exportGraphVizJson(Petrinet net, String fileName) {
+        JSONObject obj = net.getGraphVizJson();
         //write to file
-        try{
+        try {
             FileOutputStream outputStream = new FileOutputStream(fileName);
             byte[] strToBytes = obj.toString().getBytes();
             outputStream.write(strToBytes);
             outputStream.close();
-        } catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -101,19 +104,19 @@ public class main {
         net.ss.parquetWriteArc(arcSchema, arcParquet);
     }
 
-    private static Object deSerialize( String s ) throws IOException, ClassNotFoundException {
-        byte [] data = Base64.getDecoder().decode( s );
+    private static Object deSerialize(String s) throws IOException, ClassNotFoundException {
+        byte[] data = Base64.getDecoder().decode(s);
         ObjectInputStream ois = new ObjectInputStream(
-                new ByteArrayInputStream(  data ) );
-        Object o  = ois.readObject();
+                new ByteArrayInputStream(data));
+        Object o = ois.readObject();
         ois.close();
         return o;
     }
 
-    private static String serialize( Serializable o ) throws IOException {
+    private static String serialize(Serializable o) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream( baos );
-        oos.writeObject( o );
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(o);
         oos.close();
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
