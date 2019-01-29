@@ -188,21 +188,8 @@ public class Petrinet implements Serializable {
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
 
-    private Map<Pair<Place, Transition>, Edge> vars;
-    private Map<Pair<Transition, Place>, Edge> exp;
-
+    private StateSpace stateSpace;
     private static Interpreter interpreter;
-
-    Petrinet() {
-        places = new HashMap<>();
-        transitions = new HashMap<>();
-        vars = new HashMap<>();
-        exp = new HashMap<>();
-    }
-
-    Petrinet(String filename) {
-
-    }
 
     public Petrinet(int T,
                     Map<String, String> placeToColor,
@@ -306,7 +293,6 @@ public class Petrinet implements Serializable {
 
         places.get(placeID).addOutputTransition(transition);
         transitions.get(tranID).addInputPlace(place, edge);
-        vars.put(new Pair<>(place, transition), edge);
     }
 
     public void addExp(int tranID, int placeID, String varData) {
@@ -320,7 +306,6 @@ public class Petrinet implements Serializable {
         Edge edge = new Edge(transition, place, varTokens);
         transitions.get(tranID).addOutputPlace(place, edge);
         places.get(placeID).addInputTransition(transition);
-        exp.put(new Pair<>(transition, place), edge);
     }
 
     public State getCurrentState() {
@@ -347,213 +332,37 @@ public class Petrinet implements Serializable {
 
     public StateSpace generateStateSpace(State currentState) {
 
+        Queue<State> stateQueue = new LinkedList<>();
+        StateSpace ss = new StateSpace();
+        stateQueue.add(currentState);
+        ss.addState(currentState);
+
+        while (!stateQueue.isEmpty()) {
+            State parentState = cloneState(stateQueue.remove());
+
+            for(Transition transition: transitions.values()) {
+                List<Marking> markings = transition.getPlaceMarkings();
+                List<Binding> newBindings = generateAllBinding(markings, transition);
+
+                for(Binding b: newBindings) {
+
+                    State childState = execute(transition, b);
+                    if (ss.isNewState(childState)) {
+                        ss.addState(childState);
+                        stateQueue.add(childState);
+                    }
+                    ss.addEdge(parentState, childState, transition);
+                }
+            }
+        }
+
+        return ss;
     }
 
     public State execute(Transition transition, Binding b) {
         transition.execute(b, interpreter);
         return getCurrentState();
     }
-
-
-    private int numTransitions;
-    private int numPlaces;
-    private Map<Integer, String[]> placeColor;
-    private Map<Integer, String> placeType;
-    private Map<Integer, String[]> typeColor;
-    private Map<Integer, int[]> inPlaces;
-    private Map<Integer, int[]> outPlaces;
-    private Map<Integer, int[]> inTrans;
-    private Map<Integer, int[]> outTrans;
-    private Map<Pair<Integer, Integer>, String[]> variables;
-    private Map<Pair<Integer, Integer>, String[]> expressions;
-    private Map<Integer, String> guards;
-    private Map<Integer, Multiset<Token>> markings;
-    private Interpreter interpreter;
-    private Map<Integer, Multiset<Binding>> bindings;
-    transient StateSpace ss;
-
-    /**
-     * Info: components ID currently is integer index (0, 1, 2, ...), use map to make it able to change to arbitrary ID type later
-     * Constructors
-     * - Read from Petri Net model
-     * - Read from input data
-     *
-     * @param T            number of transitions
-     * @param placeToColor map placeID ~> String[] types
-     * @param outPlace     map transitionID ~> int[] input placeIDs
-     * @param inPlace      map transitionID ~> int[] input placeIDs
-     * @param markings     map placeID ~> Multiset(Token)
-     * @param guards       map transitionID ~> String expression
-     * @param expressions  map (transitionID, out placeID) ~> String[] expression
-     * @param variables    map (transitionID, placeID) ~> String[] variable's names
-     *                     bindings     map (transitionID, Token) ~> List of binding, each binding is a compound token
-     *                     outTrans     map
-     *                     inTrans      map
-     */
-//    public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
-//                    String[] guards, Object[][][] expressions, Object[][][] variables) {
-//
-//        this.numTransitions = T;
-//        this.placeColor = parsePlaceColorInput(placeToColor);
-//        this.inPlaces = parsePlaceInput(inPlace);
-//        this.outPlaces = parsePlaceInput(outPlace);
-//        this.inTrans = parseTranInput(outPlaces);
-//        this.outTrans = parseTranInput(inPlaces);
-//        this.markings = parseMarkingInput(markings);
-//        this.variables = parseEdgeInput(variables);
-//        this.guards = parseGuardInput(guards);
-//        this.expressions = parseEdgeInput(expressions);
-//        this.interpreter = new Interpreter();
-//        this.bindings = parseBindingInput();
-//        this.numPlaces = this.markings.size();
-//        this.ss = new StateSpace(numPlaces);
-//        initializeBindinds();
-//    }
-//
-//    public Petrinet(PetrinetModel model) {
-//        this.numTransitions = model.T;
-//        this.placeColor = parsePlaceColorInput(model.placeToColor);
-//        this.inPlaces = parsePlaceInput(model.inPlace);
-//        this.outPlaces = parsePlaceInput(model.outPlace);
-//        this.inTrans = parseTranInput(outPlaces);
-//        this.outTrans = parseTranInput(inPlaces);
-//        this.markings = parseMarkingInput(model.Markings);
-//        this.variables = parseEdgeInput(model.Variables);
-//        this.guards = parseGuardInput(model.Guards);
-//        this.expressions = parseEdgeInput(model.Expressions);
-//        this.interpreter = new Interpreter();
-//        this.bindings = parseBindingInput();
-//        this.numPlaces = this.markings.size();
-//        this.ss = new StateSpace(numPlaces);
-//        initializeBindinds();
-//
-//    }
-    private Map<Integer, String[]> parsePlaceColorInput(Map<String, String> placeToColor) {
-
-        Map<Integer, String[]> result = new HashMap<>();
-        for (String key : placeToColor.keySet()) {
-            String[] c = placeToColor.get(key).split("\\*");
-            result.put(Integer.parseInt(key), c);
-        }
-        return result;
-    }
-
-    private Map<Integer, int[]> parsePlaceInput(int[][] trans) {
-
-        Map<Integer, int[]> result = new HashMap<>();
-        for (int tranID = 0; tranID < trans.length; tranID++) {
-            result.put(tranID, trans[tranID]);
-        }
-
-        return result;
-    }
-
-    private Map<Integer, int[]> parseTranInput(Map<Integer, int[]> places) {
-        Map<Integer, int[]> result = new HashMap<>();
-
-        Map<Integer, List<Integer>> tmpResult = new HashMap<>();
-        for (int tranID : places.keySet()) {
-            for (int placeID : places.get(tranID)) {
-                if (!tmpResult.containsKey(placeID)) {
-                    tmpResult.put(placeID, new ArrayList<>());
-                }
-                tmpResult.get(placeID).add(tranID);
-            }
-        }
-
-        for (int placeID : tmpResult.keySet()) {
-            int[] tmpData = new int[tmpResult.get(placeID).size()];
-
-            for (int i = 0; i < tmpResult.get(placeID).size(); i++) {
-                tmpData[i] = tmpResult.get(placeID).get(i);
-            }
-
-            result.put(placeID, tmpData);
-        }
-
-        return result;
-    }
-
-    private Map<Pair<Integer, Integer>, String[]> parseEdgeInput(Object[][][] trans) {
-
-        Map<Pair<Integer, Integer>, String[]> result = new HashMap<>();
-        for (int i = 0; i < trans.length; i++) {
-            for (int j = 0; j < trans[i].length; j++) {
-                int inPlaceID = (Integer) trans[i][j][0];
-                Pair<Integer, Integer> key = new Pair<>(i, inPlaceID);
-                String[] value = String.valueOf(trans[i][j][1]).split(",");
-                result.put(key, value);
-            }
-        }
-
-        return result;
-    }
-
-    private Map<Integer, String> parseGuardInput(String[] guards) {
-
-        Map<Integer, String> result = new HashMap<>();
-        for (int tranID = 0; tranID < guards.length; tranID++) {
-            result.put(tranID, guards[tranID]);
-        }
-        return result;
-    }
-
-    private Map<Integer, Multiset<Token>> parseMarkingInput(String[] markings) {
-
-        Map<Integer, Multiset<Token>> result = new HashMap<>();
-        for (int i = 0; i < markings.length; i++) {
-
-            Multiset<Token> marking = TreeMultiset.create();
-            String s = markings[i];
-            if (s.isEmpty()) {
-                result.put(i, marking);
-                continue;
-            }
-
-            String[] e = s.split("]");
-            for (String t : e) {
-                int mulPos = t.indexOf('x');
-                int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos).replace(",", "").trim()) : 1;
-                String rawData = t.substring(t.indexOf('[') + 1);
-                Token token = new Token(rawData);
-                marking.add(token, num);
-            }
-
-            result.put(i, marking);
-        }
-
-        return result;
-    }
-
-    private Map<Integer, Multiset<Binding>> parseBindingInput() {
-
-        Map<Integer, Multiset<Binding>> result = new HashMap<>();
-        for (int i = 0; i < numTransitions; i++) {
-            Multiset<Binding> bindingSet = HashMultiset.create();
-            result.put(i, bindingSet);
-        }
-
-        return result;
-    }
-
-//    private void initializeBindinds() {
-//
-//        /* reset marking for new bindings */
-//
-//        Map<Integer, Multiset<Token>> copiedMarking = cloneMarking(markings);
-//        for (int placeID : markings.keySet()) {
-//            markings.get(placeID).clear();
-//        }
-//
-//        /* start adding token */
-//
-//        for (int placeID : copiedMarking.keySet()) {
-//            Multiset<Token> tokens = copiedMarking.get(placeID);
-//            for (Token token : tokens) {
-//                addToken(placeID, token, tokens.count(token));
-//            }
-//        }
-//    }
 
     private Map<Integer, Multiset<Token>> cloneMarking(Map<Integer, Multiset<Token>> o) {
 
@@ -583,35 +392,6 @@ public class Petrinet implements Serializable {
         }
 
         return result;
-    }
-
-    public int[] getInPlaces(int tranID) {
-        return inPlaces.get(tranID);
-    }
-
-    public int[] getOutPlaces(int tranID) {
-        return outPlaces.get(tranID);
-    }
-
-    public int[] getInTrans(int placeID) {
-        return inTrans.get(placeID);
-    }
-
-    public int[] getOutTrans(int placeID) {
-        return outTrans.get(placeID);
-    }
-
-    public int getPlaceNum() {
-        return numPlaces;
-    }
-
-    public int getTransitionNum() {
-        return numTransitions;
-    }
-
-    public boolean canFire(int tranID, Binding b, boolean recheck) {
-        if (recheck && !passGuard(tranID, b)) return false;
-        return bindings.get(tranID).contains(b);
     }
 
     /**
@@ -771,39 +551,39 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public void generateStateSpace() {
-
-        Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
-        Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
-
-        markingQueue.add(markings);
-        bindingQueue.add(bindings);
-        ss.addState(markings);
-
-        while (!markingQueue.isEmpty()) {
-            Map<Integer, Multiset<Token>> parentState = cloneMarking(markingQueue.remove());
-            Map<Integer, Multiset<Binding>> parentBindings = cloneBinding(bindingQueue.remove());
-            int parentStateID = ss.getState(parentState);
-
-            for (int tranID : parentBindings.keySet()) {
-
-                Multiset<Binding> fireableBindings = parentBindings.get(tranID);
-                for (Binding b : fireableBindings) {
-                    markings = cloneMarking(parentState);
-                    bindings = cloneBinding(parentBindings);
-                    executeTransition(tranID, b);
-
-                    Integer childStateID = ss.getState(markings);
-                    if (childStateID == null) {       /*  new state  */
-                        childStateID = ss.addState(markings);
-                        markingQueue.add(markings);
-                        bindingQueue.add(bindings);
-                    }
-                    ss.addEdge(parentStateID, childStateID, tranID);
-                }
-            }
-        }
-    }
+//    public void generateStateSpace() {
+//
+//        Queue<Map<Integer, Multiset<Token>>> markingQueue = new LinkedList<>();
+//        Queue<Map<Integer, Multiset<Binding>>> bindingQueue = new LinkedList<>();
+//
+//        markingQueue.add(markings);
+//        bindingQueue.add(bindings);
+//        ss.addState(markings);
+//
+//        while (!markingQueue.isEmpty()) {
+//            Map<Integer, Multiset<Token>> parentState = cloneMarking(markingQueue.remove());
+//            Map<Integer, Multiset<Binding>> parentBindings = cloneBinding(bindingQueue.remove());
+//            int parentStateID = ss.getState(parentState);
+//
+//            for (int tranID : parentBindings.keySet()) {
+//
+//                Multiset<Binding> fireableBindings = parentBindings.get(tranID);
+//                for (Binding b : fireableBindings) {
+//                    markings = cloneMarking(parentState);
+//                    bindings = cloneBinding(parentBindings);
+//                    executeTransition(tranID, b);
+//
+//                    Integer childStateID = ss.getState(markings);
+//                    if (childStateID == null) {       /*  new stateSpace  */
+//                        childStateID = ss.addState(markings);
+//                        markingQueue.add(markings);
+//                        bindingQueue.add(bindings);
+//                    }
+//                    ss.addEdge(parentStateID, childStateID, tranID);
+//                }
+//            }
+//        }
+//    }
 
     JSONObject getGraphVizJson() {
         JSONObject obj = new JSONObject();

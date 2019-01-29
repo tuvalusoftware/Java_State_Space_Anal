@@ -498,7 +498,7 @@ public class PetriNet01 {
             nodeObj.put(key + "", key + "\\n" + s.toString());
         }
 
-        Map<Integer, Set<Integer>> edges = ss.getEdges();
+        Map<State, Set<State>> edges = ss.getEdges();
         for (int key : edges.keySet()) {
             arcObj.put(key + "", edges.get(key));
         }

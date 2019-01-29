@@ -55,46 +55,45 @@ class StateSpace {
 
     private long P;
     private int numState;
-    private Map<String, Integer> stateIDs;
     private Map<Integer, State> nodes = new HashMap<>();
-    private Map<Integer, Set<Integer>> edges = new HashMap<>();
-    private Map<Pair<Integer, Integer>, Integer> firedTransitions = new HashMap<>();  /* [src,dst] ~> arc data  */
+    private Map<State, Set<State>> edges = new HashMap<>();
+    private Map<Pair<State, State>, Transition> firedTransitions = new HashMap<>();  /* [src,dst] ~> arc data  */
 
     StateSpace(int numPlaces) {
         numState = 0;
-        stateIDs = new HashMap<>();
         P = numPlaces;
     }
 
-    int addState(Map<Integer, Multiset<Token>> s) {
+    void addState(State state) {
         numState += 1;
-        State state = new State(s);
-        System.out.println(String.format("New state: %s ~> %s", numState, state.toString()));
         nodes.put(numState, state);
-        stateIDs.put(state.toString(), numState);
-        return numState;
     }
 
-    Integer getState(Map<Integer, Multiset<Token>> s) {
+    State getState(State s) {
 
-        State state = new State(s);
-        return stateIDs.get(state.toString());
     }
 
-    void addEdge(int parentID, int childID, int firedTranID) {
-        if (edges.containsKey(parentID)) {
-            edges.get(parentID).add(childID);
+    boolean isNewState(State s) {
+        return edges.containsKey(s);
+    }
+
+    void addEdge(State parentState, State childState, Transition transition) {
+
+        if (edges.containsKey(parentState)) {
+            edges.get(parentState).add(childState);
         } else {
-            edges.put(parentID, new HashSet<>(childID));
+            Set<State> stateSet = new HashSet<State>();
+            stateSet.add(childState);
+            edges.put(parentState, stateSet);
         }
-        firedTransitions.put(new Pair<>(parentID, childID), firedTranID);
+        firedTransitions.put(new Pair<>(parentState, childState), transition);
     }
 
     Map<Integer, State> getNodes() {
         return nodes;
     }
 
-    Map<Integer, Set<Integer>> getEdges() {
+    Map<State, Set<State>> getEdges() {
         return edges;
     }
 
