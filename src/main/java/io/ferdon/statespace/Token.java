@@ -1,5 +1,6 @@
 package io.ferdon.statespace;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Token {
@@ -7,6 +8,14 @@ public class Token {
 
     Token() {
 
+    }
+
+    Token(String x) {
+        data = new ArrayList<>();
+        String[] rawData = x.split(",");
+        for (String a : rawData) {
+            data.add(a.trim());
+        }
     }
 
     Token(List<String> x) {

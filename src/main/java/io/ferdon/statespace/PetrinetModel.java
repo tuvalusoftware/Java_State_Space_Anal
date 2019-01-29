@@ -52,7 +52,7 @@ public class PetrinetModel {
 
     public PetrinetModel(int t, Map<String, String> placeToColor, Map<String, String> typeToColor,
                          Map<String, String> placeToType, int[][] outPlace, int[][] inPlace, String[] markings,
-                         String[] guards, Object[][][] expressions, Object [][][] variables) {
+                         String[] guards, Object[][][] expressions, Object[][][] variables) {
         T = t;
         this.placeToColor = placeToColor;
         this.typeToColor = typeToColor;
@@ -65,7 +65,7 @@ public class PetrinetModel {
         this.Variables = variables;
     }
 
-    public PetrinetModel(){
+    public PetrinetModel() {
 
     }
 
@@ -106,7 +106,7 @@ public class PetrinetModel {
     }
 
     public Map<String, String> getPlaceToColor() {
-        return  placeToColor;
+        return placeToColor;
     }
 
     public void setT(int t) {

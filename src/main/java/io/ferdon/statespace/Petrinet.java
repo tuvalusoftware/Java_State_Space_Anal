@@ -204,14 +204,95 @@ public class Petrinet implements Serializable {
 
     }
 
-    public void addPlace() {
-        Place place = new Place();
-        places.put(place.getID(), place);
+    public Petrinet(int T,
+                    Map<String, String> placeToColor,
+                    int[][] outPlace,
+                    int[][] inPlace,
+                    String[] markings,
+                    String[] guards,
+                    Object[][][] expressions,
+                    Object[][][] variables) {
+
+        this.numTransitions = T;
+        this.numPlaces = markings.length;
+        this.transitions = new HashMap<>();
+        this.places = new HashMap<>();
+
+        for (int i = 0; i < numTransitions; i++) addTransition(i);
+        for (int i = 0; i < numPlaces; i++) addPlace(i);
+
+        for (int i = 0; i < numTransitions; i++) transitions.get(i).addGuard(guards[i]);
+        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(markings[i]);
+
+        for (int tranID = 0; tranID < expressions.length; tranID++) {
+            for (int j = 0; j < expressions[tranID].length; j++) {
+
+                int outPlaceID = (Integer) expressions[tranID][j][0];
+                String exp = (String) expressions[tranID][j][1];
+
+                addExp(tranID, outPlaceID, exp);
+            }
+        }
+
+        for (int tranID = 0; tranID < variables.length; tranID++) {
+            for (int j = 0; j < variables[tranID].length; j++) {
+
+                int inPlaceID = (Integer) variables[tranID][j][0];
+                String vars = (String) variables[tranID][j][1];
+
+                addVars(inPlaceID, tranID, vars);
+            }
+        }
+
+        interpreter = new Interpreter();
+        initializeBindings();
     }
 
-    public void addTransition() {
-        Transition transition = new Transition();
-        transitions.put(transition.getID(), transition);
+    public Petrinet(PetrinetModel model) {
+        this.numTransitions = model.T;
+        this.numPlaces = model.Markings.length;
+        this.transitions = new HashMap<>();
+        this.places = new HashMap<>();
+
+        for (int i = 0; i < numTransitions; i++) addTransition(i);
+        for (int i = 0; i < numPlaces; i++) addPlace(i);
+
+        for (int i = 0; i < numTransitions; i++) transitions.get(i).addGuard(model.Guards[i]);
+        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(model.Guards[i]);
+
+        for (int tranID = 0; tranID < model.Expressions.length; tranID++) {
+            for (int j = 0; j < model.Expressions[tranID].length; j++) {
+
+                int outPlaceID = (Integer) model.Expressions[tranID][j][0];
+                String exp = (String) model.Expressions[tranID][j][1];
+
+                addExp(tranID, outPlaceID, exp);
+            }
+        }
+
+        for (int tranID = 0; tranID < model.Variables.length; tranID++) {
+            for (int j = 0; j < model.Variables[tranID].length; j++) {
+
+                int inPlaceID = (Integer) model.Variables[tranID][j][0];
+                String vars = (String) model.Variables[tranID][j][1];
+
+                addVars(inPlaceID, tranID, vars);
+            }
+        }
+
+        interpreter = new Interpreter();
+        initializeBindings();
+
+    }
+
+    public void addPlace(int placeID) {
+        Place place = new Place(placeID);
+        places.put(placeID, place);
+    }
+
+    public void addTransition(int transitionID) {
+        Transition transition = new Transition(transitionID);
+        transitions.put(transitionID, transition);
     }
 
     public void addVars(int placeID, int tranID, String varData) {
@@ -245,19 +326,19 @@ public class Petrinet implements Serializable {
     public State getCurrentState() {
 
         Map<Place, Marking> data = new HashMap<>();
-        for(Place place: places.values()) {
+        for (Place place : places.values()) {
             data.put(place, place.getMarking());
         }
 
         return new State(data);
     }
 
-    void initializeBinding() {
-        for(Transition transition: transitions.values()) {
+    void initializeBindings() {
+        for (Transition transition : transitions.values()) {
             List<Marking> markings = transition.getPlaceMarkings();
             List<Binding> newBindings = generateAllBinding(markings, transition);
 
-            for(Binding newBinding: newBindings) {
+            for (Binding newBinding : newBindings) {
                 if (!transition.isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
                 transition.addBinding(newBinding, 1);
             }
@@ -272,9 +353,6 @@ public class Petrinet implements Serializable {
         transition.execute(b, interpreter);
         return getCurrentState();
     }
-
-
-
 
 
     private int numTransitions;
@@ -312,45 +390,44 @@ public class Petrinet implements Serializable {
      *                     outTrans     map
      *                     inTrans      map
      */
-    public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
-                    String[] guards, Object[][][] expressions, Object[][][] variables) {
-
-        this.numTransitions = T;
-        this.placeColor = parsePlaceColorInput(placeToColor);
-        this.inPlaces = parsePlaceInput(inPlace);
-        this.outPlaces = parsePlaceInput(outPlace);
-        this.inTrans = parseTranInput(outPlaces);
-        this.outTrans = parseTranInput(inPlaces);
-        this.markings = parseMarkingInput(markings);
-        this.variables = parseEdgeInput(variables);
-        this.guards = parseGuardInput(guards);
-        this.expressions = parseEdgeInput(expressions);
-        this.interpreter = new Interpreter();
-        this.bindings = parseBindingInput();
-        this.numPlaces = this.markings.size();
-        this.ss = new StateSpace(numPlaces);
-        initializeBindinds();
-    }
-
-    public Petrinet(PetrinetModel model) {
-        this.numTransitions = model.T;
-        this.placeColor = parsePlaceColorInput(model.placeToColor);
-        this.inPlaces = parsePlaceInput(model.inPlace);
-        this.outPlaces = parsePlaceInput(model.outPlace);
-        this.inTrans = parseTranInput(outPlaces);
-        this.outTrans = parseTranInput(inPlaces);
-        this.markings = parseMarkingInput(model.Markings);
-        this.variables = parseEdgeInput(model.Variables);
-        this.guards = parseGuardInput(model.Guards);
-        this.expressions = parseEdgeInput(model.Expressions);
-        this.interpreter = new Interpreter();
-        this.bindings = parseBindingInput();
-        this.numPlaces = this.markings.size();
-        this.ss = new StateSpace(numPlaces);
-        initializeBindinds();
-
-    }
-
+//    public Petrinet(int T, Map<String, String> placeToColor, int[][] outPlace, int[][] inPlace, String[] markings,
+//                    String[] guards, Object[][][] expressions, Object[][][] variables) {
+//
+//        this.numTransitions = T;
+//        this.placeColor = parsePlaceColorInput(placeToColor);
+//        this.inPlaces = parsePlaceInput(inPlace);
+//        this.outPlaces = parsePlaceInput(outPlace);
+//        this.inTrans = parseTranInput(outPlaces);
+//        this.outTrans = parseTranInput(inPlaces);
+//        this.markings = parseMarkingInput(markings);
+//        this.variables = parseEdgeInput(variables);
+//        this.guards = parseGuardInput(guards);
+//        this.expressions = parseEdgeInput(expressions);
+//        this.interpreter = new Interpreter();
+//        this.bindings = parseBindingInput();
+//        this.numPlaces = this.markings.size();
+//        this.ss = new StateSpace(numPlaces);
+//        initializeBindinds();
+//    }
+//
+//    public Petrinet(PetrinetModel model) {
+//        this.numTransitions = model.T;
+//        this.placeColor = parsePlaceColorInput(model.placeToColor);
+//        this.inPlaces = parsePlaceInput(model.inPlace);
+//        this.outPlaces = parsePlaceInput(model.outPlace);
+//        this.inTrans = parseTranInput(outPlaces);
+//        this.outTrans = parseTranInput(inPlaces);
+//        this.markings = parseMarkingInput(model.Markings);
+//        this.variables = parseEdgeInput(model.Variables);
+//        this.guards = parseGuardInput(model.Guards);
+//        this.expressions = parseEdgeInput(model.Expressions);
+//        this.interpreter = new Interpreter();
+//        this.bindings = parseBindingInput();
+//        this.numPlaces = this.markings.size();
+//        this.ss = new StateSpace(numPlaces);
+//        initializeBindinds();
+//
+//    }
     private Map<Integer, String[]> parsePlaceColorInput(Map<String, String> placeToColor) {
 
         Map<Integer, String[]> result = new HashMap<>();
@@ -459,24 +536,24 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    private void initializeBindinds() {
-
-        /* reset marking for new bindings */
-
-        Map<Integer, Multiset<Token>> copiedMarking = cloneMarking(markings);
-        for (int placeID : markings.keySet()) {
-            markings.get(placeID).clear();
-        }
-
-        /* start adding token */
-
-        for (int placeID : copiedMarking.keySet()) {
-            Multiset<Token> tokens = copiedMarking.get(placeID);
-            for (Token token : tokens) {
-                addToken(placeID, token, tokens.count(token));
-            }
-        }
-    }
+//    private void initializeBindinds() {
+//
+//        /* reset marking for new bindings */
+//
+//        Map<Integer, Multiset<Token>> copiedMarking = cloneMarking(markings);
+//        for (int placeID : markings.keySet()) {
+//            markings.get(placeID).clear();
+//        }
+//
+//        /* start adding token */
+//
+//        for (int placeID : copiedMarking.keySet()) {
+//            Multiset<Token> tokens = copiedMarking.get(placeID);
+//            for (Token token : tokens) {
+//                addToken(placeID, token, tokens.count(token));
+//            }
+//        }
+//    }
 
     private Map<Integer, Multiset<Token>> cloneMarking(Map<Integer, Multiset<Token>> o) {
 

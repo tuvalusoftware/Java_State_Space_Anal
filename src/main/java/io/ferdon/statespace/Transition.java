@@ -20,13 +20,14 @@ public class Transition extends Node {
     private String guard;
     private Multiset<Binding> bindings;
 
-    Transition() {
+    Transition(int nodeID) {
+
+        super(nodeID);
+
         inPlaces = new ArrayList<>();
         inEdges = new HashMap<>();
-
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
-
         bindings = new HashMultiset<>();
     }
 

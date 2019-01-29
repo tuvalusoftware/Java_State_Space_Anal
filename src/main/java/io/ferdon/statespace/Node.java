@@ -13,24 +13,12 @@ package io.ferdon.statespace;
 import java.util.List;
 
 public class Node {
+
     protected int nodeID;
-    private NodeType type; // TODO: remove
     private Marking marking;
 
-
-    private List<Edge> inEdges;
-
-    Node() {
-
-    }
-
-    Node(int nodeID, NodeType type) {
+    Node(int nodeID) {
         this.nodeID = nodeID;
-        this.type = type;
-    }
-
-    Node(NodeType type) {
-        this.type = type;
     }
 
     public int getID() {

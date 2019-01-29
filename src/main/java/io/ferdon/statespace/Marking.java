@@ -10,6 +10,10 @@ public class Marking {
     private Place place;
     private Multiset<Token> data;
 
+    Marking() {
+        data = new HashMultiset<>();
+    }
+
     Marking(Token token) {
         data = new HashMultiset<>();
         data.add(token);

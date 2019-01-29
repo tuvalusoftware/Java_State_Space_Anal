@@ -1,5 +1,9 @@
 package io.ferdon.statespace;
 
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.TreeMultiset;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,15 +14,11 @@ import java.util.List;
 public class Place extends Node {
 
     private List<Transition> inTransition;
-
     private List<Transition> outTransition;
-
     private Marking marking;
-    static private int numPlaces = 0;
 
-    Place() {
-        numPlaces++;
-        this.nodeID = numPlaces;
+    Place(int nodeID) {
+        super(nodeID);
         inTransition = new ArrayList<>();
         outTransition = new ArrayList<>();
     }
@@ -37,6 +37,21 @@ public class Place extends Node {
 
     void addOutputTransition(Transition transition) {
         outTransition.add(transition);
+    }
+
+    public void setMarking(String s) {
+
+        marking = new Marking();
+        if (s.isEmpty()) return;
+
+        String[] e = s.split("]");
+        for (String t : e) {
+            int mulPos = t.indexOf('x');
+            int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos).replace(",", "").trim()) : 1;
+            String rawData = t.substring(t.indexOf('[') + 1);
+            Token token = new Token(rawData);
+            marking.addToken(token, num);
+        }
     }
 
     public Marking getMarking() {
