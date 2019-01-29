@@ -23,35 +23,35 @@ import io.ferdon.statespace.Petrinet.Token;
 
 class StateSpace {
 
-    class State {
-        Map<Integer, Multiset<Token>> state;
-
-        State(Map<Integer, Multiset<Token>> x) {
-            state = x;
-        }
-
-        Multiset<Token> get(int placeID) {
-            return state.get(placeID);
-        }
-
-        Set<Integer> getKeySet() {
-            return state.keySet();
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder s = new StringBuilder();
-            for (int i : state.keySet()) {
-                s.append(i);
-                s.append("->[");
-                for (Token token : state.get(i)) {
-                    s.append(token.toString());
-                }
-                s.append("]");
-            }
-            return s.toString();
-        }
-    }
+//    class State {
+//        Map<Integer, Multiset<Token>> state;
+//
+//        State(Map<Integer, Multiset<Token>> x) {
+//            state = x;
+//        }
+//
+//        Multiset<Token> get(int placeID) {
+//            return state.get(placeID);
+//        }
+//
+//        Set<Integer> getKeySet() {
+//            return state.keySet();
+//        }
+//
+//        @Override
+//        public String toString() {
+//            StringBuilder s = new StringBuilder();
+//            for (int i : state.keySet()) {
+//                s.append(i);
+//                s.append("->[");
+//                for (Token token : state.get(i)) {
+//                    s.append(token.toString());
+//                }
+//                s.append("]");
+//            }
+//            return s.toString();
+//        }
+//    }
 
     private long P;
     private int numState;

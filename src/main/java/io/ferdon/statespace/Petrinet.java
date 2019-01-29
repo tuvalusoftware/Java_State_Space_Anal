@@ -1,7 +1,6 @@
 package io.ferdon.statespace;
 
 import com.google.common.collect.*;
-import it.unimi.dsi.fastutil.Hash;
 import org.javatuples.Pair;
 import io.ferdon.statespace.StateSpace.State;
 import org.json.JSONObject;
@@ -9,6 +8,7 @@ import org.json.JSONObject;
 import java.io.*;
 import java.util.*;
 
+import static io.ferdon.statespace.Utils.generateAllBinding;
 import static io.ferdon.statespace.main.parseJson;
 
 public class Petrinet implements Serializable {
@@ -104,80 +104,178 @@ public class Petrinet implements Serializable {
      * Binding: map from placeID ~> Token
      * One binding (of a transition) contains the list of tokens
      */
-    class Binding implements Serializable {
-        private Map<Integer, Token> values = new HashMap<>();
+//    class Binding implements Serializable {
+//        private Map<Integer, Token> values = new HashMap<>();
+//
+//        Binding(Map<Integer, Token> bindInfo) {
+//            values = bindInfo;
+//        }
+//
+//        Binding(Binding b) {
+//            Map<Integer, Token> bValues = b.getValues();
+//            for (int placeID : bValues.keySet()) {
+//                values.put(placeID, new Token(bValues.get(placeID)));
+//            }
+//        }
+//
+//        Token getToken(int placeID) {
+//            return values.get(placeID);
+//        }
+//
+//        Map<Integer, Token> getValues() {
+//            return values;
+//        }
+//
+//        Map<String, String> getStringMapping(int tranID) {
+//            Map<String, String> vars = new HashMap<>();
+//
+//            for (int placeID : values.keySet()) {
+//                Token token = values.get(placeID);
+//                Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
+//                int valueIndex = 0;
+//
+////                System.out.println("var " + varKey);
+//                for (String varName : variables.get(varKey)) {
+//                    vars.put(varName, token.get(valueIndex));
+//                    valueIndex++;
+//                }
+//            }
+//
+//            return vars;
+//        }
+//
+//        @Override
+//        public int hashCode() {
+//            int result = 37;
+//            for (int tranID : values.keySet()) {
+//                result += 37 * values.get(tranID).hashCode();
+//            }
+////            System.out.println("test hashcode: " + values.toString() + " -> " + result);
+//            return result;
+//        }
+//
+//        @Override
+//        public boolean equals(Object obj) {
+//            Binding otherBinding = (Binding) obj;
+//            Map<Integer, Token> otherInfo = otherBinding.getValues();
+//
+//            for (int placeID : values.keySet()) {
+//                if (!otherInfo.containsKey(placeID)) return false;
+//                if (!otherInfo.get(placeID).equals(values.get(placeID))) return false;
+//            }
+//
+//            return true;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            String s = "";
+//            s += "\n------------------\n";
+//            for (int tranID : values.keySet()) {
+//                s += tranID + " ~~~> " + values.get(tranID);
+//                s += '\n';
+//            }
+//            return s;
+//        }
+//    }
 
-        Binding(Map<Integer, Token> bindInfo) {
-            values = bindInfo;
+
+    /* -------------------------- New implementation ------------------------ */
+
+    private int numPlaces;
+    private int numTransitions;
+
+    private Map<Integer, Place> places;
+    private Map<Integer, Transition> transitions;
+
+    private Map<Pair<Place, Transition>, Edge> vars;
+    private Map<Pair<Transition, Place>, Edge> exp;
+
+    private static Interpreter interpreter;
+
+    Petrinet() {
+        places = new HashMap<>();
+        transitions = new HashMap<>();
+        vars = new HashMap<>();
+        exp = new HashMap<>();
+    }
+
+    Petrinet(String filename) {
+
+    }
+
+    public void addPlace() {
+        Place place = new Place();
+        places.put(place.getID(), place);
+    }
+
+    public void addTransition() {
+        Transition transition = new Transition();
+        transitions.put(transition.getID(), transition);
+    }
+
+    public void addVars(int placeID, int tranID, String varData) {
+
+        Place place = places.get(placeID);
+        Transition transition = transitions.get(tranID);
+        if (place == null || transition == null) return;
+
+        List<String> varTokens = Arrays.asList(varData.trim().split(","));
+        Edge edge = new Edge(place, transition, varTokens);
+
+        places.get(placeID).addOutputTransition(transition);
+        transitions.get(tranID).addInputPlace(place, edge);
+        vars.put(new Pair<>(place, transition), edge);
+    }
+
+    public void addExp(int tranID, int placeID, String varData) {
+
+        Place place = places.get(placeID);
+        Transition transition = transitions.get(tranID);
+
+        if (place == null || transition == null) return;
+        List<String> varTokens = Arrays.asList(varData.trim().split(","));
+
+        Edge edge = new Edge(transition, place, varTokens);
+        transitions.get(tranID).addOutputPlace(place, edge);
+        places.get(placeID).addInputTransition(transition);
+        exp.put(new Pair<>(transition, place), edge);
+    }
+
+    public State getCurrentState() {
+
+        Map<Place, Marking> data = new HashMap<>();
+        for(Place place: places.values()) {
+            data.put(place, place.getMarking());
         }
 
-        Binding(Binding b) {
-            Map<Integer, Token> bValues = b.getValues();
-            for (int placeID : bValues.keySet()) {
-                values.put(placeID, new Token(bValues.get(placeID)));
+        return new State(data);
+    }
+
+    void initializeBinding() {
+        for(Transition transition: transitions.values()) {
+            List<Marking> markings = transition.getPlaceMarkings();
+            List<Binding> newBindings = generateAllBinding(markings, transition);
+
+            for(Binding newBinding: newBindings) {
+                if (!transition.isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
+                transition.addBinding(newBinding, 1);
             }
-        }
-
-        Token getToken(int placeID) {
-            return values.get(placeID);
-        }
-
-        Map<Integer, Token> getValues() {
-            return values;
-        }
-
-        Map<String, String> getStringMapping(int tranID) {
-            Map<String, String> vars = new HashMap<>();
-
-            for (int placeID : values.keySet()) {
-                Token token = values.get(placeID);
-                Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
-                int valueIndex = 0;
-
-//                System.out.println("var " + varKey);
-                for (String varName : variables.get(varKey)) {
-                    vars.put(varName, token.get(valueIndex));
-                    valueIndex++;
-                }
-            }
-
-            return vars;
-        }
-
-        @Override
-        public int hashCode() {
-            int result = 37;
-            for (int tranID : values.keySet()) {
-                result += 37 * values.get(tranID).hashCode();
-            }
-//            System.out.println("test hashcode: " + values.toString() + " -> " + result);
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            Binding otherBinding = (Binding) obj;
-            Map<Integer, Token> otherInfo = otherBinding.getValues();
-
-            for (int placeID : values.keySet()) {
-                if (!otherInfo.containsKey(placeID)) return false;
-                if (!otherInfo.get(placeID).equals(values.get(placeID))) return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public String toString() {
-            String s = "";
-            s += "\n------------------\n";
-            for (int tranID : values.keySet()) {
-                s += tranID + " ~~~> " + values.get(tranID);
-                s += '\n';
-            }
-            return s;
         }
     }
+
+    public StateSpace generateStateSpace(State currentState) {
+
+    }
+
+    public State execute(Transition transition, Binding b) {
+        transition.execute(b, interpreter);
+        return getCurrentState();
+    }
+
+
+
+
 
     private int numTransitions;
     private int numPlaces;
