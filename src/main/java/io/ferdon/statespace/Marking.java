@@ -10,8 +10,14 @@ public class Marking {
     private Place place;
     private Multiset<Token> data;
 
-    Marking() {
-        data = new HashMultiset<>();
+    Marking(Place place) {
+        this.data = new HashMultiset<>();
+        this.place = place;
+    }
+
+    Marking(Place place, Multiset<Token> data) {
+        this.place = place;
+        this.data = data;
     }
 
     Marking(Token token) {
@@ -20,11 +26,7 @@ public class Marking {
     }
 
     List<Token> getTokenList() {
-        List<Token> result = new ArrayList<>();
-        for(Token token: data) {
-            result.add(token);
-        }
-        return result;
+        return new ArrayList<>(data);
     }
 
     Place getPlace() {
@@ -37,5 +39,12 @@ public class Marking {
 
     void addToken(Token token, int num) {
         data.add(token, num);
+    }
+
+    Marking deepCopy() {
+        Multiset<Token> clonedData = HashMultiset.create();
+        clonedData.addAll(data);
+
+        return new Marking(place, clonedData);
     }
 }

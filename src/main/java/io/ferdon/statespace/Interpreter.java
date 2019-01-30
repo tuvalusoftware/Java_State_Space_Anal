@@ -19,7 +19,7 @@ class Interpreter implements Serializable {
         AND, NOT, OR, XOR, ISTRUE, ISFALSE,
         EQ, NEQ, GT, GTE, LT, LTE,
         SUBSTR, APPEND, ISEMPTY, TRIM,
-        IF
+        IF, IFELSE
     }
 
     interface Value {
@@ -424,6 +424,7 @@ class Interpreter implements Serializable {
         operators.put("<", OperationType.LT);
         operators.put("<=", OperationType.LTE);
         operators.put("if", OperationType.IF);
+        operators.put("ifelse", OperationType.IFELSE);
     }
 
 
@@ -598,13 +599,21 @@ class Interpreter implements Serializable {
                 valueStack.push(arg2.isLessOrEqual(arg1));
                 break;
             }
-            case IF: {
+            case IFELSE: {
                 Value arg1 = (Value) valueStack.pop();
                 Value arg2 = (Value) valueStack.pop();
                 BooleanExpression arg3 = (BooleanExpression) valueStack.pop();
                 if (arg3.isTrue().getBoolean()) {
                     valueStack.push(arg2);
                 } else {
+                    valueStack.push(arg1);
+                }
+                break;
+            }
+            case IF: {
+                Value arg1 = (Value) valueStack.pop();
+                BooleanExpression arg2 = (BooleanExpression) valueStack.pop();
+                if (arg2.isTrue().getBoolean()) {
                     valueStack.push(arg1);
                 }
                 break;

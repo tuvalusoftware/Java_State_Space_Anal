@@ -10,6 +10,7 @@
 
 package io.ferdon.statespace;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class State extends Node {
@@ -17,5 +18,19 @@ public class State extends Node {
 
     State(Map<Place, Marking> data) {
         markingMap = data;
+    }
+
+    int getNumPlaces() {
+        return markingMap.size();
+    }
+
+    State deepCopy() {
+
+        Map<Place, Marking> clonedData = new HashMap<>();
+        for(Place place: markingMap.keySet()) {
+            clonedData.put(place, markingMap.get(place).deepCopy());
+        }
+
+        return new State(clonedData);
     }
 }

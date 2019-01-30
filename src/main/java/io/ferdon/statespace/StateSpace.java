@@ -53,15 +53,13 @@ class StateSpace {
 //        }
 //    }
 
-    private long P;
     private int numState;
     private Map<Integer, State> nodes = new HashMap<>();
     private Map<State, Set<State>> edges = new HashMap<>();
     private Map<Pair<State, State>, Transition> firedTransitions = new HashMap<>();  /* [src,dst] ~> arc data  */
 
-    StateSpace(int numPlaces) {
+    StateSpace() {
         numState = 0;
-        P = numPlaces;
     }
 
     void addState(State state) {

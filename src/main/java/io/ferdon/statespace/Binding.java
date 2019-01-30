@@ -9,6 +9,11 @@ public class Binding {
     private Map<Place, Token> data;
     private Transition transition;
 
+    Binding() {
+        this.data = new HashMap<>();
+        this.transition = null;
+    }
+
     Binding(Transition transition) {
         this.data = new HashMap<>();
         this.transition = transition;

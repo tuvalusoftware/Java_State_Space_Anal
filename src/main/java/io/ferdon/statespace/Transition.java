@@ -46,6 +46,7 @@ public class Transition extends Node {
     }
 
     List<String> getVars(Place place) {
+        if (!inEdges.containsKey(place)) return new ArrayList<>();
         return inEdges.get(place).getData();
     }
 
@@ -120,12 +121,10 @@ public class Transition extends Node {
 
         Map<String, String> varMapping = b.getVarMapping();
         if (varMapping == null) return;
-        if (!isPassGuard(varMapping, interpreter)) return;
+        if (!isPassGuard(b.getVarMapping(), interpreter)) return;
 
         for(Place place: inPlaces) {
             place.removeToken(b.getToken(place), 1);
-
-            /* remove out-of-dated binding because one token is removed */
 
             List<Marking> markings = getPartialPlaceMarkings(place);
             markings.add(new Marking(b.getToken(place)));
@@ -140,14 +139,16 @@ public class Transition extends Node {
             Token newToken = runExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, 1);
 
-            /* add new bindings because one token is added to place in each outNode */
-
             List<Marking> markings = getPartialPlaceMarkings(place);
             markings.add(new Marking(b.getToken(place)));
             List<Binding> newBindings = generateAllBinding(markings, this);
 
+            if (inPlaces.size() == 0) {  /* add empty binding for transition without input place */
+                newBindings.add(new Binding());
+            }
+
             for(Binding newBinding: newBindings) {
-                if (!isPassGuard(varMapping, interpreter)) continue;
+                if (!isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
                 addBinding(newBinding, 1);
             }
         }
