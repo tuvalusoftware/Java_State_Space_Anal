@@ -3,15 +3,16 @@ package io.ferdon.statespace;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Marking {
+public class Marking implements Serializable {
     private Multiset<Token> data;
     private Place place;
 
     Marking(Place place) {
-        this.data = new HashMultiset<>();
+        this.data = HashMultiset.create();
         this.place = place;
     }
 
@@ -20,9 +21,10 @@ public class Marking {
         this.place = place;
     }
 
-    Marking(Token token) {
-        data = new HashMultiset<>();
-        data.add(token);
+    Marking(Place place, Token token) {
+        this.data = HashMultiset.create();
+        this.data.add(token);
+        this.place = place;
     }
 
     boolean containToken(Token token) {
@@ -49,11 +51,17 @@ public class Marking {
         data.add(token, num);
     }
 
-    Marking deepCopy() {
-        Multiset<Token> clonedData = HashMultiset.create();
-        clonedData.addAll(data);
+    Marking deepCopy() throws IOException, ClassNotFoundException {
 
-        return new Marking(clonedData, place);
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        new ObjectOutputStream(os).writeObject(data);
+        byte[] buf = os.toByteArray();
+
+        ByteArrayInputStream is = new ByteArrayInputStream(buf);
+        Object clonedData = new ObjectInputStream(is).readObject();
+
+        return new Marking((Multiset<Token>) clonedData, place);
+
     }
 
     @Override
@@ -61,7 +69,7 @@ public class Marking {
         Marking otherMarking = (Marking) obj;
 
         if (!place.equals(otherMarking.getPlace())) return false;
-        for(Token token: data) {
+        for (Token token : data) {
             if (!otherMarking.containToken(token)) return false;
         }
 
@@ -71,11 +79,11 @@ public class Marking {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for(Token token: data) {
+        for (Token token : data) {
             s.append(token.toString());
-            s.append(',');
+            s.append(",");
         }
 
-        return s.substring(0, s.length() - 1);
+        return (s.toString().isEmpty()) ? s.toString() : s.substring(0, s.length() - 1);
     }
 }

@@ -1,10 +1,11 @@
 package io.ferdon.statespace;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Binding {
+public class Binding implements Serializable {
 
     private Map<Place, Token> data;
     private Transition transition;
@@ -35,7 +36,7 @@ public class Binding {
 
             /* the order of varNames is the same the order of String inside Token */
             List<String> varNames = transition.getVars(place);
-            for (int varIndex = 0; varIndex < token.size(); varIndex++) {
+            for (int varIndex = 0; varIndex < varNames.size(); varIndex++) {
 
                 String varname = varNames.get(varIndex);
                 String tokenValue = token.get(varIndex);

@@ -48,7 +48,7 @@ public class main {
                     print(arcParquet);
                     print(graphVizOutput);
                     try {
-                        net.generateStateSpace(net.getCurrentState());
+                        net.generateStateSpace(net.generateCurrentState(), false);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

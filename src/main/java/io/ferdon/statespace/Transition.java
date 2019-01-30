@@ -28,7 +28,7 @@ public class Transition extends Node {
         inEdges = new HashMap<>();
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
-        bindings = new HashMultiset<>();
+        bindings = HashMultiset.create();
     }
 
     int[] getInPlaceArray() {
@@ -121,6 +121,10 @@ public class Transition extends Node {
         return token;
     }
 
+    List<Binding> getFireableBinding() {
+        return new ArrayList<>(bindings);
+    }
+
     Binding getFireableBinding(int seed) {
         seed = seed % bindings.size();
         int cnt = 0;
@@ -133,17 +137,19 @@ public class Transition extends Node {
         return null;
     }
 
-    void execute(Binding b, Interpreter interpreter) {
+    void execute(Binding b, Interpreter interpreter, boolean maintainBindings) {
 
         Map<String, String> varMapping = b.getVarMapping();
         if (varMapping == null) return;
         if (!isPassGuard(b.getVarMapping(), interpreter)) return;
 
         for(Place place: inPlaces) {
+
             place.removeToken(b.getToken(place), 1);
+            if (!maintainBindings) continue;
 
             List<Marking> markings = getPartialPlaceMarkings(place);
-            markings.add(new Marking(b.getToken(place)));
+            markings.add(new Marking(place, b.getToken(place)));
             List<Binding> oldBindings = generateAllBinding(markings, this);
 
             for(Binding oldBinding: oldBindings) {
@@ -152,11 +158,13 @@ public class Transition extends Node {
         }
 
         for(Place place: outPlaces) {
+
             Token newToken = runExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, 1);
+            if (!maintainBindings) continue;
 
             List<Marking> markings = getPartialPlaceMarkings(place);
-            markings.add(new Marking(b.getToken(place)));
+            markings.add(new Marking(place, newToken));
             List<Binding> newBindings = generateAllBinding(markings, this);
 
             if (inPlaces.size() == 0) {  /* add empty binding for transition without input place */

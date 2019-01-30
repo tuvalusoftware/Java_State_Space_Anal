@@ -1,15 +1,7 @@
 package io.ferdon.statespace;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.TreeMultiset;
-
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * Should we split Place, Transition instead of Node
- */
 
 public class Place extends Node {
 
@@ -39,9 +31,9 @@ public class Place extends Node {
         outTransition.add(transition);
     }
 
-    public void setMarking(Place place, String s) {
+    public void setMarking(String s) {  /* TODO: need to read unit token */
 
-        marking = new Marking(place);
+        marking = new Marking(this);
         if (s.isEmpty()) return;
 
         String[] e = s.split("]");
@@ -68,5 +60,10 @@ public class Place extends Node {
 
     void addToken(Token token, int num) {
         marking.addToken(token, num);
+    }
+
+    @Override
+    public String toString() {
+        return "Place" + getID();
     }
 }

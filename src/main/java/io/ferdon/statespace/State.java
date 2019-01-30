@@ -10,8 +10,6 @@
 
 package io.ferdon.statespace;
 
-import sun.jvm.hotspot.oops.Mark;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -19,16 +17,14 @@ import java.util.Set;
 public class State extends Node {
     private Map<Place, Marking> markingMap;
 
-    State(int stateID, State state) {
+    State(int stateID) {
         super(stateID);
         markingMap = new HashMap<>();
-        for(Place place: state.getPlaceSet()) {
-            markingMap.put(place, state.getMarking(place).deepCopy());
-        }
     }
 
-    int getNumPlaces() {
-        return markingMap.size();
+    State(int stateID, Map<Place, Marking> data) {
+        super(stateID);
+        markingMap = data;
     }
 
     Marking getMarking(Place place) {
@@ -57,6 +53,21 @@ public class State extends Node {
         for (Place place: markingMap.keySet()) {
             result += 37 * place.hashCode() + markingMap.get(place).hashCode();
         }
+
         return result;
+    }
+
+    @Override
+    public String toString() {
+
+        StringBuilder s = new StringBuilder();
+        for(Place place: markingMap.keySet()) {
+            s.append(String.format("Place %s:", place.getID()));
+            s.append(" ~> ");
+            s.append(markingMap.get(place).toString());
+            s.append("\n");
+        }
+
+        return s.toString();
     }
 }

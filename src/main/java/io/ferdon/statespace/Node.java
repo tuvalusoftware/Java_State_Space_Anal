@@ -10,12 +10,12 @@
 
 package io.ferdon.statespace;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Node {
+public class Node implements Serializable {
 
     protected int nodeID;
-    private Marking marking;
 
     Node(int nodeID) {
         this.nodeID = nodeID;

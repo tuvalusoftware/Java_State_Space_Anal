@@ -1,6 +1,5 @@
 package io.ferdon.statespace;
 
-import com.google.common.collect.Multiset;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericArray;
 import org.apache.avro.generic.GenericData;
@@ -18,45 +17,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import io.ferdon.statespace.Petrinet.Token;
-
-
 class StateSpace {
-
-//    class State {
-//        Map<Integer, Multiset<Token>> state;
-//
-//        State(Map<Integer, Multiset<Token>> x) {
-//            state = x;
-//        }
-//
-//        Multiset<Token> get(int placeID) {
-//            return state.get(placeID);
-//        }
-//
-//        Set<Integer> getKeySet() {
-//            return state.keySet();
-//        }
-//
-//        @Override
-//        public String toString() {
-//            StringBuilder s = new StringBuilder();
-//            for (int i : state.keySet()) {
-//                s.append(i);
-//                s.append("->[");
-//                for (Token token : state.get(i)) {
-//                    s.append(token.toString());
-//                }
-//                s.append("]");
-//            }
-//            return s.toString();
-//        }
-//    }
 
     private int P;
     private int numState;
     private Map<Integer, State> nodes;
-    private Map<State, State> visitedState;
+    private List<State> visitedState;
     private Map<State, Set<State>> edges;
     private Map<Pair<State, State>, Transition> firedTransitions;  /* [src,dst] ~> arc data  */
 
@@ -64,22 +30,31 @@ class StateSpace {
         numState = 0;
         P = numPlaces;
         nodes = new HashMap<>();
-        visitedState = new HashMap<>();
+        visitedState = new ArrayList<>();
         edges = new HashMap<>();
         firedTransitions = new HashMap<>();
     }
 
-    State addState(State state) {
-        numState += 1;
-        State newState = new State(numState, state);
-        nodes.put(numState, newState);
-        visitedState.put(newState, newState);
-
-        return newState;
+    void addState(State newState) {
+        numState++;
+        nodes.put(newState.getID(), newState);
+        visitedState.add(newState);
     }
 
-    State getState(State s) {
-        return visitedState.get(s);
+    int getNextStateID() {
+        return numState + 1;
+    }
+
+    boolean containState(State state) {
+        for(State s: visitedState) {
+            if (s.equals(state)) return true;
+        }
+
+        return false;
+    }
+
+    int getNumState() {
+        return numState;
     }
 
     void addEdge(State parentState, State childState, Transition transition) {

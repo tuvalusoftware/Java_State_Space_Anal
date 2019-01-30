@@ -109,7 +109,7 @@ public class Petrinet implements Serializable {
 //        }
 //
 //        Binding(Binding b) {
-//            Map<Integer, Token> bValues = b.getValues();
+//            Map<Integer, Token> bValues = b.getData();
 //            for (int placeID : bValues.keySet()) {
 //                values.put(placeID, new Token(bValues.get(placeID)));
 //            }
@@ -119,7 +119,7 @@ public class Petrinet implements Serializable {
 //            return values.get(placeID);
 //        }
 //
-//        Map<Integer, Token> getValues() {
+//        Map<Integer, Token> getData() {
 //            return values;
 //        }
 //
@@ -154,7 +154,7 @@ public class Petrinet implements Serializable {
 //        @Override
 //        public boolean equals(Object obj) {
 //            Binding otherBinding = (Binding) obj;
-//            Map<Integer, Token> otherInfo = otherBinding.getValues();
+//            Map<Integer, Token> otherInfo = otherBinding.getData();
 //
 //            for (int placeID : values.keySet()) {
 //                if (!otherInfo.containsKey(placeID)) return false;
@@ -185,9 +185,7 @@ public class Petrinet implements Serializable {
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
 
-    private State currentState;
     private StateSpace stateSpace;
-
     private static Interpreter interpreter;
 
     public Petrinet(int T,
@@ -208,7 +206,7 @@ public class Petrinet implements Serializable {
         for (int i = 0; i < numPlaces; i++) addPlace(i);
 
         for (int i = 0; i < numTransitions; i++) transitions.get(i).addGuard(guards[i]);
-        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(places.get(i), markings[i]);
+        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(markings[i]);
 
         for (int tranID = 0; tranID < expressions.length; tranID++) {
             for (int j = 0; j < expressions[tranID].length; j++) {
@@ -230,6 +228,7 @@ public class Petrinet implements Serializable {
             }
         }
 
+        stateSpace = new StateSpace(numPlaces);
         interpreter = new Interpreter();
         initializeBindings();
     }
@@ -244,7 +243,7 @@ public class Petrinet implements Serializable {
         for (int i = 0; i < numPlaces; i++) addPlace(i);
 
         for (int i = 0; i < numTransitions; i++) transitions.get(i).addGuard(model.Guards[i]);
-        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(places.get(i), model.Guards[i]);
+        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(model.Markings[i]);
 
         for (int tranID = 0; tranID < model.Expressions.length; tranID++) {
             for (int j = 0; j < model.Expressions[tranID].length; j++) {
@@ -266,6 +265,7 @@ public class Petrinet implements Serializable {
             }
         }
 
+        stateSpace = new StateSpace(numPlaces);
         interpreter = new Interpreter();
         initializeBindings();
 
@@ -307,22 +307,27 @@ public class Petrinet implements Serializable {
         places.get(placeID).addInputTransition(transition);
     }
 
-    public State getCurrentState() {
-        return currentState;
+    public State generateCurrentState() throws IOException, ClassNotFoundException {
+        Map<Place, Marking> data = new HashMap<>();
+
+        for(Place place: places.values()) {
+            Marking marking = place.getMarking().deepCopy();
+            data.put(place, marking);
+        }
+
+        return new State(stateSpace.getNextStateID(), data);
     }
 
     public StateSpace getStateSpace() {
         return stateSpace;
     }
 
-    public void applyState(State state) {
-        Set<Place> placeSet = state.getPlaceSet();
+    public void applyState(State state) throws IOException, ClassNotFoundException {
 
-        for (Place place : placeSet) {
-            place.setMarking(state.getMarking(place));
+        for (Place place : places.values()) {
+            Marking marking = state.getMarking(place).deepCopy();
+            place.setMarking(marking);
         }
-
-        currentState = state;
     }
 
     void initializeBindings() {
@@ -337,7 +342,7 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public StateSpace generateStateSpace(State startState) {
+    public void generateStateSpace(State startState, boolean maintainBindings) throws ClassNotFoundException, IOException {
 
         Queue<State> stateQueue = new LinkedList<>();
         StateSpace ss = new StateSpace(this.numPlaces);
@@ -348,16 +353,17 @@ public class Petrinet implements Serializable {
             State parentState = stateQueue.remove();
             applyState(parentState);
 
+//            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
+
             for (Transition transition : transitions.values()) {
                 List<Marking> markings = transition.getPlaceMarkings();
-                List<Binding> newBindings = generateAllBinding(markings, transition);
+                List<Binding> newBindings = (!maintainBindings) ? generateAllBinding(markings, transition) : transition.getFireableBinding();
 
                 for (Binding b : newBindings) {
 
-                    State newState = execute(transition, b);
-                    State childState = ss.getState(newState);
-                    if (childState == null) {
-                        childState = ss.addState(newState);
+                    State childState = execute(transition, b, maintainBindings);
+                    if (!ss.containState(childState)) {
+                        ss.addState(childState);
                         stateQueue.add(childState);
                     }
                     ss.addEdge(parentState, childState, transition);
@@ -365,12 +371,12 @@ public class Petrinet implements Serializable {
             }
         }
 
-        return ss;
+        this.stateSpace = ss;
     }
 
-    public State execute(Transition transition, Binding b) {
-        transition.execute(b, interpreter);
-        return getCurrentState();
+    public State execute(Transition transition, Binding b, boolean maintainBindings) throws IOException, ClassNotFoundException  {
+        transition.execute(b, interpreter, maintainBindings);
+        return generateCurrentState();
     }
 
     JSONObject getGraphVizJson() {
@@ -411,13 +417,14 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ClassNotFoundException, IOException {
         String option = "analysis";
-        String petrinetInput = "/Users/thethongngu/Desktop/emptyInputPlace.json";
+        String petrinetInput = "/Users/thethongngu/Desktop/Guards.json";
 
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
 
-        net.generateStateSpace(net.getCurrentState());
+        net.generateStateSpace(net.generateCurrentState(), false);
+        System.out.println("Num state: " + net.stateSpace.getNumState());
     }
 }

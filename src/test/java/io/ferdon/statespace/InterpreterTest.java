@@ -529,21 +529,21 @@ public class InterpreterTest {
 
     @Test
     public void testExpressionWithIf01() throws UnsupportedOperationException {
-        expression = "1 1 == 3 2 if";
+        expression = "1 1 == 3 if";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(3, res.getInt());
     }
 
     @Test
     public void testExpressionWithIf02() throws UnsupportedOperationException {
-        expression = "2 1 1 + != 4 10 * 2 4 * if";
+        expression = "2 1 1 + != 4 10 * 2 4 * ifelse";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(8, res.getInt());
     }
 
     @Test
     public void testExpressionAll01() throws UnsupportedOperationException {
-        expression = "2 1 1 + != True a b && == || 4 10 * 'thong' if";
+        expression = "2 1 1 + != True a b && == || 4 10 * 'thong' ifelse";
         vars.put("a", "True");
         vars.put("b", "True");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
@@ -552,7 +552,7 @@ public class InterpreterTest {
 
     @Test
     public void testExpressionAll02() throws UnsupportedOperationException {
-        expression = "2.0 1 1 + != True a b && == && 4 10 * 'thong' if";
+        expression = "2.0 1 1 + != True a b && == && 4 10 * 'thong' ifelse";
         vars.put("a", "True");
         vars.put("b", "True");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
@@ -561,7 +561,7 @@ public class InterpreterTest {
 
     @Test
     public void testExpressionSyntaxError() throws UnsupportedOperationException {
-        expression = "2.0 1 1 + != Tr%ue a b && == && 4 10 * 'thong' if";
+        expression = "2.0 1 1 + != Tr%ue a b && == && 4 10 * 'thong' ifelse";
         vars.put("a", "True");
         vars.put("b", "True");
         thrown.expect(IllegalArgumentException.class);
