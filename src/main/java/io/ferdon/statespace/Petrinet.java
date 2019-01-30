@@ -1,8 +1,5 @@
 package io.ferdon.statespace;
 
-import com.google.common.collect.*;
-import org.javatuples.Pair;
-import io.ferdon.statespace.StateSpace.State;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -188,7 +185,9 @@ public class Petrinet implements Serializable {
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
 
+    private State currentState;
     private StateSpace stateSpace;
+
     private static Interpreter interpreter;
 
     public Petrinet(int T,
@@ -209,7 +208,7 @@ public class Petrinet implements Serializable {
         for (int i = 0; i < numPlaces; i++) addPlace(i);
 
         for (int i = 0; i < numTransitions; i++) transitions.get(i).addGuard(guards[i]);
-        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(markings[i]);
+        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(places.get(i), markings[i]);
 
         for (int tranID = 0; tranID < expressions.length; tranID++) {
             for (int j = 0; j < expressions[tranID].length; j++) {
@@ -245,7 +244,7 @@ public class Petrinet implements Serializable {
         for (int i = 0; i < numPlaces; i++) addPlace(i);
 
         for (int i = 0; i < numTransitions; i++) transitions.get(i).addGuard(model.Guards[i]);
-        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(model.Guards[i]);
+        for (int i = 0; i < numPlaces; i++) places.get(i).setMarking(places.get(i), model.Guards[i]);
 
         for (int tranID = 0; tranID < model.Expressions.length; tranID++) {
             for (int j = 0; j < model.Expressions[tranID].length; j++) {
@@ -309,13 +308,21 @@ public class Petrinet implements Serializable {
     }
 
     public State getCurrentState() {
+        return currentState;
+    }
 
-        Map<Place, Marking> data = new HashMap<>();
-        for (Place place : places.values()) {
-            data.put(place, place.getMarking());
+    public StateSpace getStateSpace() {
+        return stateSpace;
+    }
+
+    public void applyState(State state) {
+        Set<Place> placeSet = state.getPlaceSet();
+
+        for (Place place : placeSet) {
+            place.setMarking(state.getMarking(place));
         }
 
-        return new State(data);
+        currentState = state;
     }
 
     void initializeBindings() {
@@ -330,25 +337,27 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public StateSpace generateStateSpace(State currentState) {
+    public StateSpace generateStateSpace(State startState) {
 
         Queue<State> stateQueue = new LinkedList<>();
-        StateSpace ss = new StateSpace();
-        stateQueue.add(currentState);
-        ss.addState(currentState);
+        StateSpace ss = new StateSpace(this.numPlaces);
+        stateQueue.add(startState);
+        ss.addState(startState);
 
         while (!stateQueue.isEmpty()) {
-            State parentState = stateQueue.remove().deepCopy();
+            State parentState = stateQueue.remove();
+            applyState(parentState);
 
-            for(Transition transition: transitions.values()) {
+            for (Transition transition : transitions.values()) {
                 List<Marking> markings = transition.getPlaceMarkings();
                 List<Binding> newBindings = generateAllBinding(markings, transition);
 
-                for(Binding b: newBindings) {
+                for (Binding b : newBindings) {
 
-                    State childState = execute(transition, b);
-                    if (ss.isNewState(childState)) {
-                        ss.addState(childState);
+                    State newState = execute(transition, b);
+                    State childState = ss.getState(newState);
+                    if (childState == null) {
+                        childState = ss.addState(newState);
                         stateQueue.add(childState);
                     }
                     ss.addEdge(parentState, childState, transition);
@@ -369,35 +378,31 @@ public class Petrinet implements Serializable {
         JSONObject nodeObj = new JSONObject();
         JSONObject arcObj = new JSONObject();
 
-
         int[][] inputPlaces = new int[numTransitions][];
-        for (int tranID : inPlaces.keySet()) {
-            int[] places = inPlaces.get(tranID);
-            inputPlaces[tranID] = places;
-        }
-
         int[][] outputPlaces = new int[numTransitions][];
-        for (int tranID : inPlaces.keySet()) {
-            int[] places = inPlaces.get(tranID);
-            outputPlaces[tranID] = places;
+        for (Transition transition : transitions.values()) {
+            inputPlaces[transition.getID()] = transition.getInPlaceArray();
+            outputPlaces[transition.getID()] = transition.getOutPlaceArray();
         }
 
         obj.put("inPlaces", inputPlaces);
         obj.put("outPlaces", outputPlaces);
 
-        Map<Integer, State> nodes = ss.getNodes();
-        for (int key : nodes.keySet()) {
+        Map<Integer, State> nodes = stateSpace.getNodes();
+        for (State parentState : nodes.values()) {
+
             StringBuilder s = new StringBuilder();
-            for (int k : nodes.get(key).getKeySet()) {
-                s.append(nodes.get(key).get(k).size());
+            for (Place place : parentState.getPlaceSet()) {
+                Marking m = parentState.getMarking(place);
+                s.append(m.size());
                 s.append(", ");
             }
-            nodeObj.put(key + "", key + "\\n" + s.toString());
+            nodeObj.put(parentState.getID() + "", parentState.getID() + "\\n" + s.toString());
         }
 
-        Map<Integer, Set<Integer>> edges = ss.getEdges();
-        for (int key : edges.keySet()) {
-            arcObj.put(key + "", edges.get(key));
+        Map<State, Set<State>> edges = stateSpace.getEdges();
+        for (State parentState : edges.keySet()) {
+            arcObj.put(parentState.getID() + "", edges.get(parentState));
         }
 
         obj.put("nodes", nodeObj);
@@ -406,13 +411,13 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) {
         String option = "analysis";
         String petrinetInput = "/Users/thethongngu/Desktop/emptyInputPlace.json";
 
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
 
-        net.generateStateSpace();
+        net.generateStateSpace(net.getCurrentState());
     }
 }

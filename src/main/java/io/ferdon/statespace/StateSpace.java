@@ -53,26 +53,33 @@ class StateSpace {
 //        }
 //    }
 
+    private int P;
     private int numState;
-    private Map<Integer, State> nodes = new HashMap<>();
-    private Map<State, Set<State>> edges = new HashMap<>();
-    private Map<Pair<State, State>, Transition> firedTransitions = new HashMap<>();  /* [src,dst] ~> arc data  */
+    private Map<Integer, State> nodes;
+    private Map<State, State> visitedState;
+    private Map<State, Set<State>> edges;
+    private Map<Pair<State, State>, Transition> firedTransitions;  /* [src,dst] ~> arc data  */
 
-    StateSpace() {
+    StateSpace(int numPlaces) {
         numState = 0;
+        P = numPlaces;
+        nodes = new HashMap<>();
+        visitedState = new HashMap<>();
+        edges = new HashMap<>();
+        firedTransitions = new HashMap<>();
     }
 
-    void addState(State state) {
+    State addState(State state) {
         numState += 1;
-        nodes.put(numState, state);
+        State newState = new State(numState, state);
+        nodes.put(numState, newState);
+        visitedState.put(newState, newState);
+
+        return newState;
     }
 
     State getState(State s) {
-
-    }
-
-    boolean isNewState(State s) {
-        return edges.containsKey(s);
+        return visitedState.get(s);
     }
 
     void addEdge(State parentState, State childState, Transition transition) {
@@ -80,7 +87,7 @@ class StateSpace {
         if (edges.containsKey(parentState)) {
             edges.get(parentState).add(childState);
         } else {
-            Set<State> stateSet = new HashSet<State>();
+            Set<State> stateSet = new HashSet<>();
             stateSet.add(childState);
             edges.put(parentState, stateSet);
         }
@@ -95,37 +102,37 @@ class StateSpace {
         return edges;
     }
 
-    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath) {
-
-        List<Integer> path = new ArrayList<>();
-        for (int i : inPath) {
-            path.add(i);
-        }
-        path.add(start);
-
-        if (start == end) {
-            List<List<Integer>> temp = new ArrayList<>();
-            temp.add(path);
-            return temp;
-        }
-
-        if (!edges.containsKey(start)) {
-            List<List<Integer>> temp = new ArrayList<>();
-            return temp;
-        }
-
-        List<List<Integer>> result = new ArrayList<>();
-
-        for (int n : edges.get(start)) {
-            if (!path.contains(n)) {
-                List<List<Integer>> newPaths = allPathsBetween(n, end, path);
-                for (List<Integer> p : newPaths) {
-                    result.add(p);
-                }
-            }
-        }
-        return result;
-    }
+//    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath) {
+//
+//        List<Integer> path = new ArrayList<>();
+//        for (int i : inPath) {
+//            path.add(i);
+//        }
+//        path.add(start);
+//
+//        if (start == end) {
+//            List<List<Integer>> temp = new ArrayList<>();
+//            temp.add(path);
+//            return temp;
+//        }
+//
+//        if (!edges.containsKey(start)) {
+//            List<List<Integer>> temp = new ArrayList<>();
+//            return temp;
+//        }
+//
+//        List<List<Integer>> result = new ArrayList<>();
+//
+//        for (int n : edges.get(start)) {
+//            if (!path.contains(n)) {
+//                List<List<Integer>> newPaths = allPathsBetween(n, end, path);
+//                for (List<Integer> p : newPaths) {
+//                    result.add(p);
+//                }
+//            }
+//        }
+//        return result;
+//    }
 
     private static String getType(String ty) {
         String[] s = ty.split("_");
@@ -176,11 +183,12 @@ class StateSpace {
             record = new GenericData.Record(schema);
             File t = new File(outputFile);
             t.delete();
+
             ParquetWriter<GenericRecord> writer = parquetWriter(outputFile, schema);
-            for (Pair<Integer, Integer> edge : firedTransitions.keySet()) {
-                record.put("src", edge.getValue0());
-                record.put("dst", edge.getValue1());
-                record.put("transition", firedTransitions.get(edge));
+            for (Pair<State, State> edge : firedTransitions.keySet()) {
+                record.put("src", edge.getValue0().getID());
+                record.put("dst", edge.getValue1().getID());
+                record.put("transition", firedTransitions.get(edge).getID());
                 writer.write(record);
             }
             writer.close();
@@ -200,6 +208,7 @@ class StateSpace {
         GenericRecord token[] = new GenericRecord[(int) P];
         List<List<String>> colSet = new ArrayList<>();
         List<String> oneSet;
+
         try {
             for (int i = 0; i < P; ++i) {
                 listTokenSchema[i] = schema.getField("P" + i).schema();
@@ -217,42 +226,42 @@ class StateSpace {
 
             ParquetWriter<GenericRecord> writer = parquetWriter(outputFile, schema);
 
-            String content = new String();
-            for (int key : nodes.keySet()) {
-                for (int k = 0; k < P; ++k) {
-                    int m = nodes.get(key).get(k).size();
-                    if (getType(colSet.get(k).get(0)).equals("unit")) {
-                        listToken[k] = new GenericData.Array(1, listTokenSchema[k]);
-                        token[k] = new GenericData.Record(tokenSchema[k]);
-                        token[k].put("unit_0", m);
-                        listToken[k].add(0, token[k]);
+            for (State state : nodes.values()) {
+                for (Place place: state.getPlaceSet()) {
+                    int numTokens = place.getMarking().size();
+                    int placeID = place.getID();
+                    if (getType(colSet.get(placeID).get(0)).equals("unit")) {
+                        listToken[placeID] = new GenericData.Array(1, listTokenSchema[placeID]);
+                        token[placeID] = new GenericData.Record(tokenSchema[placeID]);
+                        token[placeID].put("unit_0", numTokens);
+                        listToken[placeID].add(0, token[placeID]);
                     } else {
-                        content = Arrays.toString(nodes.get(key).get(k).toArray());
-                        if (content.equals("[[]]"))
-                            continue;
+                        String content = place.getMarking().toString();
+                        if (content.equals("[[]]")) continue;
+
                         JSONObject object = new JSONObject("{\"listToken\":" + content + "}");
                         JSONArray array = object.getJSONArray("listToken");
-                        int h = 0;
-                        listToken[k] = new GenericData.Array(m, listTokenSchema[k]);
+
+                        int tokenID = 0;
+                        listToken[placeID] = new GenericData.Array(numTokens, listTokenSchema[placeID]);
                         for (Object element : array) {
 
-                            if (element.equals("[[]]"))
-                                continue;
+                            if (element.equals("[[]]"))  continue;
                             JSONObject subObj = new JSONObject("{\"Token\":" + element + "}");
                             JSONArray subArr = subObj.getJSONArray("Token");
-                            token[k] = new GenericData.Record(tokenSchema[k]);
+                            token[placeID] = new GenericData.Record(tokenSchema[placeID]);
 
-                            int n = colSet.get(k).size();
+                            int n = colSet.get(placeID).size();
                             for (int i = 0; i < n; ++i) {
-                                Object value = getValue(subArr.get(i).toString(), colSet.get(k).get(i));
-                                token[k].put(colSet.get(k).get(i), value);
+                                Object value = getValue(subArr.get(i).toString(), colSet.get(placeID).get(i));
+                                token[placeID].put(colSet.get(placeID).get(i), value);
                             }
-                            listToken[k].add(h, token[k]);
-                            h++;
+                            listToken[placeID].add(tokenID, token[placeID]);
+                            tokenID++;
                         }
                     }
-                    petriNet.put("id", key);
-                    petriNet.put("P" + k, listToken[k]);
+                    petriNet.put("id", state.getID());
+                    petriNet.put("P" + place, listToken[placeID]);
                 }
                 //  System.out.println(petriNet);
                 writer.write(petriNet);

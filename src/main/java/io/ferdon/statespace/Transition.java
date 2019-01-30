@@ -31,6 +31,22 @@ public class Transition extends Node {
         bindings = new HashMultiset<>();
     }
 
+    int[] getInPlaceArray() {
+        int[] inPlaceIDs = new int[inPlaces.size()];
+        for (int index = 0; index < inPlaceIDs.length; index++) {
+            inPlaceIDs[index] = inPlaces.get(index).getID();
+        }
+        return inPlaceIDs;
+    }
+
+    int[] getOutPlaceArray() {
+        int[] outPlaceIDs = new int[outPlaces.size()];
+        for (int index = 0; index < outPlaceIDs.length; index++) {
+            outPlaceIDs[index] = outPlaces.get(index).getID();
+        }
+        return outPlaceIDs;
+    }
+
     void addGuard(String guard) {
         this.guard = guard;
     }

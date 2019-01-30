@@ -48,7 +48,7 @@ public class main {
                     print(arcParquet);
                     print(graphVizOutput);
                     try {
-                        net.generateStateSpace();
+                        net.generateStateSpace(net.getCurrentState());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -100,8 +100,8 @@ public class main {
     }
 
     public static void exportGraphXParquet(Petrinet net, Schema nodeSchema, Schema arcSchema, String nodeParquet, String arcParquet) {
-        net.ss.parquetWriteNode(nodeSchema, nodeParquet);
-        net.ss.parquetWriteArc(arcSchema, arcParquet);
+        net.getStateSpace().parquetWriteNode(nodeSchema, nodeParquet);
+        net.getStateSpace().parquetWriteArc(arcSchema, arcParquet);
     }
 
     private static Object deSerialize(String s) throws IOException, ClassNotFoundException {

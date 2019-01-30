@@ -7,7 +7,7 @@ public class Token {
     private List<String> data;
 
     Token() {
-
+        data = new ArrayList<>();
     }
 
     Token(String x) {
@@ -16,10 +16,6 @@ public class Token {
         for (String a : rawData) {
             data.add(a.trim());
         }
-    }
-
-    Token(List<String> x) {
-        data = x;
     }
 
     int size() {
@@ -32,5 +28,16 @@ public class Token {
 
     void addData(String x) {
         data.add(x);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for(int i = 0; i < data.size(); i++) {
+            s.append(data.get(i));
+            if (i != data.size()) s.append(',');
+        }
+
+        return s.toString();
     }
 }

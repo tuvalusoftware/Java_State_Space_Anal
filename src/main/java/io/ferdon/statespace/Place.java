@@ -39,9 +39,9 @@ public class Place extends Node {
         outTransition.add(transition);
     }
 
-    public void setMarking(String s) {
+    public void setMarking(Place place, String s) {
 
-        marking = new Marking();
+        marking = new Marking(place);
         if (s.isEmpty()) return;
 
         String[] e = s.split("]");
@@ -52,6 +52,10 @@ public class Place extends Node {
             Token token = new Token(rawData);
             marking.addToken(token, num);
         }
+    }
+
+    public void setMarking(Marking marking) {
+        this.marking = marking;
     }
 
     public Marking getMarking() {
