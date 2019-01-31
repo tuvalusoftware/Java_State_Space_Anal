@@ -80,11 +80,15 @@ public class MarkingTest {
         assertEquals(marking01, marking02);
 
         Token token = new Token("1");
-        marking01.addToken(token, 1);
+        marking01.addToken(token, 2);
         assertNotEquals(marking01, marking02);
 
         Token otherToken = new Token("1");  /* same content, differnt object */
         marking02.addToken(otherToken, 1);
+        assertNotEquals(marking01, marking02);
+
+        Token otherToken1 = new Token("1");
+        marking02.addToken(otherToken1, 1);
         assertEquals(marking01, marking02);
     }
 }

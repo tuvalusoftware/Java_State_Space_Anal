@@ -13,6 +13,11 @@ public class Token implements Serializable {
     }
 
     Token(String x) {
+        if (x.equals("[]")) {
+            data = null;
+            return;
+        }
+
         data = new ArrayList<>();
         String[] rawData = x.split(",");
         for (String a : rawData) data.add(a.trim());
@@ -20,6 +25,10 @@ public class Token implements Serializable {
 
     int size() {
         return data.size();
+    }
+
+    boolean isUnit() {
+        return data == null;
     }
 
     String get(int index) {
@@ -36,6 +45,8 @@ public class Token implements Serializable {
 
     @Override
     public String toString() {
+        if (this.isUnit()) return "[]";
+
         StringBuilder s = new StringBuilder();
         for(int i = 0; i < data.size(); i++) {
             s.append(data.get(i));
@@ -64,6 +75,7 @@ public class Token implements Serializable {
     @Override
     public int hashCode() {
         StringBuilder t = new StringBuilder();
+        if (data == null) return 0;
         for (String x : data) {
             t.append(x);
             t.append('+');

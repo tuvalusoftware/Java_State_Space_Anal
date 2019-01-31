@@ -36,12 +36,15 @@ public class Place extends Node {
         marking = new Marking(this);
         if (s.isEmpty()) return;
 
-        String[] e = s.split("]");
+        String[] e = s.replace("]", "]@").split("@");
         for (String t : e) {
             int mulPos = t.indexOf('x');
             int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos).replace(",", "").trim()) : 1;
-            String rawData = t.substring(t.indexOf('[') + 1);
-            Token token = new Token(rawData);
+
+            String unitData = t.substring(t.indexOf('['));
+            Token token = (unitData.equals("[]")) ?
+                    new Token(unitData) :
+                    new Token(unitData.substring(unitData.indexOf('[') + 1, unitData.indexOf(']')));
             marking.addToken(token, num);
         }
     }

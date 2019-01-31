@@ -41,9 +41,8 @@ public class Petrinet01Test {
     }
 
     @Test
-    public void testGenerateStateSpace() throws IOException, ClassNotFoundException, Exception {
+    public void testGenerateStateSpace() throws Exception {
         net.generateStateSpace(net.generateCurrentState());
-
         assertEquals(10, net.getStateSpace().getNumState());
     }
 }

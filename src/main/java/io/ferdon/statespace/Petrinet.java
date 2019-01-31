@@ -197,7 +197,7 @@ public class Petrinet implements Serializable {
             State parentState = stateQueue.remove();
             applyState(parentState);
 
-//            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
+            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
 
             for (Transition transition : transitions.values()) {
                 List<Marking> markings = transition.getPlaceMarkings();
@@ -257,7 +257,9 @@ public class Petrinet implements Serializable {
 
         Map<State, Set<State>> edges = stateSpace.getEdges();
         for (State parentState : edges.keySet()) {
-            arcObj.put(parentState.getID() + "", edges.get(parentState));
+            Set<State> childSet = edges.get(parentState);
+            for(State childState: childSet)
+            arcObj.put(parentState.getID() + "", childState.getID());
         }
 
         obj.put("nodes", nodeObj);
@@ -266,15 +268,16 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, IOException, Exception {
+    public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String petrinetInput = "/Users/thethongngu/Desktop/simple.json";
+        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/PetrinetJson/cycle.json";
 
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
 
         net.generateStateSpace(net.generateCurrentState());
-        System.out.println("Num state: " + net.stateSpace.getNumState());
-
+        System.out.println("Num state: " + net.getStateSpace().getNumState());
+        JSONObject json = net.getGraphVizJson();
+        System.out.println(json);
     }
 }
