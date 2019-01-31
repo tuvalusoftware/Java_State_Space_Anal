@@ -705,7 +705,7 @@ class Interpreter implements Serializable {
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
-        Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
+        Interpreter.Value a = interpreter.interpretFromString("2 2 == 6 7 ifelse", vars);
         System.out.println(a.toString());
 
 //        Multiset<String> b = HashMultiset.create();

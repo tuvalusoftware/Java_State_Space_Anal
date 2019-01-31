@@ -108,6 +108,12 @@ class StateSpace {
 //        }
 //        return result;
 //    }
+    private List<Schema> placeSchema = new ArrayList<>(); // schema of list token of Place i-th.
+    private List<Schema> tokenSchema = new ArrayList<>(); // schema of token in listTokenace i-th.
+    private GenericRecord petriNet;
+    private List<GenericArray> listToken = new ArrayList<>();
+    private List<GenericRecord> token = new ArrayList<>();
+    private List<List<String>> colSet = new ArrayList<>();
 
     private static String getType(String ty) {
         String[] s = ty.split("_");
@@ -173,27 +179,47 @@ class StateSpace {
 
 
     }
+    /*init Schema */
+    private void initPlaceSchema(Schema schema) {
+        //System.out.println(P);
+        List<String> oneSet;
+        System.out.println(schema);
+        for (int i = 0; i < P; ++i) {
+            placeSchema.add(schema.getField("P" + i).schema());
+            tokenSchema.add(placeSchema.get(i).getElementType());
+            oneSet = new ArrayList<>();
+            for (Schema.Field color : tokenSchema.get(i).getFields()) {
+                oneSet.add(color.name());
+            }
+            colSet.add(oneSet);
+        }
+    }
+    private Schema getPlaceSchema(int placeID) {
+        return placeSchema.get(placeID);
+    }
+    private List<GenericArray> writeUnit(int placeID, int numTokens) {
+        GenericArray setToken = new GenericData.Array(1, getPlaceSchema(placeID));
+        listToken.set(placeID, setToken);
+        GenericRecord _token   = new GenericData.Record(tokenSchema.get(placeID));
+        token.set(placeID, _token);
+        token.get(placeID).put("unit_0", numTokens);
+        listToken.get(placeID).add(0, token.get(placeID));
+        return listToken;
+    }
 
+    String getColor(int placeID, int colorID) {
+        return colSet.get(placeID).get(colorID);
+    }
+
+    Boolean checkUnitPlace(int placeID) {
+        String type = getColor(placeID, 0);
+        return getType(type).equals("unit");
+    }
     /* write Node in parquet format */
     void parquetWriteNode(Schema schema, String outputFile) {
-        Schema listTokenSchema[] = new Schema[(int) P]; // schema of listTokenace = list of Token
-        Schema tokenSchema[] = new Schema[(int) P]; // schema of token in listTokenace i-th.
-        GenericRecord petriNet;
-        GenericArray listToken[] = new GenericData.Array[(int) P];
-        GenericRecord token[] = new GenericRecord[(int) P];
-        List<List<String>> colSet = new ArrayList<>();
-        List<String> oneSet;
 
+        initPlaceSchema(schema);
         try {
-            for (int i = 0; i < P; ++i) {
-                listTokenSchema[i] = schema.getField("P" + i).schema();
-                tokenSchema[i] = listTokenSchema[i].getElementType();
-                oneSet = new ArrayList<>();
-                for (Schema.Field color : tokenSchema[i].getFields()) {
-                    oneSet.add(color.name());
-                }
-                colSet.add(oneSet);
-            }
             petriNet = new GenericData.Record(schema);
             //System.out.println(schema);
             File t = new File(outputFile);
@@ -202,44 +228,15 @@ class StateSpace {
             ParquetWriter<GenericRecord> writer = parquetWriter(outputFile, schema);
 
             for (State state : nodes.values()) {
+                System.out.println(state.toString());
                 for (Place place: state.getPlaceSet()) {
                     int numTokens = place.getMarking().size();
                     int placeID = place.getID();
-                    if (getType(colSet.get(placeID).get(0)).equals("unit")) {
-                        listToken[placeID] = new GenericData.Array(1, listTokenSchema[placeID]);
-                        token[placeID] = new GenericData.Record(tokenSchema[placeID]);
-                        token[placeID].put("unit_0", numTokens);
-                        listToken[placeID].add(0, token[placeID]);
-                    } else {
-                        String content = place.getMarking().toString();
-                        if (content.equals("[[]]")) continue;
-
-                        JSONObject object = new JSONObject("{\"listToken\":" + content + "}");
-                        JSONArray array = object.getJSONArray("listToken");
-
-                        int tokenID = 0;
-                        listToken[placeID] = new GenericData.Array(numTokens, listTokenSchema[placeID]);
-                        for (Object element : array) {
-
-                            if (element.equals("[[]]"))  continue;
-                            JSONObject subObj = new JSONObject("{\"Token\":" + element + "}");
-                            JSONArray subArr = subObj.getJSONArray("Token");
-                            token[placeID] = new GenericData.Record(tokenSchema[placeID]);
-
-                            int n = colSet.get(placeID).size();
-                            for (int i = 0; i < n; ++i) {
-                                Object value = getValue(subArr.get(i).toString(), colSet.get(placeID).get(i));
-                                token[placeID].put(colSet.get(placeID).get(i), value);
-                            }
-                            listToken[placeID].add(tokenID, token[placeID]);
-                            tokenID++;
-                        }
-                    }
-                    petriNet.put("id", state.getID());
-                    petriNet.put("P" + place, listToken[placeID]);
+                    String context = place.getMarking().toString();
+                    System.out.println(context);
+                   // petriNet.put("id", state.getID());
                 }
-                //  System.out.println(petriNet);
-                writer.write(petriNet);
+//                writer.write(petriNet);
             }
 
             writer.close();

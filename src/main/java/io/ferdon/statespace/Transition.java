@@ -102,8 +102,8 @@ public class Transition extends Node {
 
     boolean isPassGuard(Map<String, String> varMappipng, Interpreter interpreter) {
         if (guard.isEmpty()) return true;
-
-        Interpreter.Value isPass = interpreter.interpretFromString(guard, varMappipng);
+        String postfixGuard = Utils.convertPostfix(guard);
+        Interpreter.Value isPass = interpreter.interpretFromString(postfixGuard, varMappipng);
         return isPass.getBoolean();
     }
 
@@ -114,7 +114,8 @@ public class Transition extends Node {
 
         for(String statement: expression) {
             if (statement.length() == 0) return null;
-            Interpreter.Value res = interpreter.interpretFromString(statement, varMapping);
+            String postfixStatement = Utils.convertPostfix(statement);
+            Interpreter.Value res = interpreter.interpretFromString(postfixStatement, varMapping);
             token.addData(res.getString());
         }
 

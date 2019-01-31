@@ -1,11 +1,13 @@
 package io.ferdon.statespace;
-
 import com.google.common.collect.Lists;
+import io.ferdon.statespace.gen.io.ferdon.statespace.*;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 final class Utils {
 
@@ -40,5 +42,16 @@ final class Utils {
         }
 
         return result;
+    }
+    static String convertPostfix(String infix) {
+        infix += "\n";
+        CharStream input = CharStreams.fromString(infix);
+        mlLexer lexer = new mlLexer(input);
+        CommonTokenStream token = new CommonTokenStream(lexer);
+        mlParser parser = new mlParser(token);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        MyListener listener = new MyListener();
+        walker.walk(listener, parser.prog());
+        return listener.postfix();
     }
 }
