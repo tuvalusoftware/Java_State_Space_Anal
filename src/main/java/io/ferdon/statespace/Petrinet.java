@@ -257,5 +257,6 @@ public class Petrinet implements Serializable {
 
         net.generateStateSpace(net.generateCurrentState(), false);
         System.out.println("Num state: " + net.stateSpace.getNumState());
+
     }
 }
