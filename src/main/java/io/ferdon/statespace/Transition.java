@@ -137,16 +137,54 @@ public class Transition extends Node {
         return null;
     }
 
-    void execute(Binding b, Interpreter interpreter, boolean maintainBindings) {
+    void executeWithID(int bindingID, Interpreter interpreter, boolean speedUp) {
+
+        if (speedUp) {
+            int cnt = 0;
+            bindingID = bindingID % bindings.size();
+
+            for(Binding b: bindings) {
+                cnt++;
+                if (cnt == bindingID) executeWithBinding(b, interpreter, true);
+            }
+            return;
+        }
+
+        List<Binding> fireableBindings = new ArrayList<>();
+        List<Marking> markings = getPlaceMarkings();
+        List<Binding> allBinding = generateAllBinding(markings, this);
+
+        for(Binding b: allBinding) {
+            Map<String, String> varMapping = b.getVarMapping();
+            if (varMapping == null) continue;
+            if (!isPassGuard(varMapping, interpreter)) continue;
+
+            fireableBindings.add(b);
+        }
+
+        executeWithBinding(fireableBindings.get(bindingID), interpreter, false);
+    }
+
+    void executeWithBinding(Binding b, Interpreter interpreter, boolean speedUp) {
+
+        /* maintainBindings is always false because the optimizing is not implemented
+         * You need to modify those functions to implement pre-generated bindings
+         *  generateStateSpace():
+         *      pick the pre-generated bindings list or call generateAllBinding() by maintainBindings (less computation)
+         *      use more Queue to store the bindings list of each state in state space (more memory)
+         *      applyBinding()
+         *  Binding class:
+         *      deepCopy()
+         */
 
         Map<String, String> varMapping = b.getVarMapping();
         if (varMapping == null) return;
-        if (!isPassGuard(b.getVarMapping(), interpreter)) return;
+        if (!isPassGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {
 
             place.removeToken(b.getToken(place), 1);
-            if (!maintainBindings) continue;
+            if (!speedUp) continue;
 
             List<Marking> markings = getPartialPlaceMarkings(place);
             markings.add(new Marking(place, b.getToken(place)));
@@ -161,7 +199,7 @@ public class Transition extends Node {
 
             Token newToken = runExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, 1);
-            if (!maintainBindings) continue;
+            if (!speedUp) continue;
 
             List<Marking> markings = getPartialPlaceMarkings(place);
             markings.add(new Marking(place, newToken));

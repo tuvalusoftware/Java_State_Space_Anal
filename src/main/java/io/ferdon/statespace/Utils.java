@@ -19,14 +19,6 @@ final class Utils {
             places.add(m.getPlace());
         }
 
-//        System.out.println("Transitinon: " + transition.getID());
-//        for(List<Token> tokens: tokenWrapper) {
-//            System.out.println("Marking: ");
-//            for(Token token: tokens) {
-//                System.out.println(token.toString());
-//            }
-//        }
-//        System.out.println("------------------------");
         List<List<Token>> rawBindings = Lists.cartesianProduct(tokenWrapper);
 
         List<Binding> result = new ArrayList<>();
