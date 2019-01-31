@@ -1,8 +1,5 @@
 package io.ferdon.statespace;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +15,7 @@ public class Transition extends Node {
     private Map<Place, Edge> outEdges;
 
     private String guard;
-    private Multiset<Binding> bindings;
+    private List<Binding> bindings;
 
     Transition(int nodeID) {
 
@@ -28,7 +25,7 @@ public class Transition extends Node {
         inEdges = new HashMap<>();
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
-        bindings = HashMultiset.create();
+        bindings = new ArrayList<>();
     }
 
     int[] getInPlaceArray() {
@@ -70,15 +67,15 @@ public class Transition extends Node {
         return outEdges.get(place).getData();
     }
 
-    void removeBinding(Binding b, int num) {
-        bindings.remove(b, num);
+    private void removeBinding(Binding b) {
+        bindings.remove(b);
     }
 
-    void addBinding(Binding b, int num) {
-        bindings.add(b, num);
+    void addBinding(Binding b) {
+        bindings.add(b);
     }
 
-    List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
+    private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
 
         List<Marking> result = new ArrayList<>();
         for(Place place : inPlaces) {
@@ -100,14 +97,14 @@ public class Transition extends Node {
         return result;
     }
 
-    boolean isPassGuard(Map<String, String> varMappipng, Interpreter interpreter) {
+    boolean stopByGuard(Map<String, String> varMappipng, Interpreter interpreter) {
         if (guard.isEmpty()) return true;
 
         Interpreter.Value isPass = interpreter.interpretFromString(guard, varMappipng);
-        return isPass.getBoolean();
+        return !isPass.getBoolean();
     }
 
-    Token runExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
+    private Token runExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
 
         Token token = new Token();
         String[] expression = getExpression(place).get(0).trim().split(",");
@@ -121,34 +118,8 @@ public class Transition extends Node {
         return token;
     }
 
-    List<Binding> getFireableBinding() {
-        return new ArrayList<>(bindings);
-    }
-
-    Binding getFireableBinding(int seed) {
-        seed = seed % bindings.size();
-        int cnt = 0;
-
-        for(Binding b: bindings) {
-            if (cnt == seed) return b;
-            cnt++;
-        }
-
-        return null;
-    }
-
-    void executeWithID(int bindingID, Interpreter interpreter, boolean speedUp) {
-
-        if (speedUp) {
-            int cnt = 0;
-            bindingID = bindingID % bindings.size();
-
-            for(Binding b: bindings) {
-                cnt++;
-                if (cnt == bindingID) executeWithBinding(b, interpreter, true);
-            }
-            return;
-        }
+    List<Binding> getFireableBinding(boolean speedUp, Interpreter interpreter) {
+        if (speedUp) return bindings;
 
         List<Binding> fireableBindings = new ArrayList<>();
         List<Marking> markings = getPlaceMarkings();
@@ -157,11 +128,29 @@ public class Transition extends Node {
         for(Binding b: allBinding) {
             Map<String, String> varMapping = b.getVarMapping();
             if (varMapping == null) continue;
-            if (!isPassGuard(varMapping, interpreter)) continue;
+            if (stopByGuard(varMapping, interpreter)) continue;
 
             fireableBindings.add(b);
         }
 
+        return fireableBindings;
+    }
+
+    void executeWithID(int bindingID, Interpreter interpreter, boolean speedUp) {
+
+        if (speedUp) {
+            bindingID = bindingID % bindings.size();
+            int cnt = 0;
+            for(Binding b: bindings) {
+                cnt++;
+                if (cnt == bindingID) executeWithBinding(b, interpreter, true);
+            }
+            return;
+        }
+
+        List<Binding> fireableBindings = getFireableBinding(speedUp, interpreter);
+
+        bindingID %= fireableBindings.size();
         executeWithBinding(fireableBindings.get(bindingID), interpreter, false);
     }
 
@@ -179,7 +168,7 @@ public class Transition extends Node {
 
         Map<String, String> varMapping = b.getVarMapping();
         if (varMapping == null) return;
-        if (!isPassGuard(varMapping, interpreter)) return;
+        if (stopByGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {
 
@@ -191,7 +180,7 @@ public class Transition extends Node {
             List<Binding> oldBindings = generateAllBinding(markings, this);
 
             for(Binding oldBinding: oldBindings) {
-                removeBinding(oldBinding, 1);
+                removeBinding(oldBinding);
             }
         }
 
@@ -210,8 +199,8 @@ public class Transition extends Node {
             }
 
             for(Binding newBinding: newBindings) {
-                if (!isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
-                addBinding(newBinding, 1);
+                if (stopByGuard(newBinding.getVarMapping(), interpreter)) continue;
+                addBinding(newBinding);
             }
         }
     }

@@ -105,6 +105,14 @@ public class Petrinet implements Serializable {
 
     }
 
+    public Place getPlace(int placeID) {
+        return places.get(placeID);
+    }
+
+    public Transition getTransition(int tranID) {
+        return transitions.get(tranID);
+    }
+
     public void addPlace(int placeID) {
         Place place = new Place(placeID);
         places.put(placeID, place);
@@ -170,16 +178,17 @@ public class Petrinet implements Serializable {
             List<Binding> newBindings = generateAllBinding(markings, transition);
 
             for (Binding newBinding : newBindings) {
-                if (!transition.isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
-                transition.addBinding(newBinding, 1);
+                if (!transition.stopByGuard(newBinding.getVarMapping(), interpreter)) continue;
+                transition.addBinding(newBinding);
             }
         }
     }
 
-    public void generateStateSpace(State startState) throws ClassNotFoundException, IOException {
+    public void generateStateSpace(State startState) throws ClassNotFoundException, IOException, Exception {
+
+        if (speedUp) throw new Exception("Not implemented");
 
         Queue<State> stateQueue = new LinkedList<>();
-
         StateSpace ss = new StateSpace(this.numPlaces);
         stateQueue.add(startState);
         ss.addState(startState);
@@ -257,7 +266,7 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, IOException {
+    public static void main(String[] args) throws ClassNotFoundException, IOException, Exception {
         String option = "analysis";
         String petrinetInput = "/Users/thethongngu/Desktop/simple.json";
 
