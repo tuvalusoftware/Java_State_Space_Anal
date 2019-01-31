@@ -1,8 +1,5 @@
 package io.ferdon.statespace;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +15,7 @@ public class Transition extends Node {
     private Map<Place, Edge> outEdges;
 
     private String guard;
-    private Multiset<Binding> bindings;
+    private List<Binding> bindings;
 
     Transition(int nodeID) {
 
@@ -28,7 +25,7 @@ public class Transition extends Node {
         inEdges = new HashMap<>();
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
-        bindings = HashMultiset.create();
+        bindings = new ArrayList<>();
     }
 
     int[] getInPlaceArray() {
@@ -70,15 +67,15 @@ public class Transition extends Node {
         return outEdges.get(place).getData();
     }
 
-    void removeBinding(Binding b, int num) {
-        bindings.remove(b, num);
+    private void removeBinding(Binding b) {
+        bindings.remove(b);
     }
 
-    void addBinding(Binding b, int num) {
-        bindings.add(b, num);
+    void addBinding(Binding b) {
+        bindings.add(b);
     }
 
-    List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
+    private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
 
         List<Marking> result = new ArrayList<>();
         for(Place place : inPlaces) {
@@ -100,14 +97,14 @@ public class Transition extends Node {
         return result;
     }
 
-    boolean isPassGuard(Map<String, String> varMappipng, Interpreter interpreter) {
-        if (guard.isEmpty()) return true;
+    boolean stopByGuard(Map<String, String> varMappipng, Interpreter interpreter) {
+        if (guard.isEmpty()) return false;
         String postfixGuard = Utils.convertPostfix(guard);
         Interpreter.Value isPass = interpreter.interpretFromString(postfixGuard, varMappipng);
-        return isPass.getBoolean();
+        return !isPass.getBoolean();
     }
 
-    Token runExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
+    private Token runExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
 
         Token token = new Token();
         String[] expression = getExpression(place).get(0).trim().split(",");
@@ -122,39 +119,69 @@ public class Transition extends Node {
         return token;
     }
 
-    List<Binding> getFireableBinding() {
-        return new ArrayList<>(bindings);
-    }
+    List<Binding> getFireableBinding(boolean speedUp, Interpreter interpreter) {
+        if (speedUp) return bindings;
 
-    Binding getFireableBinding(int seed) {
-        seed = seed % bindings.size();
-        int cnt = 0;
+        List<Binding> fireableBindings = new ArrayList<>();
+        List<Marking> markings = getPlaceMarkings();
+        List<Binding> allBinding = generateAllBinding(markings, this);
 
-        for(Binding b: bindings) {
-            if (cnt == seed) return b;
-            cnt++;
+        for(Binding b: allBinding) {
+            Map<String, String> varMapping = b.getVarMapping();
+            if (varMapping == null) continue;
+            if (stopByGuard(varMapping, interpreter)) continue;
+
+            fireableBindings.add(b);
         }
 
-        return null;
+        return fireableBindings;
     }
 
-    void execute(Binding b, Interpreter interpreter, boolean maintainBindings) {
+    void executeWithID(int bindingID, Interpreter interpreter, boolean speedUp) {
+
+        if (speedUp) {
+            bindingID = bindingID % bindings.size();
+            int cnt = 0;
+            for(Binding b: bindings) {
+                cnt++;
+                if (cnt == bindingID) executeWithBinding(b, interpreter, true);
+            }
+            return;
+        }
+
+        List<Binding> fireableBindings = getFireableBinding(speedUp, interpreter);
+
+        bindingID %= fireableBindings.size();
+        executeWithBinding(fireableBindings.get(bindingID), interpreter, false);
+    }
+
+    void executeWithBinding(Binding b, Interpreter interpreter, boolean speedUp) {
+
+        /* maintainBindings is always false because the optimizing is not implemented
+         * You need to modify those functions to implement pre-generated bindings
+         *  generateStateSpace():
+         *      pick the pre-generated bindings list or call generateAllBinding() by maintainBindings (less computation)
+         *      use more Queue to store the bindings list of each state in state space (more memory)
+         *      applyBinding()
+         *  Binding class:
+         *      deepCopy()
+         */
 
         Map<String, String> varMapping = b.getVarMapping();
         if (varMapping == null) return;
-        if (!isPassGuard(b.getVarMapping(), interpreter)) return;
+        if (stopByGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {
 
             place.removeToken(b.getToken(place), 1);
-            if (!maintainBindings) continue;
+            if (!speedUp) continue;
 
             List<Marking> markings = getPartialPlaceMarkings(place);
             markings.add(new Marking(place, b.getToken(place)));
             List<Binding> oldBindings = generateAllBinding(markings, this);
 
             for(Binding oldBinding: oldBindings) {
-                removeBinding(oldBinding, 1);
+                removeBinding(oldBinding);
             }
         }
 
@@ -162,7 +189,7 @@ public class Transition extends Node {
 
             Token newToken = runExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, 1);
-            if (!maintainBindings) continue;
+            if (!speedUp) continue;
 
             List<Marking> markings = getPartialPlaceMarkings(place);
             markings.add(new Marking(place, newToken));
@@ -173,8 +200,8 @@ public class Transition extends Node {
             }
 
             for(Binding newBinding: newBindings) {
-                if (!isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
-                addBinding(newBinding, 1);
+                if (stopByGuard(newBinding.getVarMapping(), interpreter)) continue;
+                addBinding(newBinding);
             }
         }
     }

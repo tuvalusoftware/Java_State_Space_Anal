@@ -10,177 +10,9 @@ import static io.ferdon.statespace.main.parseJson;
 
 public class Petrinet implements Serializable {
 
-    class Token implements Serializable, Comparable {
-        private List<String> values = new ArrayList<>();
-
-        Token(String x) {
-            String[] rawData = x.split(",");
-            for (String a : rawData) {
-                values.add(a.trim());
-            }
-        }
-
-        Token(List<String> x) {
-            values = x;
-        }
-
-        Token(String[] x) {
-            values.addAll(Arrays.asList(x));
-        }
-
-        Token(Token x) {
-            values.addAll(x.getValues());
-        }
-
-        String get(int index) {
-            return values.get(index);
-        }
-
-        List<String> getValues() {
-            return values;
-        }
-
-        int size() {
-            return values.size();
-        }
-
-        @Override
-        public int compareTo(Object o) {
-            Token otherToken = (Token) o;
-
-            if (values.size() != otherToken.size()) {
-                return (values.size() > otherToken.size()) ? 1 : -1;
-            }
-
-            for (int i = 0; i < values.size(); i++) {
-                if (values.get(i).equals(otherToken.get(i))) continue;
-                return (values.get(i).compareTo(otherToken.get(i)) > 0) ? 1 : -1;
-            }
-
-            return 0;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-
-            Token otherToken = (Token) obj;
-            List<String> otherValues = otherToken.getValues();
-
-            if (values.size() != otherValues.size()) return false;
-
-            for (int i = 0; i < values.size(); i++) {
-                if (!values.get(i).equals(otherValues.get(i))) return false;
-            }
-
-            return true;
-        }
-
-        @Override
-        public int hashCode() {
-            StringBuilder t = new StringBuilder();
-            for (String x : values) {
-                t.append(x);
-                t.append('+');
-            }
-//            System.out.println("test hashcode: " + t.toString() + " -> " + t.toString().hashCode());
-            return t.toString().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder t = new StringBuilder();
-            for (String x : values) {
-                t.append(x);
-                t.append('+');
-            }
-            return t.toString();
-        }
-    }
-
-    /**
-     * Binding: map from placeID ~> Token
-     * One binding (of a transition) contains the list of tokens
-     */
-//    class Binding implements Serializable {
-//        private Map<Integer, Token> values = new HashMap<>();
-//
-//        Binding(Map<Integer, Token> bindInfo) {
-//            values = bindInfo;
-//        }
-//
-//        Binding(Binding b) {
-//            Map<Integer, Token> bValues = b.getData();
-//            for (int placeID : bValues.keySet()) {
-//                values.put(placeID, new Token(bValues.get(placeID)));
-//            }
-//        }
-//
-//        Token getToken(int placeID) {
-//            return values.get(placeID);
-//        }
-//
-//        Map<Integer, Token> getData() {
-//            return values;
-//        }
-//
-//        Map<String, String> getStringMapping(int tranID) {
-//            Map<String, String> vars = new HashMap<>();
-//
-//            for (int placeID : values.keySet()) {
-//                Token token = values.get(placeID);
-//                Pair<Integer, Integer> varKey = new Pair<>(tranID, placeID);
-//                int valueIndex = 0;
-//
-////                System.out.println("var " + varKey);
-//                for (String varName : variables.get(varKey)) {
-//                    vars.put(varName, token.get(valueIndex));
-//                    valueIndex++;
-//                }
-//            }
-//
-//            return vars;
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            int result = 37;
-//            for (int tranID : values.keySet()) {
-//                result += 37 * values.get(tranID).hashCode();
-//            }
-////            System.out.println("test hashcode: " + values.toString() + " -> " + result);
-//            return result;
-//        }
-//
-//        @Override
-//        public boolean equals(Object obj) {
-//            Binding otherBinding = (Binding) obj;
-//            Map<Integer, Token> otherInfo = otherBinding.getData();
-//
-//            for (int placeID : values.keySet()) {
-//                if (!otherInfo.containsKey(placeID)) return false;
-//                if (!otherInfo.get(placeID).equals(values.get(placeID))) return false;
-//            }
-//
-//            return true;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            String s = "";
-//            s += "\n------------------\n";
-//            for (int tranID : values.keySet()) {
-//                s += tranID + " ~~~> " + values.get(tranID);
-//                s += '\n';
-//            }
-//            return s;
-//        }
-//    }
-
-
-    /* -------------------------- New implementation ------------------------ */
-
     private int numPlaces;
     private int numTransitions;
+    private boolean speedUp;
 
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
@@ -199,6 +31,7 @@ public class Petrinet implements Serializable {
 
         this.numTransitions = T;
         this.numPlaces = markings.length;
+        this.speedUp = false;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
 
@@ -230,12 +63,13 @@ public class Petrinet implements Serializable {
 
         stateSpace = new StateSpace(numPlaces);
         interpreter = new Interpreter();
-        initializeBindings();
+        if (speedUp) initializeBindings();
     }
 
     public Petrinet(PetrinetModel model) {
         this.numTransitions = model.T;
         this.numPlaces = model.Markings.length;
+        this.speedUp = false;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
 
@@ -267,8 +101,16 @@ public class Petrinet implements Serializable {
 
         stateSpace = new StateSpace(numPlaces);
         interpreter = new Interpreter();
-        initializeBindings();
+        if (speedUp) initializeBindings();
 
+    }
+
+    public Place getPlace(int placeID) {
+        return places.get(placeID);
+    }
+
+    public Transition getTransition(int tranID) {
+        return transitions.get(tranID);
     }
 
     public void addPlace(int placeID) {
@@ -336,13 +178,15 @@ public class Petrinet implements Serializable {
             List<Binding> newBindings = generateAllBinding(markings, transition);
 
             for (Binding newBinding : newBindings) {
-                if (!transition.isPassGuard(newBinding.getVarMapping(), interpreter)) continue;
-                transition.addBinding(newBinding, 1);
+                if (!transition.stopByGuard(newBinding.getVarMapping(), interpreter)) continue;
+                transition.addBinding(newBinding);
             }
         }
     }
 
-    public void generateStateSpace(State startState, boolean maintainBindings) throws ClassNotFoundException, IOException {
+    public void generateStateSpace(State startState) throws ClassNotFoundException, IOException, Exception {
+
+        if (speedUp) throw new Exception("Not implemented");
 
         Queue<State> stateQueue = new LinkedList<>();
         StateSpace ss = new StateSpace(this.numPlaces);
@@ -353,15 +197,15 @@ public class Petrinet implements Serializable {
             State parentState = stateQueue.remove();
             applyState(parentState);
 
-//            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
+            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
 
             for (Transition transition : transitions.values()) {
                 List<Marking> markings = transition.getPlaceMarkings();
-                List<Binding> newBindings = (!maintainBindings) ? generateAllBinding(markings, transition) : transition.getFireableBinding();
+                List<Binding> newBindings = generateAllBinding(markings, transition);
 
                 for (Binding b : newBindings) {
 
-                    State childState = execute(transition, b, maintainBindings);
+                    State childState = executeWithBinding(transition, b);
                     if (!ss.containState(childState)) {
                         ss.addState(childState);
                         stateQueue.add(childState);
@@ -374,8 +218,13 @@ public class Petrinet implements Serializable {
         this.stateSpace = ss;
     }
 
-    public State execute(Transition transition, Binding b, boolean maintainBindings) throws IOException, ClassNotFoundException  {
-        transition.execute(b, interpreter, maintainBindings);
+    public State executeWithBinding(Transition transition, Binding b) throws IOException, ClassNotFoundException  {
+        transition.executeWithBinding(b, interpreter, speedUp);
+        return generateCurrentState();
+    }
+
+    public State executeWithID(int tranID, int bindID) throws IOException, ClassNotFoundException  {
+        transitions.get(tranID).executeWithID(bindID, interpreter, speedUp);
         return generateCurrentState();
     }
 
@@ -408,7 +257,9 @@ public class Petrinet implements Serializable {
 
         Map<State, Set<State>> edges = stateSpace.getEdges();
         for (State parentState : edges.keySet()) {
-            arcObj.put(parentState.getID() + "", edges.get(parentState));
+            Set<State> childSet = edges.get(parentState);
+            for(State childState: childSet)
+            arcObj.put(parentState.getID() + "", childState.getID());
         }
 
         obj.put("nodes", nodeObj);
@@ -417,14 +268,16 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, IOException {
+    public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String petrinetInput = "/Users/thethongngu/Desktop/Guards.json";
+        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/PetrinetJson/cycle.json";
 
         PetrinetModel model = parseJson(petrinetInput);
         Petrinet net = new Petrinet(model);
 
-        net.generateStateSpace(net.generateCurrentState(), false);
-        System.out.println("Num state: " + net.stateSpace.getNumState());
+        net.generateStateSpace(net.generateCurrentState());
+        System.out.println("Num state: " + net.getStateSpace().getNumState());
+        JSONObject json = net.getGraphVizJson();
+        System.out.println(json);
     }
 }

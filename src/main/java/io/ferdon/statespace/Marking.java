@@ -31,6 +31,10 @@ public class Marking implements Serializable {
         return data.contains(token);
     }
 
+    int getNumToken(Token token) {
+        return data.count(token);
+    }
+
     Place getPlace() {
         return place;
     }
@@ -70,7 +74,7 @@ public class Marking implements Serializable {
 
         if (!place.equals(otherMarking.getPlace())) return false;
         for (Token token : data) {
-            if (!otherMarking.containToken(token)) return false;
+            if (otherMarking.getNumToken(token) != data.count(token)) return false;
         }
 
         return true;

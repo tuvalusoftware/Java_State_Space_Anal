@@ -1,5 +1,6 @@
 package io.ferdon.statespace;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.Serializable;
 import java.util.*;
@@ -456,7 +457,7 @@ class Interpreter implements Serializable {
             return ValueType.REAL;
         }
 
-        if (token.charAt(0) == '\'' && token.charAt(token.length() - 1) == '\'') {
+        if (token.equals("[]") || (token.charAt(0) == '\'' && token.charAt(token.length() - 1) == '\'')) {
             return ValueType.STRING;
         }
 

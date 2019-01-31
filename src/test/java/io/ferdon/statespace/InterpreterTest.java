@@ -11,10 +11,10 @@ import static org.junit.Assert.*;
 
 public class InterpreterTest {
 
-    Interpreter interpreter = new Interpreter();
-    Map<String, String> vars = new HashMap<>();
-    String expression;
-    double precision = 0.00001;
+    private Interpreter interpreter = new Interpreter();
+    private Map<String, String> vars = new HashMap<>();
+    private String expression;
+    private double precision = 0.00001;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();

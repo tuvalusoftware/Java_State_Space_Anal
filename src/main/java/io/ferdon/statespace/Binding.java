@@ -32,7 +32,9 @@ public class Binding implements Serializable {
         Map<String, String> vars = new HashMap<>();
 
         for (Place place : data.keySet()) {
+
             Token token = data.get(place);
+            if (token.isUnit()) continue;
 
             /* the order of varNames is the same the order of String inside Token */
             List<String> varNames = transition.getVars(place);
