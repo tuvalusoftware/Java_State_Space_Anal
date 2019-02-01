@@ -10,6 +10,8 @@
 
 package io.ferdon.statespace;
 
+import org.javatuples.Pair;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,15 +66,9 @@ public class Place extends Node {
 
         String[] e = s.replace("]", "]@").split("@");
         for (String t : e) {
-            int mulPos = t.indexOf('x');
-            int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos).replace(",", "").trim()) : 1;
-
-            String unitData = t.substring(t.indexOf('['));
-            Token token = (unitData.equals("[]")) ?
-                    new Token(unitData) :
-                    new Token(unitData.substring(unitData.indexOf('[') + 1, unitData.indexOf(']')));
-
-            marking.addToken(token, num);
+            Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(t);
+            Token token = new Token(tokenData.getValue0());
+            marking.addToken(token, tokenData.getValue1());
         }
     }
 

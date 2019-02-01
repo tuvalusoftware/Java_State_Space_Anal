@@ -9,6 +9,7 @@
 
 package io.ferdon.statespace;
 
+import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -137,8 +138,11 @@ public class Petrinet implements Serializable {
         Transition transition = transitions.get(tranID);
         if (place == null || transition == null) return;
 
-        List<String> varTokens = Arrays.asList(varData.trim().split(","));
-        Edge edge = new Edge(place, transition, varTokens);
+        Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(varData);
+        List<String> varTokens = tokenData.getValue0();
+        Integer numberToken = tokenData.getValue1();
+
+        Edge edge = new Edge(place, transition, varTokens, numberToken);
 
         places.get(placeID).addOutputTransition(transition);
         transitions.get(tranID).addInputPlace(place, edge);
@@ -150,9 +154,13 @@ public class Petrinet implements Serializable {
         Transition transition = transitions.get(tranID);
 
         if (place == null || transition == null) return;
-        List<String> varTokens = Arrays.asList(varData.trim().split(","));
+        Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(varData);
 
-        Edge edge = new Edge(transition, place, varTokens);
+        List<String> varTokens = tokenData.getValue0();
+        Integer numberToken = tokenData.getValue1();
+
+        Edge edge = new Edge(transition, place, varTokens, numberToken);
+
         transitions.get(tranID).addOutputPlace(place, edge);
         places.get(placeID).addInputTransition(transition);
     }

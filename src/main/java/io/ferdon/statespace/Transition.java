@@ -68,12 +68,19 @@ public class Transition extends Node {
     }
 
     List<String> getVars(Place place) {
-        if (!inEdges.containsKey(place)) return new ArrayList<>();
         return inEdges.get(place).getData();
     }
 
     List<String> getExpression(Place place) {
         return outEdges.get(place).getData();
+    }
+
+    int getVarNumber(Place place) {
+        return inEdges.get(place).getNumberData();
+    }
+
+    int getExpressionNumber(Place place) {
+        return outEdges.get(place).getNumberData();
     }
 
     private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
@@ -151,12 +158,12 @@ public class Transition extends Node {
         if (stopByGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {
-            place.removeToken(b.getToken(place), 1);
+            place.removeToken(b.getToken(place), getVarNumber(place));
         }
 
         for(Place place: outPlaces) {
             Token newToken = runExpression(varMapping, place, interpreter);
-            if (newToken != null) place.addToken(newToken, 1);
+            if (newToken != null) place.addToken(newToken, getExpressionNumber(place));
         }
     }
 }

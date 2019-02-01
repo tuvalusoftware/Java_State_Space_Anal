@@ -10,6 +10,7 @@
 package io.ferdon.statespace;
 
 import com.google.common.collect.Lists;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,5 +42,22 @@ final class Utils {
         }
 
         return result;
+    }
+
+    static Pair<List<String>, Integer> parseTokenWithNumber(String s) {
+
+        if (s.isEmpty()) return new Pair<>(null, 0);
+
+        int splitPos = s.indexOf('~');
+        String rawNumber = s.substring(9, splitPos).trim();
+        String[] rawToken = s.substring(splitPos + 1).replaceAll("/[\\[\\]]+/g", "").split(",");
+
+        List<String> tokenData = new ArrayList<>();
+        for(String t: rawToken) {
+            tokenData.add(t.trim());
+        }
+        int numToken = (rawNumber.isEmpty()) ? 1 : Integer.parseInt(rawNumber);
+
+        return new Pair<>(tokenData, numToken);
     }
 }

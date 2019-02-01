@@ -22,15 +22,8 @@ public class Token implements Serializable {
         data = new ArrayList<>();
     }
 
-    Token(String x) {
-        if (x.equals("[]")) {
-            data = null;
-            return;
-        }
-
-        data = new ArrayList<>();
-        String[] rawData = x.split(",");
-        for (String a : rawData) data.add(a.trim());
+    Token(List<String> x) {
+        data = x;
     }
 
     int size() {

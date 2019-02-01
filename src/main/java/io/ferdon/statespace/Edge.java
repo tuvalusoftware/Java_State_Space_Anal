@@ -15,15 +15,21 @@ import java.util.List;
 public class Edge {
     private Node inNode;
     private Node outNode;
-    private List<String> varData;
+    private List<String> tokenData;
+    private int numberData;
 
-    Edge(Node node1, Node node2, List<String> varData) {
+    Edge(Node node1, Node node2, List<String> tokenData, int numberData) {
         this.inNode = node1;
         this.outNode = node2;
-        this.varData = varData;
+        this.tokenData = tokenData;
+        this.numberData = numberData;
     }
 
     List<String> getData() {
-        return varData;
+        return tokenData;
+    }
+
+    int getNumberData() {
+        return numberData;
     }
 }
