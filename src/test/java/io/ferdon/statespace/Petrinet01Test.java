@@ -13,36 +13,37 @@ public class Petrinet01Test {
 
     private PetrinetModel model;
     private Petrinet net;
+    private Place place;
+    private Transition transition;
 
     @Before
     public void setUp() {
-        String filename = "/Users/thethongngu/Desktop/simple.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/cycle.json";
+        String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
     }
 
     @Test
-    public void testExecute() throws IOException, ClassNotFoundException {
-        State state = net.executeWithID(0, 0);
+    public void testPlaceTransitionSize() {
+        assertEquals(3, net.getNumPlaces());
+        assertEquals(3, net.getNumTransitions());
 
-        net.applyState(state);
-        state = net.executeWithID(0, 0);
-
-        Place place = net.getPlace(0);
-        List<Token> tokens = state.getMarking(place).getTokenList();
-        assertEquals(1, tokens.size());
-        assertEquals(new Token("3"), tokens.get(0));
-
-        place = net.getPlace(1);
-        tokens = state.getMarking(place).getTokenList();
-        assertEquals(2, tokens.size());
-        assertEquals(new Token("3"), tokens.get(0));
-        assertEquals(new Token("2"), tokens.get(1));
+        for (int i = 0; i < net.getNumPlaces(); i++) {
+            place = net.getPlace(i);
+            transition = net.getTransition(i);
+            assertEquals(1, place.getInTransition().size());
+            assertEquals(1, place.getOutTransition().size());
+            assertEquals(1, transition.getInPlaceArray().length);
+            assertEquals(1, transition.getOutPlaceArray().length);
+        }
     }
 
     @Test
-    public void testGenerateStateSpace() throws Exception {
-        net.generateStateSpace(net.generateCurrentState());
-        assertEquals(10, net.getStateSpace().getNumState());
+    public void testEdgeData() {
+
+        place = net.getPlace(0);
+        assertEquals(3, place.getMarking().size());
+
     }
 }

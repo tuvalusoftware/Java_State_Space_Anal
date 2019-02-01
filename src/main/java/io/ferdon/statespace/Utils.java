@@ -49,15 +49,14 @@ final class Utils {
         if (s.isEmpty()) return new Pair<>(null, 0);
 
         int splitPos = s.indexOf('~');
-        String rawNumber = s.substring(9, splitPos).trim();
+        int number = (splitPos == -1) ? 1 : Integer.parseInt(s.substring(0, splitPos).trim());
         String[] rawToken = s.substring(splitPos + 1).replaceAll("/[\\[\\]]+/g", "").split(",");
 
         List<String> tokenData = new ArrayList<>();
         for(String t: rawToken) {
             tokenData.add(t.trim());
         }
-        int numToken = (rawNumber.isEmpty()) ? 1 : Integer.parseInt(rawNumber);
 
-        return new Pair<>(tokenData, numToken);
+        return new Pair<>(tokenData, number);
     }
 }

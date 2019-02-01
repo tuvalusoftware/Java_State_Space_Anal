@@ -68,11 +68,13 @@ public class Transition extends Node {
     }
 
     List<String> getVars(Place place) {
-        return inEdges.get(place).getData();
+        if (!inEdges.containsKey(place)) return new ArrayList<>();
+        else return inEdges.get(place).getData();
     }
 
     List<String> getExpression(Place place) {
-        return outEdges.get(place).getData();
+        if (!outEdges.containsKey(place)) return new ArrayList<>();
+        else return outEdges.get(place).getData();
     }
 
     int getVarNumber(Place place) {

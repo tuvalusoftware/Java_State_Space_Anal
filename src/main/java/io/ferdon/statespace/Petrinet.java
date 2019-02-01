@@ -75,6 +75,14 @@ public class Petrinet implements Serializable {
         interpreter = new Interpreter();
     }
 
+    public int getNumPlaces() {
+        return numPlaces;
+    }
+
+    public int getNumTransitions() {
+        return numTransitions;
+    }
+
     public Petrinet(PetrinetModel model) {
 
         this.numStates = 0;
