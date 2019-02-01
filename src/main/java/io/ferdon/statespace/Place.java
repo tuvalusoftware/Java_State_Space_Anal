@@ -31,24 +31,6 @@ public class Place extends Node {
         outTransition.add(transition);
     }
 
-    public void setMarking(String s) {  /* TODO: need to read unit token */
-
-        marking = new Marking(this);
-        if (s.isEmpty()) return;
-
-        String[] e = s.replace("]", "]@").split("@");
-        for (String t : e) {
-            int mulPos = t.indexOf('x');
-            int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos).replace(",", "").trim()) : 1;
-
-            String unitData = t.substring(t.indexOf('['));
-            Token token = (unitData.equals("[]")) ?
-                    new Token(unitData) :
-                    new Token(unitData.substring(unitData.indexOf('[') + 1, unitData.indexOf(']')));
-            marking.addToken(token, num);
-        }
-    }
-
     public void setMarking(Marking marking) {
         this.marking = marking;
     }
@@ -63,6 +45,25 @@ public class Place extends Node {
 
     void addToken(Token token, int num) {
         marking.addToken(token, num);
+    }
+
+    public void setMarking(String s) {  /* TODO: need to read unit token */
+
+        marking = new Marking(this);
+        if (s.isEmpty()) return;
+
+        String[] e = s.replace("]", "]@").split("@");
+        for (String t : e) {
+            int mulPos = t.indexOf('x');
+            int num = (mulPos != -1) ? Integer.parseInt(t.substring(0, mulPos).replace(",", "").trim()) : 1;
+
+            String unitData = t.substring(t.indexOf('['));
+            Token token = (unitData.equals("[]")) ?
+                    new Token(unitData) :
+                    new Token(unitData.substring(unitData.indexOf('[') + 1, unitData.indexOf(']')));
+
+            marking.addToken(token, num);
+        }
     }
 
     @Override

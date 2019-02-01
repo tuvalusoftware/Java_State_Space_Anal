@@ -20,14 +20,12 @@ import java.util.*;
 class StateSpace {
 
     private int P;
-    private int numState;
     private Map<Integer, State> nodes;
     private List<State> visitedState;
     private Map<State, Set<State>> edges;
     private Map<Pair<State, State>, Transition> firedTransitions;  /* [src,dst] ~> arc data  */
 
     StateSpace(int numPlaces) {
-        numState = 0;
         P = numPlaces;
         nodes = new HashMap<>();
         visitedState = new ArrayList<>();
@@ -36,13 +34,8 @@ class StateSpace {
     }
 
     void addState(State newState) {
-        numState++;
         nodes.put(newState.getID(), newState);
         visitedState.add(newState);
-    }
-
-    int getNextStateID() {
-        return numState + 1;
     }
 
     boolean containState(State state) {
@@ -54,7 +47,7 @@ class StateSpace {
     }
 
     int getNumState() {
-        return numState;
+        return nodes.size();
     }
 
     void addEdge(State parentState, State childState, Transition transition) {

@@ -15,7 +15,6 @@ public class Transition extends Node {
     private Map<Place, Edge> outEdges;
 
     private String guard;
-    private List<Binding> bindings;
 
     Transition(int nodeID) {
 
@@ -25,7 +24,6 @@ public class Transition extends Node {
         inEdges = new HashMap<>();
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
-        bindings = new ArrayList<>();
     }
 
     int[] getInPlaceArray() {
@@ -65,14 +63,6 @@ public class Transition extends Node {
 
     List<String> getExpression(Place place) {
         return outEdges.get(place).getData();
-    }
-
-    private void removeBinding(Binding b) {
-        bindings.remove(b);
-    }
-
-    void addBinding(Binding b) {
-        bindings.add(b);
     }
 
     private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
@@ -118,8 +108,7 @@ public class Transition extends Node {
         return token;
     }
 
-    List<Binding> getFireableBinding(boolean speedUp, Interpreter interpreter) {
-        if (speedUp) return bindings;
+    List<Binding> getFireableBinding(Interpreter interpreter) {
 
         List<Binding> fireableBindings = new ArrayList<>();
         List<Marking> markings = getPlaceMarkings();
@@ -136,72 +125,27 @@ public class Transition extends Node {
         return fireableBindings;
     }
 
-    void executeWithID(int bindingID, Interpreter interpreter, boolean speedUp) {
+    void executeWithID(int bindingID, Interpreter interpreter) {
 
-        if (speedUp) {
-            bindingID = bindingID % bindings.size();
-            int cnt = 0;
-            for(Binding b: bindings) {
-                cnt++;
-                if (cnt == bindingID) executeWithBinding(b, interpreter, true);
-            }
-            return;
-        }
-
-        List<Binding> fireableBindings = getFireableBinding(speedUp, interpreter);
+        List<Binding> fireableBindings = getFireableBinding(interpreter);
 
         bindingID %= fireableBindings.size();
-        executeWithBinding(fireableBindings.get(bindingID), interpreter, false);
+        executeWithBinding(fireableBindings.get(bindingID), interpreter);
     }
 
-    void executeWithBinding(Binding b, Interpreter interpreter, boolean speedUp) {
-
-        /* maintainBindings is always false because the optimizing is not implemented
-         * You need to modify those functions to implement pre-generated bindings
-         *  generateStateSpace():
-         *      pick the pre-generated bindings list or call generateAllBinding() by maintainBindings (less computation)
-         *      use more Queue to store the bindings list of each state in state space (more memory)
-         *      applyBinding()
-         *  Binding class:
-         *      deepCopy()
-         */
+    void executeWithBinding(Binding b, Interpreter interpreter) {
 
         Map<String, String> varMapping = b.getVarMapping();
         if (varMapping == null) return;
         if (stopByGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {
-
             place.removeToken(b.getToken(place), 1);
-            if (!speedUp) continue;
-
-            List<Marking> markings = getPartialPlaceMarkings(place);
-            markings.add(new Marking(place, b.getToken(place)));
-            List<Binding> oldBindings = generateAllBinding(markings, this);
-
-            for(Binding oldBinding: oldBindings) {
-                removeBinding(oldBinding);
-            }
         }
 
         for(Place place: outPlaces) {
-
             Token newToken = runExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, 1);
-            if (!speedUp) continue;
-
-            List<Marking> markings = getPartialPlaceMarkings(place);
-            markings.add(new Marking(place, newToken));
-            List<Binding> newBindings = generateAllBinding(markings, this);
-
-            if (inPlaces.size() == 0) {  /* add empty binding for transition without input place */
-                newBindings.add(new Binding());
-            }
-
-            for(Binding newBinding: newBindings) {
-                if (stopByGuard(newBinding.getVarMapping(), interpreter)) continue;
-                addBinding(newBinding);
-            }
         }
     }
 }

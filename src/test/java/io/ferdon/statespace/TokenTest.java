@@ -21,16 +21,6 @@ public class TokenTest {
     }
 
     @Test
-    public void testTokenConstructor03() {
-        token = new Token("12,1.2,   'tho', true");
-        assertEquals(4,  token.size());
-        assertEquals("12", token.get(0));
-        assertEquals("1.2", token.get(1));
-        assertEquals("'tho'", token.get(2));
-        assertEquals("true", token.get(3));
-    }
-
-    @Test
     public void testTokenConstructor04() {
         token = new Token("  ,    , '  '");
         assertEquals(3,  token.size());
