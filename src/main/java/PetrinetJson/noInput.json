@@ -1,0 +1,27 @@
+{
+  "Expressions": [
+    [
+      [0, "[]"]
+    ]
+  ],
+  "Guards": [
+    ""
+  ],
+  "Markings": [
+    ""
+  ],
+  "T": 1,
+  "Variables": [
+    []
+  ],
+  "inPlace": [
+    []
+  ],
+  "outPlace": [
+    [0]
+  ],
+  "placeToColor": {
+    "0": "UNIT"
+  }
+}
+
