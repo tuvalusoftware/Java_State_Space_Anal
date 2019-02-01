@@ -156,8 +156,9 @@ public class Petrinet implements Serializable {
             data.put(place, marking);
         }
 
+        State state = new State(numStates, data);
         numStates++;
-        return new State(numStates, data);
+        return state;
     }
     public StateSpace getStateSpace() {
         return stateSpace;
