@@ -264,8 +264,8 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-//        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/PetrinetJson/cycle.json";
-//        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/PetrinetJson/noInput.json";
+//        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/io.ferdon.statespace.PetrinetJson/cycle.json";
+//        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/io.ferdon.statespace.PetrinetJson/noInput.json";
         String petrinetInput = "/Users/thethongngu/Downloads/petrinet.json";
 
         PetrinetModel model = parseJson(petrinetInput);

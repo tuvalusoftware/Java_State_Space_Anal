@@ -21,7 +21,10 @@ public class AvroSchemaTest {
     }
     @Before
     public void setUp() throws Exception {
-        inpfile = "/Users/apple/Github/Java_State_Space_Analysis/src/test/java/io/ferdon/statespace/inputFileTest.json";
+
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/AvroSchemaPetrinet.json";
+        inpfile = System.getProperty("user.dir") + relativePath;
+
         as = new AvroSchema();
         P = 2;
         color = new String[] {
