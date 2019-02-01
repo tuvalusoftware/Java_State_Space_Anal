@@ -157,6 +157,7 @@ public class Petrinet implements Serializable {
             data.put(place, marking);
         }
 
+        System.out.println("inside generateCurrentState: " + stateSpace.getNextStateID());
         return new State(stateSpace.getNextStateID(), data);
     }
 
@@ -206,6 +207,7 @@ public class Petrinet implements Serializable {
                 for (Binding b : newBindings) {
 
                     State childState = executeWithBinding(transition, b);
+                    System.out.println("child state ID: " + childState.getID());
                     if (!ss.containState(childState)) {
                         ss.addState(childState);
                         stateQueue.add(childState);

@@ -38,6 +38,11 @@ class StateSpace {
     void addState(State newState) {
         numState++;
         nodes.put(newState.getID(), newState);
+
+        System.out.println("Num state: " + numState);
+        System.out.println("state ID" + newState.getID());
+        System.out.println("Node size ss" + nodes.size());
+
         visitedState.add(newState);
     }
 
@@ -110,9 +115,6 @@ class StateSpace {
 //    }
     private List<Schema> placeSchema = new ArrayList<>(); // schema of list token of Place i-th.
     private List<Schema> tokenSchema = new ArrayList<>(); // schema of token in listTokenace i-th.
-    private GenericRecord petriNet;
-    private List<GenericArray> listToken = new ArrayList<>();
-    private List<GenericRecord> token = new ArrayList<>();
     private List<List<String>> colSet = new ArrayList<>();
 
     private static String getType(String ty) {
@@ -159,34 +161,37 @@ class StateSpace {
 
     /* write Arc in parquet format */
     void parquetWriteArc(Schema schema, String outputFile) {
-        GenericRecord record = null;
+        GenericRecord arc = null;
         try {
-            record = new GenericData.Record(schema);
+            arc = new GenericData.Record(schema);
             File t = new File(outputFile);
             t.delete();
 
             ParquetWriter<GenericRecord> writer = parquetWriter(outputFile, schema);
+
             for (Pair<State, State> edge : firedTransitions.keySet()) {
-                record.put("src", edge.getValue0().getID());
-                record.put("dst", edge.getValue1().getID());
-                record.put("transition", firedTransitions.get(edge).getID());
-                writer.write(record);
+                arc.put("src", edge.getValue0().getID());
+                arc.put("dst", edge.getValue1().getID());
+                arc.put("transition", firedTransitions.get(edge).getID());
+                writer.write(arc);
             }
+
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-
     }
-    /*init Schema */
+    private Schema getPlaceSchema(int placeID) {
+        return placeSchema.get(placeID);
+    }
+
+    // init Schema :)
     private void initPlaceSchema(Schema schema) {
-        //System.out.println(P);
         List<String> oneSet;
-        System.out.println(schema);
         for (int i = 0; i < P; ++i) {
             placeSchema.add(schema.getField("P" + i).schema());
-            tokenSchema.add(placeSchema.get(i).getElementType());
+            tokenSchema.add(getPlaceSchema(i).getElementType());
             oneSet = new ArrayList<>();
             for (Schema.Field color : tokenSchema.get(i).getFields()) {
                 oneSet.add(color.name());
@@ -194,20 +199,10 @@ class StateSpace {
             colSet.add(oneSet);
         }
     }
-    private Schema getPlaceSchema(int placeID) {
-        return placeSchema.get(placeID);
-    }
-    private List<GenericArray> writeUnit(int placeID, int numTokens) {
-        GenericArray setToken = new GenericData.Array(1, getPlaceSchema(placeID));
-        listToken.set(placeID, setToken);
-        GenericRecord _token   = new GenericData.Record(tokenSchema.get(placeID));
-        token.set(placeID, _token);
-        token.get(placeID).put("unit_0", numTokens);
-        listToken.get(placeID).add(0, token.get(placeID));
-        return listToken;
-    }
 
-    String getColor(int placeID, int colorID) {
+
+
+    private String getColor(int placeID, int colorID) {
         return colSet.get(placeID).get(colorID);
     }
 
@@ -215,30 +210,49 @@ class StateSpace {
         String type = getColor(placeID, 0);
         return getType(type).equals("unit");
     }
+
     /* write Node in parquet format */
     void parquetWriteNode(Schema schema, String outputFile) {
-
+        GenericRecord node, record;
+        GenericArray listRecord;
         initPlaceSchema(schema);
         try {
-            petriNet = new GenericData.Record(schema);
-            //System.out.println(schema);
+
             File t = new File(outputFile);
             t.delete();
 
             ParquetWriter<GenericRecord> writer = parquetWriter(outputFile, schema);
+            node = new GenericData.Record(schema);
 
             for (State state : nodes.values()) {
-                System.out.println(state.toString());
-                for (Place place: state.getPlaceSet()) {
+
+                for (Place place : state.getPlaceSet()) {
+
                     int numTokens = place.getMarking().size();
                     int placeID = place.getID();
-                    String context = place.getMarking().toString();
-                    System.out.println(context);
-                   // petriNet.put("id", state.getID());
-                }
-//                writer.write(petriNet);
-            }
+                    List<String> color = colSet.get(placeID);
+                    int numberColors = color.size();
+                    listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
 
+                    for (Token token : place.getMarking().getTokenList()) {
+                        record = new GenericData.Record(tokenSchema.get(placeID));
+                        for (int i = 0; i < numberColors; ++i) {
+                            Object value;
+                            if (getType(color.get(i)).equals("unit"))
+                                value = numTokens;
+                            else
+                                value = getValue(color.get(i), token.get(i));
+                            record.put(color.get(i), value);
+                        }
+                        listRecord.add(record);
+                    }
+
+                    node.put("P" + placeID, listRecord);
+                    node.put("id", state.getID());
+
+                }
+                writer.write(node);
+            }
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
