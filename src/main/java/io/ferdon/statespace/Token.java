@@ -1,3 +1,13 @@
+/*
+ * File name: Token.java
+ * File Description:
+ *      Represent a Token in Petrinet, store in String, Unit token: []
+ *      hashCode() and equals() is overriding to compare Token
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import java.io.Serializable;

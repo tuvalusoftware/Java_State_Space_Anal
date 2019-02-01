@@ -1,6 +1,15 @@
+/*
+ * File name: Interpreter.java
+ * File Description:
+ *      The interpreter for execute code in expressions and guards of Petrinet
+ *      Other new data types and operators can be easily implemented by implements interface
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.io.Serializable;
 import java.util.*;

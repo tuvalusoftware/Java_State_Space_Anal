@@ -1,15 +1,14 @@
-package io.ferdon.statespace;
-
 /*
  * File Name: AvroSchema.java
- *
  * File Description:
- *
- * Create schema for Avro library. The schema description for one Petri net(the state of Pn).
- * Link https://avro.apache.org/docs/1.8.1/spec.html
+ *      Create schema for Avro library. The schema description for one Petri net(the state of Pn).
+ *      Link https://avro.apache.org/docs/1.8.1/spec.html
  *
  * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Vu Thanh Vu
  */
+
+package io.ferdon.statespace;
 
 import org.apache.avro.Schema;
 import org.apache.commons.io.FileUtils;

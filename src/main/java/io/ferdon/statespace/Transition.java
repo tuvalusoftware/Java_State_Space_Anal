@@ -1,3 +1,14 @@
+/*
+ * File name: Transition.java
+ * File Description:
+ *      Inherited from Node.java
+ *      Transition is involved with most of operation in Petrinet including execute transition
+ *      From a transition, we can retrieve the information of connected places and edge (variables, expressions)
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import java.util.ArrayList;

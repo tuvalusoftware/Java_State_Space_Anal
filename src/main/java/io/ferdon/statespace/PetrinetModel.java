@@ -1,3 +1,12 @@
+/*
+ * File name: Transition.java
+ * File Description:
+ *      The Petrinet class for supporting parsing Json file into Petrinet object.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Dang Duy Nam
+ */
+
 package io.ferdon.statespace;
 
 import java.util.Map;

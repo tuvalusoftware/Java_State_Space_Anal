@@ -1,3 +1,12 @@
+/*
+ * File name: Petrinet.java
+ * File Description:
+ *      Represent for a Petrinet object
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.json.JSONObject;

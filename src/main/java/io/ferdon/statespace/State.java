@@ -1,10 +1,10 @@
 /*
  * File name: State.java
  * File Description:
- *  Represent a State in state space
+ *      Represent a State in state space
+ *      State implement hashCode() and equals() functions for supporting search State in visited State set in BFS
  *
  * Copyright (c) 2019 - Ferdon Vietnam Limited
- *
  * Author: Nguyen The Thong
  */
 

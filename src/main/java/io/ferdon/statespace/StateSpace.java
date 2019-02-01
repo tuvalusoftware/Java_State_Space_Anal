@@ -1,3 +1,12 @@
+/*
+ * File name: Transition.java
+ * File Description:
+ *      Represent a StateSpace, that contains all the states
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.apache.avro.Schema;

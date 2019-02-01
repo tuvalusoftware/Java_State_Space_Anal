@@ -1,3 +1,14 @@
+/*
+ * File name: Marking.java
+ * File Description:
+ *      Represent a list Token of a place
+ *      Marking is usually deep copied by generating state space, so Marking data should be keep simple
+ *      hashCode() and equals() is override for supporting State compare
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import com.google.common.collect.HashMultiset;

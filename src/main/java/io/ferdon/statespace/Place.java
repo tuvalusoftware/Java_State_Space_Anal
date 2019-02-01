@@ -1,3 +1,13 @@
+/*
+ * File name: Place.java
+ * File Description:
+ *      Place object represent for place in Petrinet, information that can be retrieved from Place include
+ *      the in, out transition, current marking of place.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import java.util.ArrayList;
@@ -47,7 +57,7 @@ public class Place extends Node {
         marking.addToken(token, num);
     }
 
-    public void setMarking(String s) {  /* TODO: need to read unit token */
+    public void setMarking(String s) {
 
         marking = new Marking(this);
         if (s.isEmpty()) return;
@@ -68,6 +78,6 @@ public class Place extends Node {
 
     @Override
     public String toString() {
-        return "Place" + getID();
+        return "Place " + getID();
     }
 }

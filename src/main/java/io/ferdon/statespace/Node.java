@@ -1,7 +1,8 @@
 /*
  * File name: Node.java
  * File Description:
- *  Class Node.java for common Node represent for Places, Transitions, and State (StateSpace)
+ *      class Node represent common Node objects that require id to differentiate
+ *      Class Node is the parent class of Place (Petrinet), Transition (Petrinet), State (StateSpace)
  *
  * Copyright (c) 2019 - Ferdon Vietnam Limited
  *
@@ -11,7 +12,6 @@
 package io.ferdon.statespace;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class Node implements Serializable {
 

@@ -1,3 +1,12 @@
+/*
+ * File name: Utils.java
+ * File Description:
+ *      Class Utils contains useful or general functions that can be used together with other classes
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import com.google.common.collect.Lists;

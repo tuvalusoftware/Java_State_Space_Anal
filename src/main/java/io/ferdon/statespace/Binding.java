@@ -1,3 +1,13 @@
+/*
+ * File name: Binding.java
+ * File Description:
+ *      Object represent a binding in Petrinet
+ *      Binding is generated when a transition is executed
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import java.io.Serializable;

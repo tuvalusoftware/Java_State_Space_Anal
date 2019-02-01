@@ -1,3 +1,13 @@
+/*
+ * File name: Edge.java
+ * File Description:
+ *      Object represent the Edge in Petrinet (which contains the variables and expressions)
+ *      Object represent the Edge in StateSpace (the path in stateSpace)
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import java.util.List;
