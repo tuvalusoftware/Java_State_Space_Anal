@@ -40,8 +40,9 @@ condition:
     |'(' condition ')'
     ;
 
-token: INT '`' '(' expr (',' expr)* ')'
-       |'(' expr (',' expr)* ')'
+token: |'(' expr (',' expr)* ')'
+       | '(' ')'
+       | INT '`' token
      ;
 
 

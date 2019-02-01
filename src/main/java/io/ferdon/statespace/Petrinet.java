@@ -156,8 +156,9 @@ public class Petrinet implements Serializable {
             data.put(place, marking);
         }
 
+        State state = new State(numStates, data);
         numStates++;
-        return new State(numStates, data);
+        return state;
     }
     public StateSpace getStateSpace() {
         return stateSpace;
@@ -181,7 +182,7 @@ public class Petrinet implements Serializable {
             State parentState = stateQueue.remove();
             applyState(parentState);
 
-            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
+           // System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
 
             for (Transition transition : transitions.values()) {
 
@@ -262,6 +263,6 @@ public class Petrinet implements Serializable {
         Petrinet net = new Petrinet(model);
 
         net.generateStateSpace(net.generateCurrentState());
-        System.out.println("Num state: " + net.stateSpace.getNodes().size());
+        //System.out.println("Num state: " + net.stateSpace.getNodes().size());
     }
 }

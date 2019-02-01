@@ -31,7 +31,7 @@ public class main {
             String petrinetInput = path + args[1];
 
             option = "analysis";
-            petrinetInput = "/Users/apple/Downloads/petrinet.json";
+            petrinetInput = "/Users/apple/Downloads/simple.json";
 
             print("option: " + option);
             print(petrinetInput);
@@ -44,6 +44,8 @@ public class main {
                     String nodeParquet = path + args[2];
                     String arcParquet = path + args[3];
                     String graphVizOutput = path + args[4];
+                    nodeParquet = "/Users/apple/Desktop/node.parquet";
+                    arcParquet = "/Users/apple/Desktop/arc.parquet";
                     print(nodeParquet);
                     print(arcParquet);
                     print(graphVizOutput);

@@ -10,8 +10,6 @@ import org.apache.parquet.avro.AvroParquetWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.javatuples.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -191,14 +189,7 @@ class StateSpace {
 
 
 
-    private String getColor(int placeID, int colorID) {
-        return colSet.get(placeID).get(colorID);
-    }
 
-    Boolean checkUnitPlace(int placeID) {
-        String type = getColor(placeID, 0);
-        return getType(type).equals("unit");
-    }
 
     /* write Node in parquet format */
     void parquetWriteNode(Schema schema, String outputFile) {
@@ -214,26 +205,27 @@ class StateSpace {
             node = new GenericData.Record(schema);
 
             for (State state : nodes.values()) {
-
                 for (Place place : state.getPlaceSet()) {
-
                     int numTokens = place.getMarking().size();
                     int placeID = place.getID();
                     List<String> color = colSet.get(placeID);
                     int numberColors = color.size();
                     listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
+                    for (Token token : state.getMarking(place).getTokenList()) {
+                      //  System.out.println(token.toString());
 
-                    for (Token token : place.getMarking().getTokenList()) {
                         record = new GenericData.Record(tokenSchema.get(placeID));
+
                         for (int i = 0; i < numberColors; ++i) {
                             Object value;
                             if (getType(color.get(i)).equals("unit"))
                                 value = numTokens;
                             else
-                                value = getValue(color.get(i), token.get(i));
+                                value = getValue(token.get(i), color.get(i));
                             record.put(color.get(i), value);
                         }
                         listRecord.add(record);
+
                     }
 
                     node.put("P" + placeID, listRecord);
@@ -242,7 +234,9 @@ class StateSpace {
                 }
                 writer.write(node);
             }
+
             writer.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
