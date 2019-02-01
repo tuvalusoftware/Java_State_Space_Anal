@@ -19,6 +19,7 @@ public class main {
 
         Logger.getRootLogger().setLevel(Level.OFF);
         try {
+           // System.out.println(Utils.convertPostfix("2 + 3"));
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
 //            String option = "analysis";
@@ -30,7 +31,7 @@ public class main {
             String petrinetInput = path + args[1];
 
             option = "analysis";
-            petrinetInput = "/Users/thethongngu/Desktop/Guards.json";
+            petrinetInput = "/Users/apple/Downloads/simple.json";
 
             print("option: " + option);
             print(petrinetInput);
@@ -38,12 +39,13 @@ public class main {
             PetrinetModel model = parseJson(petrinetInput);
             Petrinet net = new Petrinet(model);
 
-
             switch (option) {
                 case "analysis":
                     String nodeParquet = path + args[2];
                     String arcParquet = path + args[3];
                     String graphVizOutput = path + args[4];
+                    nodeParquet = "/Users/apple/Desktop/node.parquet";
+                    arcParquet = "/Users/apple/Desktop/arc.parquet";
                     print(nodeParquet);
                     print(arcParquet);
                     print(graphVizOutput);

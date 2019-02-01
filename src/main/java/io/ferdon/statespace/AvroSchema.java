@@ -109,16 +109,6 @@ public class AvroSchema {
         return parser.parse(s);
     }
 
-//    public void createSchemaFile(String inputfile, String outputfile) {
-//        String s = createAvroSchema(inputfile);
-//        try {
-//            FileOutputStream outputStream = new FileOutputStream(outputfile);
-//            byte[] strToBytes = s.getBytes();
-//            outputStream.write(strToBytes);
-//            outputStream.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
+
 
 }
