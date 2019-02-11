@@ -153,12 +153,23 @@ public class Transition extends Node {
     void executeWithID(int bindingID, Interpreter interpreter) {
 
         List<Binding> fireableBindings = getFireableBinding(interpreter);
-        if (fireableBindings.isEmpty()) return;
 
-        bindingID %= fireableBindings.size();
-        executeWithBinding(fireableBindings.get(bindingID), interpreter);
+        Binding fireBinding;
+        if (fireableBindings.isEmpty()) {
+            fireBinding = new Binding();
+        } else {
+            bindingID %= fireableBindings.size();
+            fireBinding = fireableBindings.get(bindingID);
+        }
+
+        executeWithBinding(fireBinding, interpreter);
     }
 
+    /**
+     * Execute the transition with binding, if binding is empty, transition only be executed with unit tokens
+     * @param b binding (possible empty)
+     * @param interpreter interpreter
+     */
     void executeWithBinding(Binding b, Interpreter interpreter) {
 
         Map<String, String> varMapping = b.getVarMapping();

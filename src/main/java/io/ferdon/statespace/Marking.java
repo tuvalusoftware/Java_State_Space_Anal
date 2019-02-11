@@ -84,6 +84,8 @@ public class Marking implements Serializable {
         Marking otherMarking = (Marking) obj;
 
         if (!place.equals(otherMarking.getPlace())) return false;
+        if (data.size() != otherMarking.size()) return false;
+
         for (Token token : data) {
             if (otherMarking.getNumToken(token) != data.count(token)) return false;
         }
