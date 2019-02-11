@@ -277,11 +277,10 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-//        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/io.ferdon.statespace.PetrinetJson/cycle.json";
-//        String petrinetInput = "/Users/thethongngu/Documents/company/Java_State_Space_Analysis/src/main/java/io.ferdon.statespace.PetrinetJson/noInput.json";
-        String petrinetInput = "/Users/thethongngu/Downloads/petrinet.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/kanban.json";
+        String filename = System.getProperty("user.dir") + relativePath;
 
-        PetrinetModel model = parseJson(petrinetInput);
+        PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
         net.generateStateSpace(net.generateCurrentState());
