@@ -144,13 +144,9 @@ public class Petrinet implements Serializable {
 
         Place place = places.get(placeID);
         Transition transition = transitions.get(tranID);
+
         if (place == null || transition == null) return;
-
-        Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(varData);
-        List<String> varTokens = tokenData.getValue0();
-        Integer numberToken = tokenData.getValue1();
-
-        Edge edge = new Edge(place, transition, varTokens, numberToken);
+        Edge edge = new Edge(place, transition, varData);
 
         places.get(placeID).addOutputTransition(transition);
         transitions.get(tranID).addInputPlace(place, edge);
@@ -168,12 +164,7 @@ public class Petrinet implements Serializable {
         Transition transition = transitions.get(tranID);
 
         if (place == null || transition == null) return;
-        Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(varData);
-
-        List<String> varTokens = tokenData.getValue0();
-        Integer numberToken = tokenData.getValue1();
-
-        Edge edge = new Edge(transition, place, varTokens, numberToken);
+        Edge edge = new Edge(transition, place, varData);
 
         transitions.get(tranID).addOutputPlace(place, edge);
         places.get(placeID).addInputTransition(transition);

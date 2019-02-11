@@ -524,6 +524,8 @@ public class InterpreterTest {
     @Test
     public void testExpressionWithoutVarValue() throws UnsupportedOperationException {
         expression = "a 3 >";
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Variable's values are not provided");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
     }
 
@@ -578,5 +580,18 @@ public class InterpreterTest {
         assertEquals("2", res.getList().get(1).getString());
         assertTrue(res.getList().get(2).getBoolean());
         assertEquals(1, res.getList().get(0).getInt());
+    }
+
+    @Test
+    public void testArrayExpression02() throws UnsupportedOperationException {
+        expression = "[ 1 , '2' , True , a ]";
+        vars.put("a", "3");
+
+        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        assertEquals(4, res.getList().size());
+        assertEquals(1, res.getList().get(0).getInt());
+        assertEquals("2", res.getList().get(1).getString());
+        assertTrue(res.getList().get(2).getBoolean());
+        assertEquals(3, res.getList().get(3).getInt());
     }
 }

@@ -9,6 +9,7 @@
  */
 
 package io.ferdon.statespace;
+
 import org.apache.commons.lang.StringEscapeUtils;
 
 import java.io.Serializable;
@@ -300,7 +301,7 @@ class Interpreter implements Serializable {
         }
 
         public String getString() {
-            return value;
+            return "'" + value + "'";
         }
 
         public List<Value> getList() {
@@ -361,7 +362,7 @@ class Interpreter implements Serializable {
         }
 
         public String getString() {
-            return String.valueOf(value);
+            return (value) ? "True" : "False";
         }
 
         public List<Value> getList() {
@@ -461,7 +462,7 @@ class Interpreter implements Serializable {
         @Override
         public String toString() {
             StringBuilder s = new StringBuilder();
-            for(Value item: value) {
+            for (Value item : value) {
                 s.append('\t');
                 s.append(item.toString());
                 s.append('\n');
@@ -710,6 +711,8 @@ class Interpreter implements Serializable {
             }
             case SPLITTER:
             case CLOSEARRAY: {
+                if (valueStack.peek() instanceof ArrayExpression) break;  /* empty array */
+
                 Value arg1 = (Value) valueStack.pop();
                 ArrayExpression arg2 = (ArrayExpression) valueStack.pop();
                 valueStack.push(arg2.insert(arg1));

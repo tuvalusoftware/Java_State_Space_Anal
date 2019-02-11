@@ -135,7 +135,7 @@ public class UtilsTest {
 
     @Test
     public void testParseTokenWithNumberUnit01() {
-        String s = "[]";
+        String s = "[ ]";
         Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(s);
 
         assertEquals(0, tokenData.getValue0().size());

@@ -30,6 +30,10 @@ public class Binding implements Serializable {
         this.transition = transition;
     }
 
+    boolean isEmpty() {
+        return data.size() == 0 && transition == null;
+    }
+
     Token getToken(Place place) {
         return data.get(place);
     }
@@ -47,10 +51,10 @@ public class Binding implements Serializable {
             if (token.isUnit()) continue;
 
             /* the order of varNames is the same the order of String inside Token */
-            List<String> varNames = transition.getVars(place);
-            for (int varIndex = 0; varIndex < varNames.size(); varIndex++) {
+            String[] varNames = transition.getVars(place);
+            for (int varIndex = 0; varIndex < varNames.length; varIndex++) {
 
-                String varname = varNames.get(varIndex);
+                String varname = varNames[varIndex];
                 String tokenValue = token.get(varIndex);
 
                 if (vars.containsKey(varname)) return null;

@@ -67,22 +67,14 @@ public class Transition extends Node {
         outEdges.put(place, edge);
     }
 
-    List<String> getVars(Place place) {
-        if (!inEdges.containsKey(place)) return new ArrayList<>();
-        else return inEdges.get(place).getData();
+    String[] getVars(Place place) {
+        if (!inEdges.containsKey(place)) return new String[0];
+        else return inEdges.get(place).getData().split(",");
     }
 
-    List<String> getExpression(Place place) {
-        if (!outEdges.containsKey(place)) return new ArrayList<>();
+    String getExpression(Place place) {
+        if (!outEdges.containsKey(place)) return ("");
         else return outEdges.get(place).getData();
-    }
-
-    int getVarNumber(Place place) {
-        return inEdges.get(place).getNumberData();
-    }
-
-    int getExpressionNumber(Place place) {
-        return outEdges.get(place).getNumberData();
     }
 
     private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
@@ -117,17 +109,13 @@ public class Transition extends Node {
     private Token runSingleTokenExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
 
         List<String> tokenData = new ArrayList<>();
-        List<String> expression = getExpression(place);
+        String expression = getExpression(place);
 
-        /* unit token */
-        if (expression.size() == 1 && expression.get(0).equals("[]")) {
-            return new Token(tokenData);
-        }
+        if (expression.length() == 0) return null;
+        Interpreter.Value res = interpreter.interpretFromString(expression, varMapping);
 
-        for(String statement: expression) {
-            if (statement.length() == 0) return null;
-            Interpreter.Value res = interpreter.interpretFromString(statement, varMapping);
-            tokenData.add(res.getString());
+        for(Interpreter.Value value: res.getList()) {
+            tokenData.add(value.getString());
         }
 
         return new Token(tokenData);
@@ -166,7 +154,7 @@ public class Transition extends Node {
     }
 
     /**
-     * Execute the transition with binding, if binding is empty, transition only be executed with unit tokens
+     * Execute the transition with binding, if binding is empty and no input place, transition only be executed with unit tokens
      * @param b binding (possible empty)
      * @param interpreter interpreter
      */
@@ -177,12 +165,15 @@ public class Transition extends Node {
         if (stopByGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {
-            place.removeToken(b.getToken(place), getVarNumber(place));
+            place.removeToken(b.getToken(place), 1);
         }
+
+        /* if transition contains input places then require binding not empty */
+        if (!inPlaces.isEmpty() && b.isEmpty()) return;
 
         for(Place place: outPlaces) {
             Token newToken = runSingleTokenExpression(varMapping, place, interpreter);
-            if (newToken != null) place.addToken(newToken, getExpressionNumber(place));
+            if (newToken != null) place.addToken(newToken, 1);
         }
     }
 }
