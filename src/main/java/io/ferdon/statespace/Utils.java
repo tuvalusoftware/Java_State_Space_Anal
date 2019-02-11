@@ -83,7 +83,7 @@ final class Utils {
 
         int splitPos = s.indexOf('~');
         int number = (splitPos == -1) ? 1 : Integer.parseInt(s.substring(0, splitPos).trim());
-        String[] rawToken = s.substring(splitPos + 1).replaceAll("[\\[\\]]+", "").split(",");
+        String[] rawToken = s.substring(splitPos + 1).replaceAll("[\\[\\]]+", "").trim().split(",");
 
         List<String> tokenData = new ArrayList<>();
         if (rawToken.length == 1 && rawToken[0].equals("")) return new Pair<>(tokenData, number);

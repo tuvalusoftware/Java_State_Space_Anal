@@ -309,11 +309,13 @@ class Interpreter implements Serializable {
         }
 
         public BooleanExpression isEqual(StringValue x) {
-            return new BooleanExpression(this.value.equals(x.getString()));
+            String rawString = x.getString();
+            return new BooleanExpression(this.value.equals(rawString.substring(1, rawString.length() - 1)));
         }
 
         public BooleanExpression isNotEqual(StringValue x) {
-            return new BooleanExpression(!this.value.equals(x.getString()));
+            String rawString = x.getString();
+            return new BooleanExpression(!this.value.equals(rawString.substring(1, rawString.length() - 1)));
         }
 
         public BooleanExpression isGreater(StringValue x) throws UnsupportedOperationException {

@@ -376,6 +376,7 @@ public class InterpreterTest {
     public void testStringExpressionEqual()  {
         expression = "'efe' 'efe' == ";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        System.out.println(res.getString());
         assertEquals(true, res.getBoolean());
     }
 
@@ -390,7 +391,7 @@ public class InterpreterTest {
     public void testStringExpressionAppend()  {
         expression = "'thong' 'dep' append ";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        assertEquals("thongdep", res.getString());
+        assertEquals("'thongdep'", res.getString());
     }
 
     @Test
@@ -398,7 +399,7 @@ public class InterpreterTest {
         expression = "b trim ";
         vars.put("b", "'    d ep trai   '");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        assertEquals("d ep trai", res.getString());
+        assertEquals("'d ep trai'", res.getString());
     }
 
     @Test
@@ -412,7 +413,7 @@ public class InterpreterTest {
     public void testStringExpressionSubStr()  {
         expression = "'thethongdeptrai' 3 8 substr";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        assertEquals("thong", res.getString());
+        assertEquals("'thong'", res.getString());
     }
 
     @Test
@@ -486,7 +487,7 @@ public class InterpreterTest {
     public void testBooleanExpressionGetString() {
         expression = "False";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        assertEquals("false", res.getString());
+        assertEquals("False", res.getString());
     }
 
     @Test
@@ -558,7 +559,7 @@ public class InterpreterTest {
         vars.put("a", "True");
         vars.put("b", "True");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        assertEquals("thong", res.getString());
+        assertEquals("'thong'", res.getString());
     }
 
     @Test
@@ -577,7 +578,7 @@ public class InterpreterTest {
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(4, res.getList().size());
         assertEquals(1, res.getList().get(0).getInt());
-        assertEquals("2", res.getList().get(1).getString());
+        assertEquals("'2'", res.getList().get(1).getString());
         assertTrue(res.getList().get(2).getBoolean());
         assertEquals(1, res.getList().get(0).getInt());
     }
@@ -590,7 +591,7 @@ public class InterpreterTest {
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(4, res.getList().size());
         assertEquals(1, res.getList().get(0).getInt());
-        assertEquals("2", res.getList().get(1).getString());
+        assertEquals("'2'", res.getList().get(1).getString());
         assertTrue(res.getList().get(2).getBoolean());
         assertEquals(3, res.getList().get(3).getInt());
     }
