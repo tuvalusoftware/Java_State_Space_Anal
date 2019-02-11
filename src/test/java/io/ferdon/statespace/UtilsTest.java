@@ -1,3 +1,12 @@
+/*
+ * File name: UtilsTest.java
+ * File Description:
+ *      Class UtilsTest contains unit tests for Utils class source code.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.javatuples.Pair;

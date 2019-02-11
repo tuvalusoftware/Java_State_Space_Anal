@@ -1,3 +1,12 @@
+/*
+ * File name: Token.java
+ * File Description:
+ *      Class Token contains unit tests for Token class source code.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.junit.Before;

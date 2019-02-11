@@ -1,3 +1,12 @@
+/*
+ * File name: InterpreterTest.java
+ * File Description:
+ *      Class InterpreterTest contains unit tests for Interpreter source code.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.junit.Rule;

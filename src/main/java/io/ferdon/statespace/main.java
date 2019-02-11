@@ -1,3 +1,12 @@
+/*
+ * File name: main.java
+ * File Description:
+ *      The Main class of State Space Analysis project
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import com.fasterxml.jackson.core.JsonGenerationException;

@@ -1,3 +1,12 @@
+/*
+ * File name: PetrinetNoInputTest.java
+ * File Description:
+ *      Class PetrinetNoInputTest contains unit tests for Petrinet source code with noInput.json.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.junit.Before;

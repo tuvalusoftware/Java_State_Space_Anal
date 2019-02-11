@@ -1,10 +1,18 @@
+/*
+ * File name: PetrinetPermu.java
+ * File Description:
+ *      Class PetrinetPermu contains unit tests for Petrinet source code with permu.json.
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.List;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.*;
