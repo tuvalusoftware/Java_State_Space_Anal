@@ -1,6 +1,6 @@
 package io.ferdon.statespace;
+import io.ferdon.statespace.generator.*;
 import com.google.common.collect.Lists;
-import io.ferdon.statespace.gen.io.ferdon.statespace.*;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -42,8 +42,14 @@ final class Utils {
         CommonTokenStream token = new CommonTokenStream(lexer);
         mlParser parser = new mlParser(token);
         ParseTreeWalker walker = new ParseTreeWalker();
-        MyListener listener = new MyListener();
+        ANTLRListener listener = new ANTLRListener();
         walker.walk(listener, parser.prog());
-        return listener.postfix();
+        return listener.getPostfix();
+    }
+
+    static String jsonPostfix(String file) {
+        String json = "";
+
+        return json;
     }
 }

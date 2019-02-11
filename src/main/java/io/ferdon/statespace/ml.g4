@@ -2,7 +2,6 @@ grammar ml;
 
 
 prog : ifelsesyntax
-     | ifsyntax
      | token
      | condition
      | expr
@@ -10,22 +9,16 @@ prog : ifelsesyntax
 
 ifelsesyntax:
     IF condition THEN
-        (ifsyntax | ifelsesyntax | statement)
+        (ifelsesyntax | token)
     ELSE
-        (ifsyntax | ifelsesyntax| statement)
+        (ifelsesyntax | token)
     ;
-ifsyntax:
-    IF condition THEN
-        (ifelsesyntax | ifsyntax | statement)
-    ;
-statement: expr
-       | ID '=' expr
-       | token
-       ;
+
 
 
 expr: expr ('*'|'/') expr
     | expr ('+'|'-') expr
+    | expr Concat expr
     | INT
     | REAL
     | STRING
@@ -42,7 +35,6 @@ condition:
 
 token: |'(' expr (',' expr)* ')'
        | '(' ')'
-       | INT '`' token
      ;
 
 
@@ -56,7 +48,7 @@ EQUAL: '=';
 GTandEQUAL : '>=';
 EQUALandLESS : '<=';
 NotEQUAL : '<>';
-
+Concat : '^^';
 AND : 'andalso';
 OR : 'oralso';
 NOT : 'not';
