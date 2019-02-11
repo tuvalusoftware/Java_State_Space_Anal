@@ -1,7 +1,10 @@
 {
   "Expressions": [
     [
-      [2, "[s, n]"]
+      [
+        2,
+        "[s, n]"
+      ]
     ]
   ],
   "Guards": [
@@ -14,18 +17,32 @@
   ],
   "T": 1,
   "Variables": [
-    [[0, "s"], [1, "n"]]
+    [
+      [
+        0,
+        "s"
+      ],
+      [
+        1,
+        "n"
+      ]
+    ]
   ],
   "inPlace": [
-    [0, 1]
+    [
+      0,
+      1
+    ]
   ],
   "outPlace": [
-    [2]
+    [
+      2
+    ]
   ],
   "placeToColor": {
-    "0": "UNIT",
-    "1": "UNIT",
-    "2": "UNIT"
+    "0": "STRING",
+    "1": "INT",
+    "2": "STRING*INT"
   }
 }
 
