@@ -156,6 +156,12 @@ public class Petrinet implements Serializable {
         transitions.get(tranID).addInputPlace(place, edge);
     }
 
+    /**
+     * parse Expression string and add to Petrinet data
+     * @param tranID transitionID (index of array)
+     * @param placeID placeID (first element)
+     * @param varData expression String (ex: 4~['thong', 1.2, True])
+     */
     public void addExp(int tranID, int placeID, String varData) {
 
         Place place = places.get(placeID);

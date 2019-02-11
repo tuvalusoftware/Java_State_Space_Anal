@@ -466,7 +466,7 @@ class Interpreter implements Serializable {
             return ValueType.REAL;
         }
 
-        if (token.equals("[]") || (token.charAt(0) == '\'' && token.charAt(token.length() - 1) == '\'')) {
+        if (token.charAt(0) == '\'' && token.charAt(token.length() - 1) == '\'') {
             return ValueType.STRING;
         }
 

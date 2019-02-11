@@ -44,19 +44,53 @@ final class Utils {
         return result;
     }
 
+    /**
+     * Parse marking string
+     *      Ex: "['thong', 1.2], 3~['he', 3.2]" ~> List [ "['thong', 1.2]" , "3~['he', 3.2]" ]
+     *      Ex: "3~[],  []" ~> List [ "3~[]" , "[]" ]
+     *      Ex: "" ~> List []
+     * @param s marking string
+     * @return list of string
+     */
+    static List<String> parseMarkingString(String s) {
+
+        List<String> result = new ArrayList<>();
+
+        String[] e = s.replace("]", "]@").split("@");
+        for(String t: e) {
+            for(int i = 0; i < t.length(); i++) {
+                if (t.charAt(i) == '[' || Character.isDigit(t.charAt(i))) {
+                    result.add(t.substring(i));
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Use this utility function to parse token data (String) into token object
+     * @param s Token string data
+     * @return List of string, empty list for unit token, null for empty input string data
+     *      Ex: "3~['thong', 1.2]" ~> Pair<["'thong'", "1.2"], 3>
+     *      Ex: "['thong', 1.2]" ~> Pair<["'thong'", "1.2"], 1>
+     *      Ex: "3~[]" ~> Pair<[], 3>
+     */
     static Pair<List<String>, Integer> parseTokenWithNumber(String s) {
 
         if (s.isEmpty()) return new Pair<>(null, 0);
 
         int splitPos = s.indexOf('~');
         int number = (splitPos == -1) ? 1 : Integer.parseInt(s.substring(0, splitPos).trim());
-        String[] rawToken = s.substring(splitPos + 1).replaceAll("/[\\[\\]]+/g", "").split(",");
+        String[] rawToken = s.substring(splitPos + 1).replaceAll("[\\[\\]]+", "").split(",");
 
         List<String> tokenData = new ArrayList<>();
+        if (rawToken.length == 1 && rawToken[0].equals("")) return new Pair<>(tokenData, number);
+
         for(String t: rawToken) {
             tokenData.add(t.trim());
         }
-
         return new Pair<>(tokenData, number);
     }
 }

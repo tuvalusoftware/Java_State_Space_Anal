@@ -59,12 +59,16 @@ public class Place extends Node {
         marking.addToken(token, num);
     }
 
+    /**
+     * Set new marking for a place
+     * @param s marking String (Ex: ['thong', 1.2], 3~['he', 3.2])
+     */
     public void setMarking(String s) {
 
         marking = new Marking(this);
         if (s.isEmpty()) return;
 
-        String[] e = s.replace("]", "]@").split("@");
+        List<String> e = Utils.parseMarkingString(s);
         for (String t : e) {
             Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(t);
             Token token = new Token(tokenData.getValue0());

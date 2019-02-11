@@ -31,7 +31,7 @@ public class Token implements Serializable {
     }
 
     boolean isUnit() {
-        return data == null;
+        return data.isEmpty();
     }
 
     String get(int index) {

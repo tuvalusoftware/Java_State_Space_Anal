@@ -114,18 +114,23 @@ public class Transition extends Node {
         return !isPass.getBoolean();
     }
 
-    private Token runExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
+    private Token runSingleTokenExpression(Map<String, String> varMapping, Place place, Interpreter interpreter) {
 
-        Token token = new Token();
-        String[] expression = getExpression(place).get(0).trim().split(",");
+        List<String> tokenData = new ArrayList<>();
+        List<String> expression = getExpression(place);
+
+        /* unit token */
+        if (expression.size() == 1 && expression.get(0).equals("[]")) {
+            return new Token(tokenData);
+        }
 
         for(String statement: expression) {
             if (statement.length() == 0) return null;
             Interpreter.Value res = interpreter.interpretFromString(statement, varMapping);
-            token.addData(res.getString());
+            tokenData.add(res.getString());
         }
 
-        return token;
+        return new Token(tokenData);
     }
 
     List<Binding> getFireableBinding(Interpreter interpreter) {
@@ -148,6 +153,7 @@ public class Transition extends Node {
     void executeWithID(int bindingID, Interpreter interpreter) {
 
         List<Binding> fireableBindings = getFireableBinding(interpreter);
+        if (fireableBindings.isEmpty()) return;
 
         bindingID %= fireableBindings.size();
         executeWithBinding(fireableBindings.get(bindingID), interpreter);
@@ -164,7 +170,7 @@ public class Transition extends Node {
         }
 
         for(Place place: outPlaces) {
-            Token newToken = runExpression(varMapping, place, interpreter);
+            Token newToken = runSingleTokenExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, getExpressionNumber(place));
         }
     }
