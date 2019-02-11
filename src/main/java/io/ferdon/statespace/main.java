@@ -38,9 +38,6 @@ public class main {
             String option = args[0];
             String petrinetInput = path + args[1];
 
-            option = "analysis";
-            petrinetInput = "/Users/thethongngu/Desktop/Guards.json";
-
             print("option: " + option);
             print(petrinetInput);
 
