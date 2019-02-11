@@ -442,7 +442,7 @@ public class InterpreterTest {
         expression = "'8' '7' >=";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -450,7 +450,7 @@ public class InterpreterTest {
         expression = "'8' '7' <";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -458,7 +458,7 @@ public class InterpreterTest {
         expression = "'8' '7' <=";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -466,7 +466,7 @@ public class InterpreterTest {
         expression = "'8' '7' >";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -495,7 +495,7 @@ public class InterpreterTest {
         expression = "True True >=";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -503,7 +503,7 @@ public class InterpreterTest {
         expression = "True True <";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -511,7 +511,7 @@ public class InterpreterTest {
         expression = "True False <=";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -519,7 +519,7 @@ public class InterpreterTest {
         expression = "True True >";
         thrown.expect(UnsupportedOperationException.class);
         thrown.expectMessage("Method have not implemented yet");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -527,7 +527,7 @@ public class InterpreterTest {
         expression = "a 3 >";
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Variable's values are not provided");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
@@ -569,7 +569,7 @@ public class InterpreterTest {
         vars.put("b", "True");
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Syntax Error");
-        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        interpreter.interpretFromString(expression, vars);
     }
 
     @Test
