@@ -20,113 +20,113 @@ public class InterpreterTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void testIntegerExpressionGetReal() throws Exception {
+    public void testIntegerExpressionGetReal()  {
         expression = "2 5 * 3 + 2 8 4 2 / / * - 3 3 * +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(14, res.getReal(), precision);
     }
 
     @Test
-    public void testIntegerExpressionGetString() throws Exception {
+    public void testIntegerExpressionGetString()  {
         expression = "2 5 * 3 + 2 8 4 2 / / * - 3 3 * +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals("14", res.getString());
     }
 
     @Test
-    public void testIntegerExpressGetBool() throws Exception {
+    public void testIntegerExpressGetBool()  {
         expression = "1 5 +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionRandom01() throws Exception {
+    public void testIntegerExpressionRandom01()  {
         expression = "2 5 * 3 + 2 8 4 2 / / * - 3 3 * +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(14, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionRandom02() throws Exception {
+    public void testIntegerExpressionRandom02()  {
         expression = "33 32 + 432 322 917 - * 3 * + 1 - 1 - 12 12 12 12 2 - + + + +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(-771011, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressReturnDouble() throws Exception {
+    public void testIntegerExpressReturnDouble()  {
         expression = "10.0 2 / 2 / 2 / 2 / 2 /";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(0.3125, res.getReal(), precision);
     }
 
     @Test
-    public void testIntegerExpressionNegative() throws Exception {
+    public void testIntegerExpressionNegative()  {
         expression = "1 2 + 3 + 4 + 5 + 6 - 7 - 8 - 9 2 * -";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(-24, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressOpsOrder() throws Exception {
+    public void testIntegerExpressOpsOrder()  {
         expression = "2 5 * 3 + 2 8 4 2 / / * - 3 3 * +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(14, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionRandom03() throws Exception {
+    public void testIntegerExpressionRandom03()  {
         expression = "1324123 1234123 + 12341234 + 12341234 12341234 + +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(39581948, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionNegativeInput() throws Exception {
+    public void testIntegerExpressionNegativeInput()  {
         expression = "-2 1 +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(-1, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionOpsWithNegative01() throws Exception {
+    public void testIntegerExpressionOpsWithNegative01()  {
         expression = "-2 -1 -";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(-1, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionOpsWithNegative02() throws Exception {
+    public void testIntegerExpressionOpsWithNegative02()  {
         expression = "-2 -1 +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(-3, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionWithoutOps() throws Exception {
+    public void testIntegerExpressionWithoutOps()  {
         expression = "-2";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(-2, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionOnlyZero() throws Exception {
+    public void testIntegerExpressionOnlyZero()  {
         expression = "0";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(0, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressWithVar() throws Exception {
+    public void testIntegerExpressWithVar()  {
         expression = "1 2 + a ==";
         vars.put("a", "3");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        assertEquals(true, res.getBoolean());
+        assertTrue(res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionWithVars() throws Exception {
+    public void testIntegerExpressionWithVars()  {
         expression = "1 2 + a b - ==";
         vars.put("a", "10");
         vars.put("b", "7");
@@ -135,7 +135,7 @@ public class InterpreterTest {
     }
 
     @Test
-    public void testIntegerExpressionWithOnlyVars() throws Exception {
+    public void testIntegerExpressionWithOnlyVars()  {
         expression = "my code + is perfect - *";
         vars.put("my", "10");
         vars.put("code", "5");
@@ -146,21 +146,21 @@ public class InterpreterTest {
     }
 
     @Test
-    public void testRealExpressionRandom01() throws Exception {
+    public void testRealExpressionRandom01()  {
         expression = "1.1 2.2 + 3.3 + 4.4 +";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(11, res.getReal(), precision);
     }
 
     @Test
-    public void testRealExpressionRandom02() throws Exception {
+    public void testRealExpressionRandom02()  {
         expression = "5.3 1.32 + 2.31 * 5.3 4 * - 12 + 2 -";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(4.092200000000002, res.getReal(), precision);
     }
 
     @Test
-    public void testRealExpressionWithVars() throws Exception {
+    public void testRealExpressionWithVars()  {
         expression = "5.3 1.32 + thong * 5.3 is * - 12 + here -";
         vars.put("thong", "2.31");
         vars.put("is", "4");
@@ -170,231 +170,231 @@ public class InterpreterTest {
     }
 
     @Test
-    public void testRealExpressionGetInt() throws Exception {
+    public void testRealExpressionGetInt()  {
         expression = "5.3 1.32 + 2.31 * 5.3 4 * - 12 + 2 -";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(4, res.getInt());
     }
 
     @Test
-    public void testRealExpressionGetString() throws Exception {
+    public void testRealExpressionGetString()  {
         expression = "5.3 1.32 + 2.31 * 5.3 4 * - 12 + 2 -";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals("4.092200000000002", res.getString());
     }
 
     @Test
-    public void testBooleanExpressionRandom01() throws Exception {
+    public void testBooleanExpressionRandom01()  {
         expression = "True True == True False != ||";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom02() throws Exception {
+    public void testBooleanExpressionRandom02()  {
         expression = "False !";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom03() throws Exception {
+    public void testBooleanExpressionRandom03()  {
         expression = "False True ! ==";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom04() throws Exception {
+    public void testBooleanExpressionRandom04()  {
         expression = "True True !";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom05() throws Exception {
+    public void testBooleanExpressionRandom05()  {
         expression = "False True &&";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom06() throws Exception {
+    public void testBooleanExpressionRandom06()  {
         expression = "False True ||";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom07() throws Exception {
+    public void testBooleanExpressionRandom07()  {
         expression = "False True ^";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom08() throws Exception {
+    public void testBooleanExpressionRandom08()  {
         expression = "True True ^";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom09() throws Exception {
+    public void testBooleanExpressionRandom09()  {
         expression = "False isTrue";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testBooleanExpressionRandom10() throws Exception {
+    public void testBooleanExpressionRandom10()  {
         expression = "False isFalse";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionMod() throws Exception {
+    public void testIntegerExpressionMod()  {
         expression = "6 3 %";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(0, res.getInt());
     }
 
     @Test
-    public void testIntegerExpressionGT() throws Exception {
+    public void testIntegerExpressionGT()  {
         expression = "3 4 >";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionGTE() throws Exception {
+    public void testIntegerExpressionGTE()  {
         expression = "4 3 >=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionLT() throws Exception {
+    public void testIntegerExpressionLT()  {
         expression = "10 5 <";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionLTE() throws Exception {
+    public void testIntegerExpressionLTE()  {
         expression = "5 10 <=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionEqual() throws Exception {
+    public void testIntegerExpressionEqual()  {
         expression = "5 10 ==";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testIntegerExpressionNotEqual() throws Exception {
+    public void testIntegerExpressionNotEqual()  {
         expression = "5 10 !=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionGetBoolean01() throws Exception {
+    public void testRealExpressionGetBoolean01()  {
         expression = "2.123";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionGetBoolean02() throws Exception {
+    public void testRealExpressionGetBoolean02()  {
         expression = "0.0";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionMod() throws Exception {
+    public void testRealExpressionMod()  {
         expression = "5.3 1.2 %";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(0.5, res.getReal(), precision);
     }
 
     @Test
-    public void testRealExpressionGT() throws Exception {
+    public void testRealExpressionGT()  {
         expression = "3.9 4.0 >";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionGTE() throws Exception {
+    public void testRealExpressionGTE()  {
         expression = "-4.4 -3.99 >=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionLT() throws Exception {
+    public void testRealExpressionLT()  {
         expression = "10.012345 5.9999999999999999 <";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionLTE01() throws Exception {
+    public void testRealExpressionLTE01()  {
         expression = "-5.0 10.0 <=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionLTE02() throws Exception {
+    public void testRealExpressionLTE02()  {
         expression = "-5.0 -10.0 <=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionEqual() throws Exception {
+    public void testRealExpressionEqual()  {
         expression = "5.0 10.0 ==";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testRealExpressionNotEqual() throws Exception {
+    public void testRealExpressionNotEqual() {
         expression = "5.0 10.0 !=";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testStringExpressionEqual() throws Exception {
+    public void testStringExpressionEqual()  {
         expression = "'efe' 'efe' == ";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testStringExpressionNotEqual() throws Exception {
+    public void testStringExpressionNotEqual()  {
         expression = "'efe' 'efe' != ";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(false, res.getBoolean());
     }
 
     @Test
-    public void testStringExpressionAppend() throws Exception {
+    public void testStringExpressionAppend()  {
         expression = "'thong' 'dep' append ";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals("thongdep", res.getString());
     }
 
     @Test
-    public void testStringExpressionTrim() throws Exception {
+    public void testStringExpressionTrim()  {
         expression = "b trim ";
         vars.put("b", "'    d ep trai   '");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
@@ -402,21 +402,21 @@ public class InterpreterTest {
     }
 
     @Test
-    public void testStringExpressionIsEmpty() throws Exception {
+    public void testStringExpressionIsEmpty()  {
         expression = "'' isEmpty";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(true, res.getBoolean());
     }
 
     @Test
-    public void testStringExpressionSubStr() throws Exception {
+    public void testStringExpressionSubStr()  {
         expression = "'thethongdeptrai' 3 8 substr";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals("thong", res.getString());
     }
 
     @Test
-    public void testStringExpressionGetInt() throws Exception {
+    public void testStringExpressionGetInt()  {
         expression = "'8'";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
         assertEquals(8, res.getInt());
@@ -567,5 +567,16 @@ public class InterpreterTest {
         thrown.expect(IllegalArgumentException.class);
         thrown.expectMessage("Syntax Error");
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+    }
+
+    @Test
+    public void testArrayExpression01() throws UnsupportedOperationException {
+        expression = "[ 1 , '2' , True , 4 3 - ]";
+        Interpreter.Value res = interpreter.interpretFromString(expression, vars);
+        assertEquals(4, res.getList().size());
+        assertEquals(1, res.getList().get(0).getInt());
+        assertEquals("2", res.getList().get(1).getString());
+        assertTrue(res.getList().get(2).getBoolean());
+        assertEquals(1, res.getList().get(0).getInt());
     }
 }

@@ -29,7 +29,8 @@ class Interpreter implements Serializable {
         AND, NOT, OR, XOR, ISTRUE, ISFALSE,
         EQ, NEQ, GT, GTE, LT, LTE,
         SUBSTR, APPEND, ISEMPTY, TRIM,
-        IF, IFELSE
+        IF, IFELSE,
+        OPENARRAY, CLOSEARRAY, SPLITTER
     }
 
     interface Value {
@@ -42,6 +43,8 @@ class Interpreter implements Serializable {
         String getString();
 
         String toString();
+
+        List<Value> getList();
     }
 
     interface ArithmeticValue extends Value {
@@ -94,6 +97,10 @@ class Interpreter implements Serializable {
         BooleanExpression isLessOrEqual(T x) throws IllegalArgumentException;
     }
 
+    interface ContainerValue extends Value {
+        ContainerValue insert(Value x);
+    }
+
     class IntegerExpression implements ArithmeticValue, ComparableValue<ArithmeticValue> {
         private int value;
 
@@ -119,6 +126,10 @@ class Interpreter implements Serializable {
 
         public String getString() {
             return String.valueOf(value);
+        }
+
+        public List<Value> getList() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
         public ArithmeticValue add(ArithmeticValue x) {
@@ -196,6 +207,10 @@ class Interpreter implements Serializable {
 
         public String getString() {
             return String.valueOf(value);
+        }
+
+        public List<Value> getList() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
         public ArithmeticValue add(ArithmeticValue x) {
@@ -288,6 +303,10 @@ class Interpreter implements Serializable {
             return value;
         }
 
+        public List<Value> getList() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
         public BooleanExpression isEqual(StringValue x) {
             return new BooleanExpression(this.value.equals(x.getString()));
         }
@@ -345,6 +364,10 @@ class Interpreter implements Serializable {
             return String.valueOf(value);
         }
 
+        public List<Value> getList() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
         public BooleanValue and(BooleanValue x) {
             return new BooleanExpression(this.value && x.getBoolean());
         }
@@ -399,6 +422,54 @@ class Interpreter implements Serializable {
         }
     }
 
+    class ArrayExpression implements ContainerValue {
+        private List<Value> value;
+
+        ArrayExpression() {
+            value = new ArrayList<>();
+        }
+
+        public List<Value> getList() {
+            return value;
+        }
+
+        public ContainerValue insert(Value x) {
+            value.add(x);
+            return this;
+        }
+
+        @Override
+        public int getInt() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        @Override
+        public double getReal() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        @Override
+        public boolean getBoolean() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        @Override
+        public String getString() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder s = new StringBuilder();
+            for(Value item: value) {
+                s.append('\t');
+                s.append(item.toString());
+                s.append('\n');
+            }
+            return s.toString();
+        }
+    }
+
     /*
      * operator: operation name ~> operationType
      * variables: variable name ~> variable value
@@ -426,6 +497,10 @@ class Interpreter implements Serializable {
         operators.put("append", OperationType.APPEND);
         operators.put("isEmpty", OperationType.ISEMPTY);
         operators.put("trim", OperationType.TRIM);
+
+        operators.put("[", OperationType.OPENARRAY);
+        operators.put("]", OperationType.CLOSEARRAY);
+        operators.put(",", OperationType.SPLITTER);
 
         operators.put("==", OperationType.EQ);
         operators.put("!=", OperationType.NEQ);
@@ -628,6 +703,18 @@ class Interpreter implements Serializable {
                 }
                 break;
             }
+            case OPENARRAY: {
+                ArrayExpression arg1 = new ArrayExpression();
+                valueStack.push(arg1);
+                break;
+            }
+            case SPLITTER:
+            case CLOSEARRAY: {
+                Value arg1 = (Value) valueStack.pop();
+                ArrayExpression arg2 = (ArrayExpression) valueStack.pop();
+                valueStack.push(arg2.insert(arg1));
+                break;
+            }
         }
     }
 
@@ -678,7 +765,7 @@ class Interpreter implements Serializable {
      * @param tokens    list of string tokens
      * @param variables map: variable name ~> variable value
      * @return Value
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException wrong grammar
      */
     public Value interpret(String[] tokens, Map<String, String> variables) throws IllegalArgumentException {
 
@@ -715,7 +802,7 @@ class Interpreter implements Serializable {
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
-        Interpreter.Value a = interpreter.interpretFromString("-1 1 +", vars);
+        Interpreter.Value a = interpreter.interpretFromString("[ 1 , '2' , 1 3 + ]", vars);
         System.out.println(a.toString());
 
 //        Multiset<String> b = HashMultiset.create();
@@ -738,13 +825,13 @@ class Interpreter implements Serializable {
 //        System.out.println(b.hashCode());
 //        System.out.println(f.equals(b));
 
-        List<String> t = new ArrayList<>();
-        t.add("thong");
-        List<String> b = t;
-        t.add("tam");
-
-        String aa = "asfasd";
-
-        System.out.println(b.size());
+//        List<String> t = new ArrayList<>();
+//        t.add("thong");
+//        List<String> b = t;
+//        t.add("tam");
+//
+//        String aa = "asfasd";
+//
+//        System.out.println(b.size());
     }
 }
