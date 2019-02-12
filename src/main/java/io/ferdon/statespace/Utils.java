@@ -17,6 +17,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.javatuples.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,6 +50,37 @@ final class Utils {
 
         return result;
     }
+
+
+    static List<String> parseMarkingString(String s) {
+        List<String> result = new ArrayList<>();
+        String[] e = s.replace("]", "]@").split("@");
+        for(String t: e) {
+            for(int i = 0; i < t.length(); i++) {
+                if (t.charAt(i) == '[' || Character.isDigit(t.charAt(i))) {
+                    result.add(t.substring(i));
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    static Pair<List<String>, Integer> parseTokenWithNumber(String s) {
+        if (s.isEmpty()) return new Pair<>(null, 0);
+        int splitPos = s.indexOf('~');
+        int number = (splitPos == -1) ? 1 : Integer.parseInt(s.substring(0, splitPos).trim());
+        String[] rawToken = s.substring(splitPos + 1).replaceAll("[\\[\\]]+", "").trim().split(",");
+        List<String> tokenData = new ArrayList<>();
+        if (rawToken.length == 1 && rawToken[0].equals("")) return new Pair<>(tokenData, number);
+        for (String t : rawToken) {
+            tokenData.add(t.trim());
+        }
+        return new Pair<>(tokenData, number);
+    }
+
+
+
     static String convertPostfix(String infix) {
         infix += "\n";
         CharStream input = CharStreams.fromString(infix);
@@ -125,7 +157,5 @@ final class Utils {
         return objPost.toString();
     }
 
-    public static void main(String[] args) {
-        System.out.println(jsonPostfix("/Users/apple/Downloads/petrinet.json"));
-    }
+
 }

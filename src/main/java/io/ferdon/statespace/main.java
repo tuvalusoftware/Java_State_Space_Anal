@@ -67,6 +67,11 @@ public class main {
                     exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
                     exportGraphVizJson(net, graphVizOutput);
                     break;
+
+                case "translate":
+
+                    break;
+
             }
 
         } catch (Exception e) {
