@@ -101,8 +101,7 @@ public class Transition extends Node {
 
     boolean stopByGuard(Map<String, String> varMappipng, Interpreter interpreter) {
         if (guard.isEmpty()) return false;
-        String postfixGuard = Utils.convertPostfix(guard);
-        Interpreter.Value isPass = interpreter.interpretFromString(postfixGuard, varMappipng);
+        Interpreter.Value isPass = interpreter.interpretFromString(guard, varMappipng);
         return !isPass.getBoolean();
     }
 
@@ -114,16 +113,8 @@ public class Transition extends Node {
         if (expression.length() == 0) return null;
         Interpreter.Value res = interpreter.interpretFromString(expression, varMapping);
 
-<<<<<<< HEAD
         for(Interpreter.Value value: res.getList()) {
             tokenData.add(value.getString());
-=======
-        for(String statement: expression) {
-            if (statement.length() == 0) return null;
-            String postfixStatement = Utils.convertPostfix(statement);
-            Interpreter.Value res = interpreter.interpretFromString(postfixStatement, varMapping);
-            token.addData(res.getString());
->>>>>>> Vu_reformatSchema
         }
 
         return new Token(tokenData);

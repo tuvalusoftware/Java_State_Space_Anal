@@ -39,12 +39,7 @@ public class main {
             String option = args[0];
             String petrinetInput = path + args[1];
 
-<<<<<<< HEAD
-=======
-            option = "analysis";
-            petrinetInput = "/Users/apple/Downloads/simple.json";
 
->>>>>>> Vu_reformatSchema
             print("option: " + option);
             print(petrinetInput);
 
@@ -56,8 +51,7 @@ public class main {
                     String nodeParquet = path + args[2];
                     String arcParquet = path + args[3];
                     String graphVizOutput = path + args[4];
-                    nodeParquet = "/Users/apple/Desktop/node.parquet";
-                    arcParquet = "/Users/apple/Desktop/arc.parquet";
+
                     print(nodeParquet);
                     print(arcParquet);
                     print(graphVizOutput);

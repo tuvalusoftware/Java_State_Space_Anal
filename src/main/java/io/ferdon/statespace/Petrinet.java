@@ -277,13 +277,15 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/kanban.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/permu.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
         net.generateStateSpace(net.generateCurrentState());
-        //System.out.println("Num state: " + net.stateSpace.getNodes().size());
+
+        System.out.println(net.getGraphVizJson().toString());
+        System.out.println("Num state: " + net.stateSpace.getNodes().size());
     }
 }
