@@ -125,7 +125,7 @@ class StateSpace {
         if (type.equals("string")) {
             return input;
         }
-        if (type.equals("double")) {
+        if (type.equals("real")) {
             return Double.parseDouble(input);
         }
         if (type.equals("bool")) {
