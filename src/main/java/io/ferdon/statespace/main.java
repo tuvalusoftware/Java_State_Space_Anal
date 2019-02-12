@@ -79,6 +79,7 @@ public class main {
     }
 
     public static PetrinetModel parseJson(String filename) {
+        System.out.println(Utils.jsonPostfix(filename));
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         try {
