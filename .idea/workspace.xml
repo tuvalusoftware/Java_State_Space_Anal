@@ -7,7 +7,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="02369b78-d086-41ee-9287-e04836346ce3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/gen/io/ferdon/statespace/MyListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/ml.g4" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/nam.nam.main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/nam.nam.main.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/nam.nam.test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/nam.nam.test.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/Petrinet.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/Petrinet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/StateSpace.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/StateSpace.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/classes/io/ferdon/statespace/main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/output/.arc.parquet.crc" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/output/.arc.parquet.crc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/output/.node.parquet.crc" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/output/.node.parquet.crc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/output/arc.parquet" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/output/arc.parquet" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/output/graphviz.json" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/output/graphviz.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/output/node.parquet" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Interpreter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Interpreter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Transition.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Transition.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -30,35 +50,35 @@
     </system>
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2304">
-              <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
+            <state relative-caret-position="308">
+              <caret line="185" selection-start-line="185" selection-end-line="185" />
               <folding>
-                <element signature="imports" expanded="true" />
+                <element signature="e#5845#5846#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/out/production/marble.json">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="30" column="9" selection-start-line="30" selection-start-column="9" selection-end-line="30" selection-end-column="9" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="375">
-              <caret line="35" selection-start-line="35" selection-end-line="35" />
+            <state relative-caret-position="780">
+              <caret line="59" column="78" lean-forward="true" selection-start-line="59" selection-start-column="78" selection-end-line="59" selection-end-column="78" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="e#1516#1517#0" expanded="true" />
+                <element signature="e#1551#1552#0" expanded="true" />
+                <element signature="e#2015#2016#0" expanded="true" />
+                <element signature="e#2043#2044#0" expanded="true" />
+                <element signature="e#2084#2085#0" expanded="true" />
+                <element signature="e#2112#2113#0" expanded="true" />
+                <element signature="e#4133#4148#0" expanded="true" />
+                <element signature="e#5533#5534#0" expanded="true" />
+                <element signature="e#5580#5581#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -117,13 +137,13 @@
         <option value="$PROJECT_DIR$/build.gradle" />
         <option value="$PROJECT_DIR$/out/production/plus.json" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/AvroSchema.java" />
-        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" />
         <option value="$PROJECT_DIR$/out/production/output/graphviz.json" />
         <option value="$PROJECT_DIR$/out/production/cycle.json" />
         <option value="$PROJECT_DIR$/out/production/bpp.json" />
         <option value="$PROJECT_DIR$/out/production/marble.json" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java" />
         <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java" />
+        <option value="$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java" />
       </list>
     </option>
   </component>
@@ -131,52 +151,82 @@
     <option name="width" value="1440" />
     <option name="height" value="900" />
   </component>
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
-              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
               <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
-              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
+              <item name="output" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
               <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
               <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
             </path>
             <path>
-              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
               <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="nam" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
               <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="statespace" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Java_State_Space_Analysis" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Java_State_Space_Analysis" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="test" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="statespace" type="462c0819:PsiDirectoryNode" />
+              <item name="PetrinetJson" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -256,6 +306,7 @@
       </extension>
       <option name="PACKAGE_NAME" value="io.ferdon.statespace" />
       <option name="MAIN_CLASS_NAME" value="io.ferdon.statespace.AvroSchemaTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -373,7 +424,7 @@
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.26752505" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.23891273" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Favorites" order="3" side_tool="true" />
@@ -383,7 +434,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
       <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49928468" weight="0.2759036" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.40963855" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.24819277" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32956153" />
@@ -446,6 +497,18 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java</url>
+          <line>72</line>
+          <properties />
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="antWorkspaceConfiguration">
     <option name="IS_AUTOSCROLL_TO_SOURCE" value="false" />
     <option name="FILTER_TARGETS" value="false" />
@@ -456,9 +519,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/arcSchema.avsc" />
     <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/PetrinetJson/kanban.json">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/PetrinetJson/kanban.json" />
     <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.json/json/20180130/66ab57acbb9086d16201c2eafa2145d2b914bb26/json-20180130-sources.jar!/org/json/JSONObject.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="143">
@@ -476,13 +537,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="1" lean-forward="true" selection-start-column="1" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/inputFileTest.json" />
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_191.jdk/Contents/Home/src.zip!/java/util/function/ToIntFunction.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="331">
@@ -595,23 +650,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3780">
-          <caret line="254" column="45" lean-forward="true" selection-start-line="254" selection-start-column="45" selection-end-line="254" selection-end-column="45" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/out/production/output/graphviz.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="45" selection-start-column="45" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/out/production/bpp.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
@@ -628,10 +666,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/Petrinet.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2304">
-          <caret line="289" lean-forward="true" selection-start-line="289" selection-end-line="289" />
+        <state relative-caret-position="308">
+          <caret line="185" selection-start-line="185" selection-end-line="185" />
           <folding>
-            <element signature="imports" expanded="true" />
+            <element signature="e#5845#5846#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -645,10 +683,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="375">
-          <caret line="35" selection-start-line="35" selection-end-line="35" />
+        <state relative-caret-position="150">
+          <caret line="116" selection-start-line="116" selection-end-line="116" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/io/ferdon/statespace/PetrinetJson/AvroSchemaPetrinet.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="6" column="1" selection-start-line="6" selection-start-column="1" selection-end-line="6" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/out/production/output/graphviz.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="42" selection-end-column="90" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/io/ferdon/statespace/StateSpace.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="780">
+          <caret line="59" column="78" lean-forward="true" selection-start-line="59" selection-start-column="78" selection-end-line="59" selection-end-column="78" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="e#1516#1517#0" expanded="true" />
+            <element signature="e#1551#1552#0" expanded="true" />
+            <element signature="e#2015#2016#0" expanded="true" />
+            <element signature="e#2043#2044#0" expanded="true" />
+            <element signature="e#2084#2085#0" expanded="true" />
+            <element signature="e#2112#2113#0" expanded="true" />
+            <element signature="e#4133#4148#0" expanded="true" />
+            <element signature="e#5533#5534#0" expanded="true" />
+            <element signature="e#5580#5581#0" expanded="true" />
           </folding>
         </state>
       </provider>

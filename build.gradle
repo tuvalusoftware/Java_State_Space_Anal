@@ -22,4 +22,6 @@ dependencies {
     implementation 'org.javatuples:javatuples:1.2'
     implementation 'org.apache.parquet:parquet-avro:1.10.0'
     implementation 'org.apache.avro:avro-tools:1.8.2'
+
+    implementation 'org.antlr:antlr4:4.7.2'
 }

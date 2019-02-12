@@ -8,14 +8,19 @@
  */
 
 package io.ferdon.statespace;
-
 import com.google.common.collect.Lists;
+<<<<<<< HEAD
 import org.javatuples.Pair;
+=======
+import io.ferdon.statespace.gen.io.ferdon.statespace.*;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+>>>>>>> Vu_reformatSchema
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 final class Utils {
 
@@ -43,6 +48,7 @@ final class Utils {
 
         return result;
     }
+<<<<<<< HEAD
 
     /**
      * Parse marking string
@@ -92,5 +98,17 @@ final class Utils {
             tokenData.add(t.trim());
         }
         return new Pair<>(tokenData, number);
+=======
+    static String convertPostfix(String infix) {
+        infix += "\n";
+        CharStream input = CharStreams.fromString(infix);
+        mlLexer lexer = new mlLexer(input);
+        CommonTokenStream token = new CommonTokenStream(lexer);
+        mlParser parser = new mlParser(token);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        MyListener listener = new MyListener();
+        walker.walk(listener, parser.prog());
+        return listener.postfix();
+>>>>>>> Vu_reformatSchema
     }
 }
