@@ -1,0 +1,85 @@
+{
+  "Variables": [
+    [
+      [
+        1,
+        "name , sex , age , married"
+      ]
+    ],
+    [
+      [
+        0,
+        "name , sex , age , married"
+      ],
+      [
+        4,
+        "[ ]"
+      ]
+    ]
+  ],
+  "placeToType": {
+    "0": "INFO",
+    "1": "INFO",
+    "2": "INFO",
+    "3": "INFO",
+    "4": "UNIT"
+  },
+  "T": 2,
+  "typeToColor": {
+    "INFO": "STRING*STRING*INT*BOOL"
+  },
+  "Guards": [
+    "",
+    "age 20 >= sex 'boy' == && age 18 >= sex 'girl' == && || married False == &&"
+  ],
+  "Markings": [
+    "['Truong', 'boy', 23, False ],['Su', 'boy', 32, True ], ['Vu', 'boy', 20, False],['Lan', 'girl', 18, False],['Thong', 'girl', 17, False]",
+    "",
+    "",
+    "",
+    "6 ~ []"
+  ],
+  "Expressions": [
+    [
+      [
+        2,
+        "name 'Truong' == [ name , sex , age , married ] [ ] ifelse"
+      ],
+      [
+        3,
+        "age 30 < sex 'girl' == && [ name , sex , age , married ] [ ] ifelse"
+      ]
+    ],
+    [
+      [
+        1,
+        "[ name , sex , age , married ]"
+      ]
+    ]
+  ],
+  "outPlace": [
+    [
+      2,
+      3
+    ],
+    [
+      1
+    ]
+  ],
+  "inPlace": [
+    [
+      1
+    ],
+    [
+      0,
+      4
+    ]
+  ],
+  "placeToColor": {
+    "0": "STRING*STRING*INT*BOOL",
+    "1": "STRING*STRING*INT*BOOL",
+    "2": "STRING*STRING*INT*BOOL",
+    "3": "STRING*STRING*INT*BOOL",
+    "4": "UNIT"
+  }
+}
