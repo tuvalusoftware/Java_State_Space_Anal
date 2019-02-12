@@ -3,13 +3,13 @@
     [
       [
         1,
-        "name , sex , age , married"
+        "name,sex,age,married"
       ]
     ],
     [
       [
         0,
-        "name , sex , age , married"
+        "name,sex,age,married"
       ],
       [
         4,
@@ -33,7 +33,7 @@
     "age 20 >= sex 'boy' == && age 18 >= sex 'girl' == && || married False == &&"
   ],
   "Markings": [
-    "['Truong', 'boy', 23, False ],['Su', 'boy', 32, True ], ['Vu', 'boy', 20, False],['Lan', 'girl', 18, False],['Thong', 'girl', 17, False]",
+    "[ 'Truong' , 'boy', 23 , False ],[ 'Su' , 'boy', 32 , True ], ['Vu', 'boy', 20 , False],['Lan', 'girl', 18 , False],['Thong', 'girl', 17 , False]",
     "",
     "",
     "",
@@ -43,11 +43,11 @@
     [
       [
         2,
-        "name 'Truong' == [ name , sex , age , married ] [ ] ifelse"
+        " name 'Truong' == [ name , sex , age , married ] [ ] ifelse "
       ],
       [
         3,
-        "age 30 < sex 'girl' == && [ name , sex , age , married ] [ ] ifelse"
+        " age 30 < sex 'girl' == && [ name , sex , age , married ] [ ] ifelse "
       ]
     ],
     [
