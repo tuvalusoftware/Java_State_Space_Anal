@@ -1,0 +1,38 @@
+{
+  "Expressions": [
+    [[2,"\treturn [n,s]"]]
+  ],
+  "Guards": [
+    ""
+  ],
+  "Markings": [
+    "['a'],['b'],['c'],['d']",
+    "[1],[2],[3],[4]",
+    ""
+  ],
+  "T" : 1,
+  "Variables": [
+    [[0,"s"], [1,"n"]]
+  ],
+  "inPlace": [
+    [0,1]
+  ],
+  "outPlace": [
+    [2]
+  ],
+  "placeToColor": {
+    "0": "STRING",
+    "1": "INT",
+    "2": "INT*STRING"
+  },
+  "placeToType": {
+    "0": "P0",
+    "1": "P1",
+    "2": "P2"
+  },
+  "typeToColor": {
+    "P0": "STRING",
+    "P1": "INT",
+    "P2": "INT*STRING"
+  }
+}
