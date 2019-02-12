@@ -1,1 +1,5 @@
+<<<<<<< Updated upstream
 {"outPlaces":[[0],[2]],"nodes":{"1":"1\\n1, 0, 0, "},"arc":{"1":1},"inPlaces":[[2],[1,0]]}
+=======
+{"outPlaces":[[1],[2],[0]],"nodes":{"0":"0\\n0, 3, 0, "},"arc":{},"inPlaces":[[0],[1],[2]]}
+>>>>>>> Stashed changes
