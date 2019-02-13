@@ -46,7 +46,7 @@ class StateSpace {
     }
 
     boolean containState(State state) {
-        for(State s: visitedState) {
+        for (State s : visitedState) {
             if (s.equals(state)) return true;
         }
 
@@ -77,7 +77,7 @@ class StateSpace {
         return edges;
     }
 
-//    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath) {
+    //    List<List<Integer>> allPathsBetween(int start, int end, List<Integer> inPath) {
 //
 //        List<Integer> path = new ArrayList<>();
 //        for (int i : inPath) {
@@ -177,6 +177,7 @@ class StateSpace {
         }
 
     }
+
     private Schema getPlaceSchema(int placeID) {
         return placeSchema.get(placeID);
     }
@@ -194,9 +195,6 @@ class StateSpace {
             colSet.add(oneSet);
         }
     }
-
-
-
 
 
     /* write Node in parquet format */
@@ -218,27 +216,24 @@ class StateSpace {
                     int placeID = place.getID();
                     List<String> color = colSet.get(placeID);
                     int numberColors = color.size();
-                    listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
-                    for (Token token : state.getMarking(place).getTokenList()) {
+                    record = new GenericData.Record(tokenSchema.get(placeID));
 
-                        record = new GenericData.Record(tokenSchema.get(placeID));
-
-                        if (token.size() == 0) {
-                            if (!color.get(0).equals("unit"))
-                                break;
-                        }
-
-                        for (int i = 0; i < numberColors; ++i) {
-                            Object value;
-                            if (getType(color.get(i)).equals("unit"))
-                                value = numTokens;
-                            else
-                                value = getValue(token.get(i), color.get(i));
-
-                            record.put(color.get(i), value);
-                        }
+                    if (getType(color.get(0)).equals("unit")) { // Unit Place
+                        listRecord = new GenericData.Array(1, placeSchema.get(placeID));
+                        record.put(color.get(0), numTokens);
                         listRecord.add(record);
-
+                    } else {
+                        listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
+                        for (Token token : state.getMarking(place).getTokenList()) {
+                            if (token.size() != 0) { // token not empty
+                                for (int i = 0; i < numberColors; ++i) {
+                                    Object value;
+                                    value = getValue(token.get(i), color.get(i));
+                                    record.put(color.get(i), value);
+                                }
+                            }
+                            listRecord.add(record);
+                        }
                     }
 
                     node.put("P" + placeID, listRecord);
