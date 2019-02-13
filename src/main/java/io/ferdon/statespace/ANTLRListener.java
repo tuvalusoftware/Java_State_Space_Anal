@@ -9,14 +9,15 @@ import java.util.*;
 
 public class ANTLRListener extends mlBaseListener {
     StringBuffer postfix = new StringBuffer();
-    private HashSet<String> operator = new HashSet<>(Arrays.asList("=", "<>", "<", ">", "<=", ">=", "andalso", "oralso",
-            "not", "+", "-", "*", "/", "if", "else", "then", ")", "(", "^", "`"));
+    private HashSet<String> operator = new HashSet<>(Arrays.asList("=", "<>", "<", ">", "<=", ">=", "andalso", "orelse",
+            "not", "+", "-", "*", "/", "if", "else", "then", ")", "(", "^", "`", "\"", "empty", "1`"));
     private HashMap<String, String> translate = new HashMap<String, String>() {{
         put("andalso", "&&");
-        put("oralso", "||");
+        put("orelse", "||");
         put("=", "==");
-        put("^", "concat");
+        put("^", "append");
         put("\"", "'");
+        put("empty", " ");
     }};
 
     public void showPostfix() {
@@ -38,7 +39,8 @@ public class ANTLRListener extends mlBaseListener {
             if (!isOperator(str))
                 return;
             str = convertOp(str);
-            postfix.append(str + " ");
+            System.out.println(str);
+            postfix.append(" " + str);
         }
     }
 
@@ -50,16 +52,18 @@ public class ANTLRListener extends mlBaseListener {
 
     @Override
     public void exitIfelsesyntax(mlParser.IfelsesyntaxContext ctx) {
-        postfix.append("ifelse ");
+        postfix.append(" ifelse");
     }
 
 
     @Override
     public void enterToken(mlParser.TokenContext ctx) {
+        postfix.append(" [");
     }
 
     @Override
     public void exitToken(mlParser.TokenContext ctx) {
+        postfix.append(" ]");
     }
 
     @Override
@@ -77,7 +81,7 @@ public class ANTLRListener extends mlBaseListener {
         String str = node.getText();
         if (isOperator(str))
             return;
-        postfix.append(str + " ");
+        postfix.append(" " + str);
     }
 
 

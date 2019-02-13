@@ -3,16 +3,16 @@ grammar ml;
 
 prog : ifelsesyntax
      | token
-     | multipleToken
+     | oneToken
      | condition
      | expr
      ;
 
 ifelsesyntax:
     IF condition THEN
-        (ifelsesyntax | token)
+        (ifelsesyntax | token | oneToken)
     ELSE
-        (ifelsesyntax | token)
+        (ifelsesyntax | token | oneToken)
     ;
 
 
@@ -25,7 +25,7 @@ expr: expr ('*'|'/') expr
     | REAL
     | ID
     | STRING
-    |'(' expr ')'
+    |'(' expr')'
     ;
 
 condition:
@@ -35,8 +35,8 @@ condition:
     |'(' condition ')'
     ;
 
-multipleToken:
-       | INT '`' token
+oneToken:
+          '1`' token
        ;
 
 token: |'(' expr (',' expr)* ')'
