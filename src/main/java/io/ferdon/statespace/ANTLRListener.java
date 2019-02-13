@@ -25,7 +25,7 @@ public class ANTLRListener extends mlBaseListener {
     }
 
     public String getPostfix() {
-        return postfix.toString().trim();
+        return postfix.toString();
     }
 
     private boolean isOperator(String str) {
@@ -39,7 +39,6 @@ public class ANTLRListener extends mlBaseListener {
             if (!isOperator(str))
                 return;
             str = convertOp(str);
-            System.out.println(str);
             postfix.append(" " + str);
         }
     }
