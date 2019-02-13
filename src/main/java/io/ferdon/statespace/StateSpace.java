@@ -220,9 +220,13 @@ class StateSpace {
                     int numberColors = color.size();
                     listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
                     for (Token token : state.getMarking(place).getTokenList()) {
-                      //  System.out.println(token.toString());
 
                         record = new GenericData.Record(tokenSchema.get(placeID));
+
+                        if (token.size() == 0) {
+                            if (!color.get(0).equals("unit"))
+                                break;
+                        }
 
                         for (int i = 0; i < numberColors; ++i) {
                             Object value;
@@ -230,6 +234,7 @@ class StateSpace {
                                 value = numTokens;
                             else
                                 value = getValue(token.get(i), color.get(i));
+
                             record.put(color.get(i), value);
                         }
                         listRecord.add(record);
