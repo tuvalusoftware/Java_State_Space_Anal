@@ -40,6 +40,10 @@ class StateSpace {
         firedTransitions = new HashMap<>();
     }
 
+    int getFiredTransitionID(State parentState, State childState) {
+        return firedTransitions.get(new Pair<>(parentState, childState)).getID();
+    }
+
     void addState(State newState) {
         nodes.put(newState.getID(), newState);
         visitedState.add(newState);

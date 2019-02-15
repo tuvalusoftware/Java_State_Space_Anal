@@ -28,7 +28,6 @@ public class main {
 
         Logger.getRootLogger().setLevel(Level.OFF);
         try {
-           // System.out.println(Utils.convertPostfix("2 + 3"));
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
 //            String option = "analysis";
