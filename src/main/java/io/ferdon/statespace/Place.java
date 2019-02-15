@@ -61,7 +61,7 @@ public class Place extends Node {
     }
 
     void setColor(String colorString) {
-        String[] dataType = colorString.split(",");
+        String[] dataType = colorString.split("\\*");
         for(String type: dataType) {
             color.add(type);
         }
