@@ -2,13 +2,15 @@
 
 Implementation of Petrinet and State Space generation by BFS
 
-##### Syntax specification
+### Syntax specification
 - Value type: 
     - **String**: use single quote (Ex: `'This is a string'`)
     - **Integer**: integer number literal (Ex: `1`, `69`, `-42`)
     - **Real**: floating number literal (Ex: `3.4`, `-03.13`, `.99`)
     - **Boolean**: boolean literal (Ex: `True`, `False`)
     - **Variable**: variables that contained value of 4 above data types (Ex: `n`, `money`, `numAccount`)
+
+
 - Arithmetic operators: `+`, `-`, `*`, `/`, `%`
 - Logic operators: `&&`, `!`, `||`, `^`, `isTrue`, `isFalse`
 - Compare operators: `==`, `!=`, `>`, `<`, `>=`, `<=`
@@ -24,8 +26,9 @@ Implementation of Petrinet and State Space generation by BFS
     - **[**: create empty array
     - **,** and **]**: add new element to array (add nothing if empty array)
 
-##### Input Petrinet JSON
-- **Expression**: array of each **Transition** to **output places** 
+### Input Petrinet JSON
+- **Expression**: array of each **Transition** to **output** places
+    *Note*: spaces between expression is important for parsing
     ```
     Expression: [
         [
@@ -37,15 +40,15 @@ Implementation of Petrinet and State Space generation by BFS
         ]
     ]
     ```
-    *Note*: spaces between expression is important for parsing
--   **Guards**: array of string which is contained checking condition at each **place**
+
+-   **Guards**: array of string which is contained checking condition at each place
     ```
         "Guards": [
             "a b >",  # Guard at place 0 in postfix (a > b)
             "1 1 + 2 ==" # Guard at place 1 in postfix (1 + 1 == 2)
         ],
     ```
--   ***Marking***: array of string contained the initial tokens information in each **place**
+-   ***Marking***: array of string contained the initial tokens information in each place
     ```
         "Markings": [
             "[ 'a' ], [ 'b' ], [ 'c' ]",
@@ -57,7 +60,7 @@ Implementation of Petrinet and State Space generation by BFS
     ```
         "T": 4  # There are 4 transitions in petrinet
     ```
--   ***Variables***: array of each **Transition** to **input places**      
+-   ***Variables***: array of each Transition to **input** places
     ```
     Variables: [
         [
@@ -82,7 +85,7 @@ Implementation of Petrinet and State Space generation by BFS
         ]
     ```
 -   **outPlace**: simplified version of ***Expression*** without specified the output edge's information
--   ```
+    ```
         "outPlace": [
             [
                 2
@@ -93,7 +96,7 @@ Implementation of Petrinet and State Space generation by BFS
             ]
         ]
     ```
--   **placeToColor**: data type of **places**
+-   **placeToColor**: data type of places
     ```
         "placeToColor": {
             "0": "STRING",
