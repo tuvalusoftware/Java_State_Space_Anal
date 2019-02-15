@@ -62,7 +62,6 @@ public class UtilsTest {
         assertEquals(b2.getToken(place02), token01);
         assertEquals(b2.getToken(place03), token03);
     }
-<<<<<<< HEAD
 
     @Test
     public void testParseMarkingString01() {
@@ -166,9 +165,10 @@ public class UtilsTest {
         String s = "";
         Pair<List<String>, Integer> tokenData = Utils.parseTokenWithNumber(s);
 
-        assertEquals(null, tokenData.getValue0());
+        assertNull(tokenData.getValue0());
         assertEquals(0, tokenData.getValue1().intValue());
-=======
+    }
+
     @Test
     public void testConvertPostfixWithExpr() {
         String infix01 = "(4 + 5) * 4 + 6";
@@ -226,6 +226,5 @@ public class UtilsTest {
         String postfix02 = "a 2 == x 3 + 4 < and [ 3 , 4 ] [ a , b ] ifelse";
         String output02 = Utils.convertPostfix(infix02).trim();
         assertEquals(postfix02, output02);
->>>>>>> syntax-tree-antlr
     }
 }

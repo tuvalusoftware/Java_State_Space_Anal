@@ -220,7 +220,6 @@ class StateSpace {
                     int numberColors = color.size();
                     listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
                     for (Token token : state.getMarking(place).getTokenList()) {
-                      //  System.out.println(token.toString());
 
                         record = new GenericData.Record(tokenSchema.get(placeID));
 

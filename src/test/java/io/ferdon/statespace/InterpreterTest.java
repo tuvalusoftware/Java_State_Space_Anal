@@ -385,7 +385,6 @@ public class InterpreterTest {
     public void testStringExpressionEqual()  {
         expression = "'efe' 'efe' == ";
         Interpreter.Value res = interpreter.interpretFromString(expression, vars);
-        System.out.println(res.getString());
         assertTrue(res.getBoolean());
     }
 
