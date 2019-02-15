@@ -53,6 +53,13 @@ public class Transition extends Node {
         return outPlaceIDs;
     }
 
+    private boolean allUnitInput() {
+        for(Place place: inPlaces) {
+            if (!place.isUnit()) return false;
+        }
+        return true;
+    }
+
     void addGuard(String guard) {
         this.guard = guard;
     }
@@ -68,8 +75,15 @@ public class Transition extends Node {
     }
 
     String[] getVars(Place place) {
+
         if (!inEdges.containsKey(place)) return new String[0];
-        else return inEdges.get(place).getData().split(",");
+        else {
+            String[] vars = inEdges.get(place).getData().split(",");
+            for(int i = 0; i < vars.length; i++) {
+                vars[i] = vars[i].trim();
+            }
+            return vars;
+        }
     }
 
     String getExpression(Place place) {
@@ -128,7 +142,7 @@ public class Transition extends Node {
         List<Binding> allBinding = generateAllBinding(markings, this);
 
         for(Binding b: allBinding) {
-            Map<String, String> varMapping = b.getVarMapping();
+            Map<String, String> varMapping = b.assignValueToVariables();
             if (varMapping == null) continue;
             if (stopByGuard(varMapping, interpreter)) continue;
 
@@ -160,8 +174,9 @@ public class Transition extends Node {
      */
     void executeWithBinding(Binding b, Interpreter interpreter) {
 
-        Map<String, String> varMapping = b.getVarMapping();
+        Map<String, String> varMapping = b.assignValueToVariables();
         if (varMapping == null) return;
+        if (b.isEmpty() && !allUnitInput()) return;
         if (stopByGuard(varMapping, interpreter)) return;
 
         for(Place place: inPlaces) {

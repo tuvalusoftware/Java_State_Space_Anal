@@ -71,6 +71,10 @@ public class Petrinet implements Serializable {
             }
         }
 
+        for(String placeID: placeToColor.keySet()) {
+            places.get(Integer.parseInt(placeID)).setColor(placeToColor.get(placeID));
+        }
+
         stateSpace = new StateSpace(numPlaces);
         interpreter = new Interpreter();
     }
@@ -115,6 +119,10 @@ public class Petrinet implements Serializable {
 
                 addVars(inPlaceID, tranID, vars);
             }
+        }
+
+        for(String placeID: model.placeToColor.keySet()) {
+            places.get(Integer.parseInt(placeID)).setColor(model.placeToColor.get(placeID));
         }
 
         stateSpace = new StateSpace(numPlaces);

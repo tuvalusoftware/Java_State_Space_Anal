@@ -50,14 +50,6 @@ public class PetrinetCycleTest {
     }
 
     @Test
-    public void testEdgeData() {
-        assertEquals(3, place00.getMarking().size());
-        assertEquals(0, place01.getMarking().size());
-        assertEquals(0, place02.getMarking().size());
-
-    }
-
-    @Test
     public void testNetStructure() {
         assertEquals(2, place00.getInTransition().get(0).getID());
         assertEquals(0, place00.getOutTransition().get(0).getID());

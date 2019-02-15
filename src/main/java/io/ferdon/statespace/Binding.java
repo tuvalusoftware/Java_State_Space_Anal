@@ -42,7 +42,7 @@ public class Binding implements Serializable {
         data.put(place, token);
     }
 
-    Map<String, String> getVarMapping() {
+    Map<String, String> assignValueToVariables() {
         Map<String, String> vars = new HashMap<>();
 
         for (Place place : data.keySet()) {
@@ -50,14 +50,14 @@ public class Binding implements Serializable {
             Token token = data.get(place);
             if (token.isUnit()) continue;
 
-            /* the order of varNames is the same the order of String inside Token */
+            /* the order of varNames is the same the order of values inside Token */
             String[] varNames = transition.getVars(place);
             for (int varIndex = 0; varIndex < varNames.length; varIndex++) {
 
                 String varname = varNames[varIndex];
                 String tokenValue = token.get(varIndex);
 
-                if (vars.containsKey(varname)) return null;
+                if (vars.containsKey(varname)) return null;  /* variable's value conflicted! */
                 vars.put(varname, tokenValue);
             }
         }
