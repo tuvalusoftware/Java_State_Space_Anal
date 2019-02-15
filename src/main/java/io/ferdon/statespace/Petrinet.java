@@ -212,7 +212,7 @@ public class Petrinet implements Serializable {
             State parentState = stateQueue.remove();
             applyState(parentState);
 
-            System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
+           // System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
 
             for (Transition transition : transitions.values()) {
 
@@ -285,13 +285,15 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/kanban.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/permu.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
         net.generateStateSpace(net.generateCurrentState());
+
+        System.out.println(net.getGraphVizJson().toString());
         System.out.println("Num state: " + net.stateSpace.getNodes().size());
     }
 }

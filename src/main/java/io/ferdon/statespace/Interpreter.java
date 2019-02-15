@@ -807,8 +807,10 @@ class Interpreter implements Serializable {
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
+
         Interpreter.Value a = interpreter.interpretFromString("[ 1 , '2' , 1 3 + ]", vars);
         System.out.println(a.toString());
+
 
 //        Multiset<String> b = HashMultiset.create();
 //        b.add("t");

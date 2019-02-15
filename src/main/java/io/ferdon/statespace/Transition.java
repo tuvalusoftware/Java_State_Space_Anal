@@ -115,7 +115,6 @@ public class Transition extends Node {
 
     boolean stopByGuard(Map<String, String> varMappipng, Interpreter interpreter) {
         if (guard.isEmpty()) return false;
-
         Interpreter.Value isPass = interpreter.interpretFromString(guard, varMappipng);
         return !isPass.getBoolean();
     }

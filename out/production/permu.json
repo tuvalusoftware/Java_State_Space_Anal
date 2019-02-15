@@ -1,0 +1,49 @@
+{
+  "Expressions": [
+    [
+      [
+        2,
+        "[ s , n ]"
+      ]
+    ]
+  ],
+  "Guards": [
+    ""
+  ],
+  "Markings": [
+    "['a'], ['b'], ['c']",
+    "[1], [2], [3]",
+    ""
+  ],
+  "T": 1,
+  "Variables": [
+    [
+      [
+        0,
+        "s"
+      ],
+      [
+        1,
+        "n"
+      ]
+    ]
+  ],
+  "inPlace": [
+    [
+      0,
+      1
+    ]
+  ],
+  "outPlace": [
+    [
+      2
+    ]
+  ],
+  "placeToColor": {
+    "0": "STRING",
+    "1": "INT",
+    "2": "STRING*INT"
+  }
+}
+
+

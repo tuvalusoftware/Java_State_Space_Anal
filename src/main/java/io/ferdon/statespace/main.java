@@ -28,6 +28,7 @@ public class main {
 
         Logger.getRootLogger().setLevel(Level.OFF);
         try {
+           // System.out.println(Utils.convertPostfix("2 + 3"));
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
 //            String option = "analysis";
@@ -38,18 +39,19 @@ public class main {
             String option = args[0];
             String petrinetInput = path + args[1];
 
+
             print("option: " + option);
             print(petrinetInput);
 
             PetrinetModel model = parseJson(petrinetInput);
             Petrinet net = new Petrinet(model);
 
-
             switch (option) {
                 case "analysis":
                     String nodeParquet = path + args[2];
                     String arcParquet = path + args[3];
                     String graphVizOutput = path + args[4];
+
                     print(nodeParquet);
                     print(arcParquet);
                     print(graphVizOutput);
@@ -65,6 +67,11 @@ public class main {
                     exportGraphXParquet(net, nodeSchema, arcSchema, nodeParquet, arcParquet);
                     exportGraphVizJson(net, graphVizOutput);
                     break;
+
+                case "translate":
+
+                    break;
+
             }
 
         } catch (Exception e) {
@@ -77,6 +84,7 @@ public class main {
     }
 
     public static PetrinetModel parseJson(String filename) {
+        System.out.println(Utils.jsonPostfix(filename));
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         try {
