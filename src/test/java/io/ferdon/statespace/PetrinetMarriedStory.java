@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
@@ -96,6 +98,58 @@ public class PetrinetMarriedStory {
         assertEquals(2, afterState.getMarking(place00).size());
         assertEquals(3, afterState.getMarking(place02).size());
         assertEquals(3, afterState.getMarking(place03).size());
+        System.out.println(afterState);
+
+        List<String> tokenData000 = new ArrayList<>();
+        tokenData000.add("'Thong'");
+        tokenData000.add("'girl'");
+        tokenData000.add("17");
+        tokenData000.add("False");
+        Token token000 = new Token(tokenData000);
+
+        List<String> tokenData001 = new ArrayList<>();
+        tokenData001.add("'Su'");
+        tokenData001.add("'boy'");
+        tokenData001.add("32");
+        tokenData001.add("True");
+        Token token001 = new Token(tokenData001);
+        Marking marking00 = new Marking(place00);
+        marking00.addToken(token000, 1);
+        marking00.addToken(token001, 1);
+        assertEquals(marking00, afterState.getMarking(place00));
+
+        Marking marking01 = new Marking(place01);
+        assertEquals(marking01, afterState.getMarking(place01));
+
+        Marking marking02 = new Marking(place02);
+        List<String> tokenData020 = new ArrayList<>();
+        tokenData020.add("'Truong'");
+        tokenData020.add("'boy'");
+        tokenData020.add("23");
+        tokenData020.add("False");
+        Token token020 = new Token(tokenData020);
+        marking02.addToken(new Token(), 1);
+        marking02.addToken(new Token(), 1);
+        marking02.addToken(token020, 1);
+        assertEquals(marking02, afterState.getMarking(place02));
+
+        Marking marking03 = new Marking(place03);
+        List<String> tokenData030 = new ArrayList<>();
+        tokenData030.add("'Lan'");
+        tokenData030.add("'girl'");
+        tokenData030.add("18");
+        tokenData030.add("False");
+        Token token030 = new Token(tokenData030);
+        marking03.addToken(new Token(), 1);
+        marking03.addToken(new Token(), 1);
+        marking03.addToken(token030, 1);
+        assertEquals(marking03, afterState.getMarking(place03));
+
+        Marking marking04 = new Marking(place04);
+        marking04.addToken(new Token(), 1);
+        marking04.addToken(new Token(), 1);
+        marking04.addToken(new Token(), 1);
+        assertEquals(marking04, afterState.getMarking(place04));
     }
 
     @Test
