@@ -1,0 +1,91 @@
+{
+  "Variables": [
+    [
+      [
+        0,
+        "name,age,sex,height"
+      ],
+      [
+        4,
+        "[ ]"
+      ]
+    ],
+    [
+      [
+        3,
+        "label"
+      ],
+      [
+        1,
+        "name,age,sex,height"
+      ]
+    ]
+  ],
+  "placeToType": {
+    "0": "PERSON",
+    "1": "PERSON",
+    "2": "CANDIDATE",
+    "3": "STRING",
+    "4": "UNIT"
+  },
+  "T": 2,
+  "typeToColor": {
+    "PERSON": "STRING*INT*BOOL*REAL",
+    "CANDIDATE": "STRING"
+  },
+  "Guards": [
+    " age 23 >= ",
+    " height 1.7 >= sex True == && "
+  ],
+  "Markings": [
+    "['Nam',25,True,1.74], ['Nhut',24,True,1.8], ['Lan',29,False,1.9], ['Truong',27,True,1.6]",
+    "",
+    "",
+    "[ '-pass' ]",
+    "5~[ ]"
+  ],
+  "Expressions": [
+    [
+      [
+        1,
+        "[ name , age , sex , height ]"
+      ]
+    ],
+    [
+      [
+        2,
+        "[ name label append ]"
+      ],
+      [
+        3,
+        "[ label ]"
+      ]
+    ]
+  ],
+  "outPlace": [
+    [
+      1
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "inPlace": [
+    [
+      0,
+      4
+    ],
+    [
+      3,
+      1
+    ]
+  ],
+  "placeToColor": {
+    "0": "STRING*INT*BOOL*REAL",
+    "1": "STRING*INT*BOOL*REAL",
+    "2": "STRING",
+    "3": "STRING",
+    "4": "UNIT"
+  }
+}

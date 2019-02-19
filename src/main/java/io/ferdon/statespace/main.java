@@ -38,7 +38,7 @@ public class main {
             String option = args[0];
             String petrinetInput = path + args[1];
 
-
+           // option = "translate";
             print("option: " + option);
             print(petrinetInput);
 
@@ -68,9 +68,10 @@ public class main {
                     break;
 
                 case "translate":
-
+                    String jsonPostfixOutput = path + args[2];
+                    jsonPostfixOutput = path + "jsonPostfix.json";
+                    exportJsonPostfix(petrinetInput, jsonPostfixOutput);
                     break;
-
             }
 
         } catch (Exception e) {
@@ -82,12 +83,28 @@ public class main {
         System.out.println(s);
     }
 
+    public static void exportJsonPostfix(String fileInput, String fileOutput) {
+        String json = Utils.jsonPostfix(fileInput);
+        try {
+            FileOutputStream outputStream = new FileOutputStream(fileOutput);
+            byte[] strToBytes = json.getBytes();
+            outputStream.write(strToBytes);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     public static PetrinetModel parseJson(String filename) {
+<<<<<<< HEAD
 //        System.out.println(Utils.jsonPostfix(filename));
+=======
+//        String json = Utils.jsonPostfix(filename);
+//        System.out.println(json);
+>>>>>>> origin/parquet-fixbug
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         try {
-            PetrinetModel model = mapper.readValue(new File(filename), PetrinetModel.class);
+            PetrinetModel model = mapper.readValue(new File(filename) , PetrinetModel.class);
             return model;
         } catch (JsonGenerationException e) {
             e.printStackTrace();

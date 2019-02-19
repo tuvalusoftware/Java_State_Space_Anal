@@ -10,12 +10,13 @@ import java.util.*;
 public class ANTLRListener extends mlBaseListener {
     StringBuffer postfix = new StringBuffer();
     private HashSet<String> operator = new HashSet<>(Arrays.asList("=", "<>", "<", ">", "<=", ">=", "andalso", "oralso",
-            "not", "+", "-", "*", "/", "if", "else", "then", ")", "(", "^^"));
+            "not", "+", "-", "*", "/", "if", "else", "then", ")", "(", "^", "`"));
     private HashMap<String, String> translate = new HashMap<String, String>() {{
-        put("andalso", "and");
-        put("oralso", "or");
+        put("andalso", "&&");
+        put("oralso", "||");
         put("=", "==");
-        put("^^", "concat");
+        put("^", "concat");
+        put("\"", "'");
     }};
 
     public void showPostfix() {
@@ -23,7 +24,7 @@ public class ANTLRListener extends mlBaseListener {
     }
 
     public String getPostfix() {
-        return postfix.toString();
+        return postfix.toString().trim();
     }
 
     private boolean isOperator(String str) {
@@ -52,14 +53,13 @@ public class ANTLRListener extends mlBaseListener {
         postfix.append("ifelse ");
     }
 
+
     @Override
     public void enterToken(mlParser.TokenContext ctx) {
-        postfix.append("[ ");
     }
 
     @Override
     public void exitToken(mlParser.TokenContext ctx) {
-        postfix.append("] ");
     }
 
     @Override
@@ -79,4 +79,6 @@ public class ANTLRListener extends mlBaseListener {
             return;
         postfix.append(str + " ");
     }
+
+
 }

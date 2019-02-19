@@ -107,13 +107,19 @@ final class Utils {
         objPost.put("Markings", objIn.get("Markings"));
         objPost.put("inPlace", objIn.get("inPlace"));
         objPost.put("outPlace", objIn.get("outPlace"));
+        objPost.put("placeToColor", objIn.get("placeToColor"));
+        objPost.put("placeToType", objIn.get("placeToType"));
+        objPost.put("typeToColor", objIn.get("typeToColor"));
         // convert expression from infix to postfix :)
 
         JSONArray arr = objIn.getJSONArray("Guards");
         int sz = arr.length();
         for (int i = 0; i < sz; ++i) {
             String infix = arr.getString(i);
-            arr.put(i, convertPostfix(infix));
+            if (!infix.isEmpty())
+                arr.put(i, convertPostfix(infix));
+            else
+                arr.put(i, "");
         }
         objPost.put("Guards", arr);
 
@@ -128,7 +134,7 @@ final class Utils {
                 int placeID = arc.getInt(0);
                 String expression = arc.getString(1);
                 arc.put(0, placeID);
-                arc.put(1, convertPostfix(expression));
+                arc.put(1, "[ " + convertPostfix(expression) + "]");
                 toPlace.put(j, arc);
             }
             arr.put(i, toPlace);
@@ -146,7 +152,10 @@ final class Utils {
                 int placeID = arc.getInt(0);
                 String expression = arc.getString(1);
                 arc.put(0, placeID);
-                arc.put(1, convertPostfix(expression));
+                if (expression.equals("1`()"))
+                    arc.put(1, "[ ]");
+                else
+                    arc.put(1, convertPostfix(expression));
                 toPlace.put(j, arc);
             }
             arr.put(i, toPlace);
@@ -157,5 +166,7 @@ final class Utils {
         return objPost.toString();
     }
 
+    public static void main(String[] args) {
+    }
 
 }

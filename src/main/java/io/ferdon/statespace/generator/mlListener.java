@@ -48,6 +48,26 @@ public interface mlListener extends ParseTreeListener {
 	 */
 	void exitCondition(mlParser.ConditionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link mlParser#multipleToken}.
+	 * @param ctx the parse tree
+	 */
+	void enterMultipleToken(mlParser.MultipleTokenContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link mlParser#multipleToken}.
+	 * @param ctx the parse tree
+	 */
+	void exitMultipleToken(mlParser.MultipleTokenContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link mlParser#numberToken}.
+	 * @param ctx the parse tree
+	 */
+	void enterNumberToken(mlParser.NumberTokenContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link mlParser#numberToken}.
+	 * @param ctx the parse tree
+	 */
+	void exitNumberToken(mlParser.NumberTokenContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link mlParser#token}.
 	 * @param ctx the parse tree
 	 */
