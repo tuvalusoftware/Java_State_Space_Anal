@@ -220,24 +220,7 @@ class StateSpace {
                     int placeID = place.getID();
                     List<String> color = colSet.get(placeID);
                     int numberColors = color.size();
-<<<<<<< HEAD
-                    listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
-                    for (Token token : state.getMarking(place).getTokenList()) {
-
-                        record = new GenericData.Record(tokenSchema.get(placeID));
-
-                        for (int i = 0; i < numberColors; ++i) {
-                            Object value;
-                            if (getType(color.get(i)).equals("unit"))
-                                value = numTokens;
-                            else
-                                value = getValue(token.get(i), color.get(i));
-                            record.put(color.get(i), value);
-                        }
-                        listRecord.add(record);
-=======
                     record = new GenericData.Record(tokenSchema.get(placeID));
->>>>>>> origin/parquet-fixbug
 
                     if (getType(color.get(0)).equals("unit")) { // Unit Place
                         listRecord = new GenericData.Array(1, placeSchema.get(placeID));

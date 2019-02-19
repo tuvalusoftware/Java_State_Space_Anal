@@ -95,12 +95,8 @@ public class main {
         }
     }
     public static PetrinetModel parseJson(String filename) {
-<<<<<<< HEAD
-//        System.out.println(Utils.jsonPostfix(filename));
-=======
 //        String json = Utils.jsonPostfix(filename);
 //        System.out.println(json);
->>>>>>> origin/parquet-fixbug
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         try {
