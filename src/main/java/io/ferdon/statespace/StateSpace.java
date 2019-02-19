@@ -40,6 +40,10 @@ class StateSpace {
         firedTransitions = new HashMap<>();
     }
 
+    int getFiredTransitionID(State parentState, State childState) {
+        return firedTransitions.get(new Pair<>(parentState, childState)).getID();
+    }
+
     void addState(State newState) {
         nodes.put(newState.getID(), newState);
         visitedState.add(newState);
@@ -220,7 +224,6 @@ class StateSpace {
                     int numberColors = color.size();
                     listRecord = new GenericData.Array(numTokens, placeSchema.get(placeID));
                     for (Token token : state.getMarking(place).getTokenList()) {
-                      //  System.out.println(token.toString());
 
                         record = new GenericData.Record(tokenSchema.get(placeID));
 

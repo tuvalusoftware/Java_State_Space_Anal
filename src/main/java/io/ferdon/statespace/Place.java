@@ -19,12 +19,14 @@ public class Place extends Node {
 
     private List<Transition> inTransition;
     private List<Transition> outTransition;
+    private List<String> color;
     private Marking marking;
 
     Place(int nodeID) {
         super(nodeID);
         inTransition = new ArrayList<>();
         outTransition = new ArrayList<>();
+        color = new ArrayList<>();
     }
 
     public List<Transition> getInTransition() {
@@ -43,12 +45,26 @@ public class Place extends Node {
         outTransition.add(transition);
     }
 
+    boolean isUnit() {
+        for(String dataType: color) {
+            if (!dataType.equals("UNIT")) return false;
+        }
+        return true;
+    }
+
     public void setMarking(Marking marking) {
         this.marking = marking;
     }
 
     public Marking getMarking() {
         return marking;
+    }
+
+    void setColor(String colorString) {
+        String[] dataType = colorString.split("\\*");
+        for(String type: dataType) {
+            color.add(type);
+        }
     }
 
     void removeToken(Token token, int num) {

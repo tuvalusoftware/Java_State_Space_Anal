@@ -51,12 +51,14 @@ public class Token implements Serializable {
         if (this.isUnit()) return "[]";
 
         StringBuilder s = new StringBuilder();
+        s.append('[');
         for(int i = 0; i < data.size(); i++) {
             s.append(data.get(i));
-            if (i != data.size()) s.append(",");
+            if (i != data.size() - 1) s.append(",");
         }
+        s.append(']');
 
-        return s.toString().substring(0, s.length() - 1);
+        return s.toString();
     }
 
     @Override

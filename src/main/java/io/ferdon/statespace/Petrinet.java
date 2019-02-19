@@ -71,6 +71,10 @@ public class Petrinet implements Serializable {
             }
         }
 
+        for(String placeID: placeToColor.keySet()) {
+            places.get(Integer.parseInt(placeID)).setColor(placeToColor.get(placeID));
+        }
+
         stateSpace = new StateSpace(numPlaces);
         interpreter = new Interpreter();
     }
@@ -115,6 +119,10 @@ public class Petrinet implements Serializable {
 
                 addVars(inPlaceID, tranID, vars);
             }
+        }
+
+        for(String placeID: model.placeToColor.keySet()) {
+            places.get(Integer.parseInt(placeID)).setColor(model.placeToColor.get(placeID));
         }
 
         stateSpace = new StateSpace(numPlaces);
@@ -214,9 +222,13 @@ public class Petrinet implements Serializable {
                 for (Binding b : newBindings) {
 
                     State childState = executeWithBinding(transition, b);
+
                     if (!stateSpace.containState(childState)) {
                         stateSpace.addState(childState);
                         stateQueue.add(childState);
+                    }
+                    else {
+                        numStates -= 1;
                     }
                     stateSpace.addEdge(parentState, childState, transition);
                     applyState(parentState);
@@ -266,7 +278,7 @@ public class Petrinet implements Serializable {
         for (State parentState : edges.keySet()) {
             Set<State> childSet = edges.get(parentState);
             for(State childState: childSet)
-            arcObj.put(parentState.getID() + "", childState.getID());
+            arcObj.put(parentState.getID() + "," + childState.getID(), stateSpace.getFiredTransitionID(parentState, childState));
         }
 
         obj.put("nodes", nodeObj);

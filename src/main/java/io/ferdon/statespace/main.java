@@ -28,7 +28,6 @@ public class main {
 
         Logger.getRootLogger().setLevel(Level.OFF);
         try {
-           // System.out.println(Utils.convertPostfix("2 + 3"));
             String path = new File(main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent() + "/";
 
 //            String option = "analysis";
@@ -84,7 +83,7 @@ public class main {
     }
 
     public static PetrinetModel parseJson(String filename) {
-        System.out.println(Utils.jsonPostfix(filename));
+//        System.out.println(Utils.jsonPostfix(filename));
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         try {
