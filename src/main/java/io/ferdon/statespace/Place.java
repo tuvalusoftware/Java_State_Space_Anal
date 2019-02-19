@@ -52,6 +52,14 @@ public class Place extends Node {
         return true;
     }
 
+    boolean isEmptyInput() {
+        return inTransition.isEmpty();
+    }
+
+    boolean isEmptyOutput() {
+        return outTransition.isEmpty();
+    }
+
     public void setMarking(Marking marking) {
         this.marking = marking;
     }

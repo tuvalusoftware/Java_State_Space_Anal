@@ -26,6 +26,7 @@ public class Petrinet implements Serializable {
 
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
+    private Map<Pair<Place, Place>, ConditionSet> conditions;
 
     private StateSpace stateSpace;
     private static Interpreter interpreter;
@@ -69,6 +70,11 @@ public class Petrinet implements Serializable {
 
                 addVars(inPlaceID, tranID, vars);
             }
+        }
+
+        for(Place place: places.values()) {
+            ConditionSet conditionSet = new ConditionSet(place);
+            if (place.isEmptyInput()) combineConditions(place, place, conditionSet);
         }
 
         for(String placeID: placeToColor.keySet()) {
@@ -119,6 +125,11 @@ public class Petrinet implements Serializable {
 
                 addVars(inPlaceID, tranID, vars);
             }
+        }
+
+        for(Place place: places.values()) {
+            ConditionSet conditionSet = new ConditionSet(place);
+            if (place.isEmptyInput()) combineConditions(place, place, conditionSet);
         }
 
         for(String placeID: model.placeToColor.keySet()) {
@@ -176,6 +187,21 @@ public class Petrinet implements Serializable {
 
         transitions.get(tranID).addOutputPlace(place, edge);
         places.get(placeID).addInputTransition(transition);
+    }
+
+    public void combineConditions(Place startPlace, Place currentPlace, ConditionSet currentCondition) {
+
+        List<Transition> transitions = currentPlace.getInTransition();  /* 'Choices' is not allowed, so basically only one transition */
+        if (transitions.isEmpty()) {  /* end place */
+            conditions.put(new Pair<>(startPlace, currentPlace), currentCondition);
+            return;
+        }
+
+        for(Transition transition: transitions) {
+            for(Place outPlace: transition.getOutPlaces()) {
+                combineConditions(startPlace, outPlace, new ConditionSet(currentCondition, currentPlace));
+            }
+        }
     }
 
     public State generateCurrentState() throws IOException, ClassNotFoundException {

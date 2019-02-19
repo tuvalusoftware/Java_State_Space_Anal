@@ -53,6 +53,10 @@ public class Transition extends Node {
         return outPlaceIDs;
     }
 
+    List<Place> getOutPlaces() {
+        return outPlaces;
+    }
+
     private boolean allUnitInput() {
         for(Place place: inPlaces) {
             if (!place.isUnit()) return false;
@@ -72,6 +76,10 @@ public class Transition extends Node {
     void addOutputPlace(Place place, Edge edge) {
         outPlaces.add(place);
         outEdges.put(place, edge);
+    }
+
+    String getGuard() {
+        return guard;
     }
 
     String[] getVars(Place place) {
