@@ -45,6 +45,7 @@ public class Petrinet implements Serializable {
         this.numPlaces = markings.length;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
+        this.conditions = new HashMap<>();
 
         for (int i = 0; i < numTransitions; i++) addTransition(i);
         for (int i = 0; i < numPlaces; i++) addPlace(i);
@@ -72,12 +73,12 @@ public class Petrinet implements Serializable {
             }
         }
 
-        for(Place place: places.values()) {
+        for (Place place : places.values()) {
             ConditionSet conditionSet = new ConditionSet(place);
             if (place.isEmptyInput()) combineConditions(place, place, conditionSet);
         }
 
-        for(String placeID: placeToColor.keySet()) {
+        for (String placeID : placeToColor.keySet()) {
             places.get(Integer.parseInt(placeID)).setColor(placeToColor.get(placeID));
         }
 
@@ -100,6 +101,7 @@ public class Petrinet implements Serializable {
         this.numPlaces = model.Markings.length;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
+        this.conditions = new HashMap<>();
 
         for (int i = 0; i < numTransitions; i++) addTransition(i);
         for (int i = 0; i < numPlaces; i++) addPlace(i);
@@ -127,12 +129,12 @@ public class Petrinet implements Serializable {
             }
         }
 
-        for(Place place: places.values()) {
+        for (Place place : places.values()) {
             ConditionSet conditionSet = new ConditionSet(place);
             if (place.isEmptyInput()) combineConditions(place, place, conditionSet);
         }
 
-        for(String placeID: model.placeToColor.keySet()) {
+        for (String placeID : model.placeToColor.keySet()) {
             places.get(Integer.parseInt(placeID)).setColor(model.placeToColor.get(placeID));
         }
 
@@ -173,7 +175,8 @@ public class Petrinet implements Serializable {
 
     /**
      * parse Expression string and add to Petrinet data
-     * @param tranID transitionID (index of array)
+     *
+     * @param tranID  transitionID (index of array)
      * @param placeID placeID (first element)
      * @param varData expression String (ex: 4~['thong', 1.2, True])
      */
@@ -191,23 +194,21 @@ public class Petrinet implements Serializable {
 
     public void combineConditions(Place startPlace, Place currentPlace, ConditionSet currentCondition) {
 
-        List<Transition> transitions = currentPlace.getInTransition();  /* 'Choices' is not allowed, so basically only one transition */
-        if (transitions.isEmpty()) {  /* end place */
+        if (currentPlace.isEmptyOutput()) {  /* end place */
             conditions.put(new Pair<>(startPlace, currentPlace), currentCondition);
             return;
         }
 
-        for(Transition transition: transitions) {
-            for(Place outPlace: transition.getOutPlaces()) {
-                combineConditions(startPlace, outPlace, new ConditionSet(currentCondition, currentPlace));
-            }
+        Transition transition = currentPlace.getOutTransition().get(0);    /* 'Choices' is not allowed, so basically only one transition */
+        for (Place outPlace : transition.getOutPlaces()) {
+            combineConditions(startPlace, outPlace, new ConditionSet(currentCondition, outPlace));
         }
     }
 
     public State generateCurrentState() throws IOException, ClassNotFoundException {
         Map<Place, Marking> data = new HashMap<>();
 
-        for(Place place: places.values()) {
+        for (Place place : places.values()) {
             Marking marking = place.getMarking().deepCopy();
             data.put(place, marking);
         }
@@ -216,6 +217,7 @@ public class Petrinet implements Serializable {
         numStates++;
         return state;
     }
+
     public StateSpace getStateSpace() {
         return stateSpace;
     }
@@ -238,7 +240,7 @@ public class Petrinet implements Serializable {
             State parentState = stateQueue.remove();
             applyState(parentState);
 
-           // System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
+            // System.out.println("Parent state: \n" + parentState.toString());  /* !!! */
 
             for (Transition transition : transitions.values()) {
 
@@ -252,8 +254,7 @@ public class Petrinet implements Serializable {
                     if (!stateSpace.containState(childState)) {
                         stateSpace.addState(childState);
                         stateQueue.add(childState);
-                    }
-                    else {
+                    } else {
                         numStates -= 1;
                     }
                     stateSpace.addEdge(parentState, childState, transition);
@@ -263,12 +264,12 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public State executeWithBinding(Transition transition, Binding b) throws IOException, ClassNotFoundException  {
+    public State executeWithBinding(Transition transition, Binding b) throws IOException, ClassNotFoundException {
         transition.executeWithBinding(b, interpreter);
         return generateCurrentState();
     }
 
-    public State executeWithID(int tranID, int bindID) throws IOException, ClassNotFoundException  {
+    public State executeWithID(int tranID, int bindID) throws IOException, ClassNotFoundException {
         transitions.get(tranID).executeWithID(bindID, interpreter);
         return generateCurrentState();
     }
@@ -303,8 +304,8 @@ public class Petrinet implements Serializable {
         Map<State, Set<State>> edges = stateSpace.getEdges();
         for (State parentState : edges.keySet()) {
             Set<State> childSet = edges.get(parentState);
-            for(State childState: childSet)
-            arcObj.put(parentState.getID() + "," + childState.getID(), stateSpace.getFiredTransitionID(parentState, childState));
+            for (State childState : childSet)
+                arcObj.put(parentState.getID() + "," + childState.getID(), stateSpace.getFiredTransitionID(parentState, childState));
         }
 
         obj.put("nodes", nodeObj);

@@ -3,6 +3,7 @@ package io.ferdon.statespace;
 import org.apache.commons.math3.optim.PointValuePair;
 import org.apache.commons.math3.optim.linear.SimplexSolver;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,13 @@ import java.util.Map;
 public class ConditionSet {
 
     private List<String> conditions;
-    private Map<String, String> varMapping = new HashMap<>();
+    private Map<String, String> varMapping;
 
     ConditionSet(Place place) {
+
+        conditions = new ArrayList<>();
+        varMapping = new HashMap<>();
+
         addCondition(place);
         updateVarMapping(place);
     }
@@ -52,6 +57,7 @@ public class ConditionSet {
         if (place.isEmptyInput()) return;
 
         for (Transition inTran : place.getInTransition()) {
+            if (inTran.getGuard().isEmpty()) continue;
             String newCondition = String.join(" ", replaceVariables(inTran.getGuard()));
             conditions.add(newCondition);
         }
@@ -62,7 +68,7 @@ public class ConditionSet {
         if (place.isEmptyOutput()) return;
         varMapping.clear();
 
-        Transition outTran = place.getInTransition().get(0);   /* 'Choices' is not allowed in our petrinet */
+        Transition outTran = place.getOutTransition().get(0);   /* 'Choices' is not allowed in our petrinet */
         String[] newVars = outTran.getVars(place);
 
         if (place.isEmptyInput()) {
