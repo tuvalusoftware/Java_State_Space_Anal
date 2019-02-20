@@ -13,7 +13,9 @@ package io.ferdon.statespace;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Place extends Node {
 
@@ -21,6 +23,7 @@ public class Place extends Node {
     private List<Transition> outTransition;
     private List<String> color;
     private Marking marking;
+    private Map<String, List<String>> varMapping;
 
     Place(int nodeID) {
         super(nodeID);
@@ -44,6 +47,23 @@ public class Place extends Node {
     void addOutputTransition(Transition transition) {
         outTransition.add(transition);
     }
+
+    void createNewVarMapping() {
+        varMapping = new HashMap<>();
+    }
+
+    boolean isCreateVarMapping() {
+        return varMapping != null;
+    }
+
+    void addVarMapping(String[] newVars, String[] oldVars) {
+        for(String newVar: newVars) {
+            if (!varMapping.containsKey(newVar)) varMapping.put(newVar, new ArrayList<>());
+            for(String oldVar: oldVars) varMapping.get(newVar).add(oldVar);
+        }
+    }
+
+    Map<String, List<String>> getVarMapping() { return varMapping; }
 
     boolean isUnit() {
         for(String dataType: color) {

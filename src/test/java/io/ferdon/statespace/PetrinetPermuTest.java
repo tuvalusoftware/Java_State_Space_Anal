@@ -1,7 +1,7 @@
 /*
  * File name: PetrinetPermu.java
  * File Description:
- *      Class PetrinetPermu contains unit tests for Petrinet source code with permu.json.
+ *      Class PetrinetPermu contains unit tests for Petrinet source code with permu01.json.
  *
  * Copyright (c) 2019 - Ferdon Vietnam Limited
  * Author: Nguyen The Thong
@@ -26,7 +26,7 @@ public class PetrinetPermuTest {
 
     @Before
     public void setUp() {
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/permu.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/permu01.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
@@ -41,8 +41,8 @@ public class PetrinetPermuTest {
         assertEquals(3, net.getNumPlaces());
         assertEquals(1, net.getNumTransitions());
 
-        assertEquals(2, transition.getInPlaceArray().length);
-        assertEquals(1, transition.getOutPlaceArray().length);
+        assertEquals(2, transition.getInPlaceIDs().length);
+        assertEquals(1, transition.getOutPlaceIDs().length);
     }
 
     @Test

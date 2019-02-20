@@ -1,94 +1,80 @@
-package io.ferdon.statespace;
-
-import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.linear.SimplexSolver;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ConditionSet {
-
-    private List<String> conditions;
-    private Map<String, String> varMapping;
-
-    ConditionSet(Place place) {
-
-        conditions = new ArrayList<>();
-        varMapping = new HashMap<>();
-
-        addCondition(place);
-        updateVarMapping(place);
-    }
-
-    ConditionSet(ConditionSet o, Place place) {
-
-        this.varMapping = o.getVarMapping();
-        this.conditions = o.getConditions();
-
-        addCondition(place);     /* addCondition() must call before updateVarMapping() */
-        updateVarMapping(place);
-    }
-
-    Map<String, String> getVarMapping() {
-        return varMapping;
-    }
-
-    List<String> getConditions() {
-        return conditions;
-    }
-
-    private String replaceVariables(String expressionString) {
-
-        String[] stringTokens = expressionString.split(" ");
-
-        for (int i = 0; i < stringTokens.length; i++) {
-            String varName = stringTokens[i].trim();
-            if (Interpreter.getValueType(varName) == Interpreter.ValueType.VARIABLE && varMapping.containsKey(varName)) {
-                stringTokens[i] = varMapping.get(varName).trim();
-            }
-        }
-
-        return String.join(" ", stringTokens);
-    }
-
-    void addCondition(Place place) {
-        if (place.isEmptyInput()) return;
-
-        for (Transition inTran : place.getInTransition()) {
-            if (inTran.getGuard().isEmpty()) continue;
-            String newCondition = String.join(" ", replaceVariables(inTran.getGuard()));
-            conditions.add(newCondition);
-        }
-    }
-
-    void updateVarMapping(Place place) {
-
-        if (place.isEmptyOutput()) return;
-        varMapping.clear();
-
-        Transition outTran = place.getOutTransition().get(0);   /* 'Choices' is not allowed in our petrinet */
-        String[] newVars = outTran.getVars(place);
-
-        if (place.isEmptyInput()) {
-            for (String var: newVars) varMapping.put(var, var);
-            return;
-        }
-
-        for (Transition inTran : place.getInTransition()) {
-
-            String newExp = replaceVariables(inTran.getExpression(place));
-            String[] oldVars = newExp.replace("[", "").replace("]", "").split(",");
-
-            for (int i = 0; i < newVars.length; i++) {
-                varMapping.put(newVars[i], oldVars[i]);
-            }
-        }
-    }
-
-//    PointValuePair getSolution() {
-//        SimplexSolver linearOptimizer = new SimplexSolver();
+//package io.ferdon.statespace;
 //
+//import java.util.ArrayList;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//
+//public class ConditionSet {
+//
+//    private Place place;
+//    private List<String> conditions;
+//    private Map<String, List<String>>  varMapping;
+//
+//    ConditionSet(Place place) {
+//        this.conditions = new ArrayList<>();
+//        this.varMapping = new HashMap<>();
+//        this.place = place;
+//
+//        if (place.isEmptyOutput()) return;
+//
+//        Transition outTran = place.getOutTransition().get(0);
+//        String[] newVars = outTran.getVars(place);
+//        for (String var: newVars) varMapping.put(var, var);
 //    }
-}
+//
+//    Map<String, List<String>>  getVarMapping() {
+//        return varMapping;
+//    }
+//
+//    List<String> getConditions() { return conditions; }
+//
+//    private String replaceVariablesInString(Map<String, List<String>> currentVars, String expressionString) {
+//
+//        String[] stringTokens = expressionString.split(" ");
+//
+//        for (int i = 0; i < stringTokens.length; i++) {
+//            String varName = stringTokens[i].trim();
+//            if (Interpreter.getValueType(varName) == Interpreter.ValueType.VARIABLE && currentVars.containsKey(varName)) {
+//                stringTokens[i] = currentVars.get(varName).trim();
+//            }
+//        }
+//
+//        return String.join(" ", stringTokens);
+//    }
+//
+//    void updateConditionWithVarMapping(Map<String, List<String>> vars, String condition) {
+//
+//        if (condition.isEmpty()) return;
+//        List<String> newGuards = replaceVariablesInString(vars, condition);
+//        conditions.addAll(newGuards);
+//    }
+//
+//    void addGuard(Map<String, String> vars, Transition transition) {
+//
+//        String guard = transition.getGuard();
+//        if (guard.isEmpty()) return;
+//        String newGuard = String.join(" ", replaceVariablesInString(vars, guard));
+//        conditions.add(newGuard);
+//    }
+//
+//    void updateVarMapping(Map<String, List<String>> vars, String expression, String[] newVars) {
+//
+//        List<String> newExpressions = replaceVariablesInString(vars, expression);
+//
+//        for(String exp: newExpressions) {
+//
+//            String[] oldVars = exp.replace("[", "").replace("]", "").split(",");
+//            for(int i = 0; i < newVars.length; i++) {
+//
+//                if (!varMapping.containsKey(newVars[i])) varMapping.put(newVars[i], new ArrayList<>());
+//                varMapping.get(newVars[i]).add(oldVars[i]);
+//            }
+//        }
+//    }
+//
+////    PointValuePair getSolution() {
+////        SimplexSolver linearOptimizer = new SimplexSolver();
+////
+////    }
+//}

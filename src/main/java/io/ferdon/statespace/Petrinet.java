@@ -9,6 +9,7 @@
 
 package io.ferdon.statespace;
 
+import com.google.common.collect.Lists;
 import org.javatuples.Pair;
 import org.json.JSONObject;
 
@@ -26,7 +27,7 @@ public class Petrinet implements Serializable {
 
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
-    private Map<Pair<Place, Place>, ConditionSet> conditions;
+//    private Map<Place, ConditionSet> conditions;
 
     private StateSpace stateSpace;
     private static Interpreter interpreter;
@@ -45,7 +46,7 @@ public class Petrinet implements Serializable {
         this.numPlaces = markings.length;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
-        this.conditions = new HashMap<>();
+//        this.conditions = new HashMap<>();
 
         for (int i = 0; i < numTransitions; i++) addTransition(i);
         for (int i = 0; i < numPlaces; i++) addPlace(i);
@@ -73,9 +74,9 @@ public class Petrinet implements Serializable {
             }
         }
 
+//        for (Place place : places.values()) conditions.put(place, new ConditionSet(place));
         for (Place place : places.values()) {
-            ConditionSet conditionSet = new ConditionSet(place);
-            if (place.isEmptyInput()) combineConditions(place, place, conditionSet);
+            if (place.isEmptyOutput()) combineConditions(place);
         }
 
         for (String placeID : placeToColor.keySet()) {
@@ -101,7 +102,7 @@ public class Petrinet implements Serializable {
         this.numPlaces = model.Markings.length;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
-        this.conditions = new HashMap<>();
+//        this.conditions = new HashMap<>();
 
         for (int i = 0; i < numTransitions; i++) addTransition(i);
         for (int i = 0; i < numPlaces; i++) addPlace(i);
@@ -129,9 +130,9 @@ public class Petrinet implements Serializable {
             }
         }
 
+//        for (Place place : places.values()) conditions.put(place, new ConditionSet(place));
         for (Place place : places.values()) {
-            ConditionSet conditionSet = new ConditionSet(place);
-            if (place.isEmptyInput()) combineConditions(place, place, conditionSet);
+            if (place.isEmptyOutput()) combineConditions(place);
         }
 
         for (String placeID : model.placeToColor.keySet()) {
@@ -192,16 +193,78 @@ public class Petrinet implements Serializable {
         places.get(placeID).addInputTransition(transition);
     }
 
-    public void combineConditions(Place startPlace, Place currentPlace, ConditionSet currentCondition) {
+    public void combineConditions(Place currentPlace) {
 
-        if (currentPlace.isEmptyOutput()) {  /* end place */
-            conditions.put(new Pair<>(startPlace, currentPlace), currentCondition);
-            return;
+        /* if the place has no transition, var name mapping to itself */
+
+        if (currentPlace.isEmptyInput()) {
+            currentPlace.createNewVarMapping();
+            Transition outTran = currentPlace.getOutTransition().get(0);
+            String[] varList = outTran.getVars(currentPlace);
+            currentPlace.addVarMapping(varList, varList);
         }
 
-        Transition transition = currentPlace.getOutTransition().get(0);    /* 'Choices' is not allowed, so basically only one transition */
-        for (Place outPlace : transition.getOutPlaces()) {
-            combineConditions(startPlace, outPlace, new ConditionSet(currentCondition, outPlace));
+
+        for (Transition inTran : currentPlace.getInTransition()) {
+
+            for (Place previousPlace : inTran.getInPlaces()) {
+                if (!previousPlace.isCreateVarMapping()) combineConditions(previousPlace);
+            }
+            currentPlace.createNewVarMapping();
+
+            /* update var mapping if not is end place */
+            if (!currentPlace.isEmptyOutput()) {
+
+                Transition outTran = currentPlace.getOutTransition().get(0);
+                String[] newVars = outTran.getVars(currentPlace);
+                String oldExpression = inTran.getExpression(currentPlace);
+                Map<String, List<String>> combinedMapping = new HashMap<>();
+
+                /* get value of all variables */
+                for (Place previousPlace : inTran.getInPlaces()) {
+                    Map<String, List<String>> previousPlaceMapping = previousPlace.getVarMapping();
+
+                    for (String previousVar : previousPlaceMapping.keySet()) {
+                        if (!combinedMapping.containsKey(previousVar))
+                            combinedMapping.put(previousVar, new ArrayList<>());
+                        combinedMapping.get(previousVar).addAll(previousPlaceMapping.get(previousVar));
+                    }
+                }
+
+                /* generate all possible */
+                Map<String, Integer> varOrder = new HashMap<>();
+
+                List<List<String>> allVars = new ArrayList<>();
+                int index = 0;
+
+                for (String var : combinedMapping.keySet()) {
+                    allVars.add(combinedMapping.get(var));
+                    varOrder.put(var, index);   /* store variables's order */
+                    index++;
+                }
+                List<List<String>> possibleValues = Lists.cartesianProduct(allVars);
+
+                /* update new expression */
+                for (List<String> possibleValue : possibleValues) {
+
+                    String[] tokenList = oldExpression.replace("[", "").replace("]", "").split(",");
+                    String[] newVarList = new String[tokenList.length];
+
+                    for(int tokenIndex = 0; tokenIndex < tokenList.length; tokenIndex++) {
+                        String token = tokenList[tokenIndex];
+                        String[] varList = token.trim().split(" ");
+                        for (int i = 0; i < varList.length; i++) {
+                            String var = varList[i].trim();
+                            if (Interpreter.getValueType(var) == Interpreter.ValueType.VARIABLE) {
+                                varList[i] = possibleValue.get(varOrder.get(var));
+                            }
+                        }
+                        newVarList[tokenIndex] = String.join(" ", varList);
+                    }
+
+                    currentPlace.addVarMapping(newVars, newVarList);
+                }
+            }
         }
     }
 
@@ -282,8 +345,8 @@ public class Petrinet implements Serializable {
         int[][] inputPlaces = new int[numTransitions][];
         int[][] outputPlaces = new int[numTransitions][];
         for (Transition transition : transitions.values()) {
-            inputPlaces[transition.getID()] = transition.getInPlaceArray();
-            outputPlaces[transition.getID()] = transition.getOutPlaceArray();
+            inputPlaces[transition.getID()] = transition.getInPlaceIDs();
+            outputPlaces[transition.getID()] = transition.getOutPlaceIDs();
         }
 
         obj.put("inPlaces", inputPlaces);
@@ -316,7 +379,7 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/permu.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/petrinet01.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);

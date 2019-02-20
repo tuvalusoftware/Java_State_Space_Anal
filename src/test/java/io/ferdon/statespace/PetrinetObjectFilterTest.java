@@ -54,10 +54,10 @@ public class PetrinetObjectFilterTest {
         assertEquals(1, place03.getOutTransition().size());
         assertEquals(1, place04.getOutTransition().size());
 
-        assertEquals(2, transition00.getInPlaceArray().length);
-        assertEquals(2, transition01.getInPlaceArray().length);
-        assertEquals(1, transition00.getOutPlaceArray().length);
-        assertEquals(2, transition01.getOutPlaceArray().length);
+        assertEquals(2, transition00.getInPlaceIDs().length);
+        assertEquals(2, transition01.getInPlaceIDs().length);
+        assertEquals(1, transition00.getOutPlaceIDs().length);
+        assertEquals(2, transition01.getOutPlaceIDs().length);
     }
 
     @Test

@@ -37,7 +37,7 @@ public class Transition extends Node {
         outEdges = new HashMap<>();
     }
 
-    int[] getInPlaceArray() {
+    int[] getInPlaceIDs() {
         int[] inPlaceIDs = new int[inPlaces.size()];
         for (int index = 0; index < inPlaceIDs.length; index++) {
             inPlaceIDs[index] = inPlaces.get(index).getID();
@@ -45,7 +45,7 @@ public class Transition extends Node {
         return inPlaceIDs;
     }
 
-    int[] getOutPlaceArray() {
+    int[] getOutPlaceIDs() {
         int[] outPlaceIDs = new int[outPlaces.size()];
         for (int index = 0; index < outPlaceIDs.length; index++) {
             outPlaceIDs[index] = outPlaces.get(index).getID();
@@ -56,6 +56,8 @@ public class Transition extends Node {
     List<Place> getOutPlaces() {
         return outPlaces;
     }
+
+    List<Place> getInPlaces() { return inPlaces; }
 
     private boolean allUnitInput() {
         for(Place place: inPlaces) {
@@ -197,5 +199,10 @@ public class Transition extends Node {
             Token newToken = runSingleTokenExpression(varMapping, place, interpreter);
             if (newToken != null) place.addToken(newToken, 1);
         }
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Transition %s", nodeID);
     }
 }
