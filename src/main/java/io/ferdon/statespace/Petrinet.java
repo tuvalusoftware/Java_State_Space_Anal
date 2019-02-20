@@ -202,18 +202,18 @@ public class Petrinet implements Serializable {
             Transition outTran = currentPlace.getOutTransition().get(0);
             String[] varList = outTran.getVars(currentPlace);
             currentPlace.addVarMapping(varList, varList);
+            return;
         }
 
-
+        currentPlace.createNewVarMapping();
         for (Transition inTran : currentPlace.getInTransition()) {
 
             for (Place previousPlace : inTran.getInPlaces()) {
                 if (!previousPlace.isCreateVarMapping()) combineConditions(previousPlace);
             }
-            currentPlace.createNewVarMapping();
 
             /* update var mapping if not is end place */
-            if (!currentPlace.isEmptyOutput()) {
+            if (!currentPlace.isEmptyOutput()) {     // TODO: add the way for update var mapping in output place
 
                 Transition outTran = currentPlace.getOutTransition().get(0);
                 String[] newVars = outTran.getVars(currentPlace);
@@ -379,7 +379,7 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/petrinet01.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/petrinet02.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);

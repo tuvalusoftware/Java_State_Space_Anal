@@ -57,16 +57,18 @@ public class Place extends Node {
     }
 
     void addVarMapping(String[] newVars, String[] oldVars) {
-        for(String newVar: newVars) {
-            if (!varMapping.containsKey(newVar)) varMapping.put(newVar, new ArrayList<>());
-            for(String oldVar: oldVars) varMapping.get(newVar).add(oldVar);
+        for (int i = 0; i < newVars.length; i++) {
+            if (!varMapping.containsKey(newVars[i])) varMapping.put(newVars[i], new ArrayList<>());
+            varMapping.get(newVars[i]).add(oldVars[i]);
         }
     }
 
-    Map<String, List<String>> getVarMapping() { return varMapping; }
+    Map<String, List<String>> getVarMapping() {
+        return varMapping;
+    }
 
     boolean isUnit() {
-        for(String dataType: color) {
+        for (String dataType : color) {
             if (!dataType.equals("UNIT")) return false;
         }
         return true;
@@ -90,7 +92,7 @@ public class Place extends Node {
 
     void setColor(String colorString) {
         String[] dataType = colorString.split("\\*");
-        for(String type: dataType) {
+        for (String type : dataType) {
             color.add(type);
         }
     }
@@ -105,6 +107,7 @@ public class Place extends Node {
 
     /**
      * Set new marking for a place
+     *
      * @param s marking String (Ex: ['thong', 1.2], 3~['he', 3.2])
      */
     public void setMarking(String s) {
