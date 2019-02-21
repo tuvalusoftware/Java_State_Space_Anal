@@ -196,74 +196,75 @@ public class Petrinet implements Serializable {
     public void combineConditions(Place currentPlace) {
 
         /* if the place has no transition, var name mapping to itself */
-
+        currentPlace.createNewVarMapping();
         if (currentPlace.isEmptyInput()) {
-            currentPlace.createNewVarMapping();
             Transition outTran = currentPlace.getOutTransition().get(0);
             String[] varList = outTran.getVars(currentPlace);
             currentPlace.addVarMapping(varList, varList);
             return;
         }
 
-        currentPlace.createNewVarMapping();
+        /* combine var mapping from previous places */
         for (Transition inTran : currentPlace.getInTransition()) {
-
             for (Place previousPlace : inTran.getInPlaces()) {
                 if (!previousPlace.isCreateVarMapping()) combineConditions(previousPlace);
             }
 
-            /* update var mapping if not is end place */
-            if (!currentPlace.isEmptyOutput()) {     // TODO: add the way for update var mapping in output place
+            String oldExpression = inTran.getExpression(currentPlace);
+            Map<String, List<String>> combinedMapping = new HashMap<>();
 
-                Transition outTran = currentPlace.getOutTransition().get(0);
-                String[] newVars = outTran.getVars(currentPlace);
-                String oldExpression = inTran.getExpression(currentPlace);
-                Map<String, List<String>> combinedMapping = new HashMap<>();
+            /* combine values of all variables in previous places */
+            for (Place previousPlace : inTran.getInPlaces()) {
+                Map<String, List<String>> previousPlaceMapping = previousPlace.getVarMapping();
 
-                /* get value of all variables */
-                for (Place previousPlace : inTran.getInPlaces()) {
-                    Map<String, List<String>> previousPlaceMapping = previousPlace.getVarMapping();
-
-                    for (String previousVar : previousPlaceMapping.keySet()) {
-                        if (!combinedMapping.containsKey(previousVar))
-                            combinedMapping.put(previousVar, new ArrayList<>());
-                        combinedMapping.get(previousVar).addAll(previousPlaceMapping.get(previousVar));
-                    }
+                for (String previousVar : previousPlaceMapping.keySet()) {
+                    if (!combinedMapping.containsKey(previousVar))
+                        combinedMapping.put(previousVar, new ArrayList<>());
+                    combinedMapping.get(previousVar).addAll(previousPlaceMapping.get(previousVar));
                 }
+            }
 
-                /* generate all possible */
-                Map<String, Integer> varOrder = new HashMap<>();
+            /* end place then var mapping equals to all combined in place's var mappings */
+            if (currentPlace.isEmptyOutput()) {
+                currentPlace.setVarMapping(combinedMapping);
+                return;
+            }
 
-                List<List<String>> allVars = new ArrayList<>();
-                int index = 0;
+            /* generate all possible values of each variable */
+            int index = 0;
+            Map<String, Integer> varOrder = new HashMap<>();  /* store variables's order */
+            List<List<String>> allVars = new ArrayList<>();
 
-                for (String var : combinedMapping.keySet()) {
-                    allVars.add(combinedMapping.get(var));
-                    varOrder.put(var, index);   /* store variables's order */
-                    index++;
-                }
-                List<List<String>> possibleValues = Lists.cartesianProduct(allVars);
+            for (String var : combinedMapping.keySet()) {
+                allVars.add(combinedMapping.get(var));
+                varOrder.put(var, index);
+                index++;
+            }
+            List<List<String>> possibleValues = Lists.cartesianProduct(allVars);
 
-                /* update new expression */
-                for (List<String> possibleValue : possibleValues) {
 
-                    String[] tokenList = oldExpression.replace("[", "").replace("]", "").split(",");
-                    String[] newVarList = new String[tokenList.length];
+            /* update var mapping of current place by replace variables of expression with current var mapping */
+            Transition outTran = currentPlace.getOutTransition().get(0);
+            String[] newVars = outTran.getVars(currentPlace);
 
-                    for(int tokenIndex = 0; tokenIndex < tokenList.length; tokenIndex++) {
-                        String token = tokenList[tokenIndex];
-                        String[] varList = token.trim().split(" ");
-                        for (int i = 0; i < varList.length; i++) {
-                            String var = varList[i].trim();
-                            if (Interpreter.getValueType(var) == Interpreter.ValueType.VARIABLE) {
-                                varList[i] = possibleValue.get(varOrder.get(var));
-                            }
+            for (List<String> possibleValue : possibleValues) {
+
+                String[] tokenList = oldExpression.replace("[", "").replace("]", "").split(",");
+                String[] newVarList = new String[tokenList.length];
+
+                for (int tokenIndex = 0; tokenIndex < tokenList.length; tokenIndex++) {
+                    String token = tokenList[tokenIndex];
+                    String[] varList = token.trim().split(" ");
+                    for (int i = 0; i < varList.length; i++) {
+                        String var = varList[i].trim();
+                        if (Interpreter.getValueType(var) == Interpreter.ValueType.VARIABLE) {
+                            varList[i] = possibleValue.get(varOrder.get(var));
                         }
-                        newVarList[tokenIndex] = String.join(" ", varList);
                     }
-
-                    currentPlace.addVarMapping(newVars, newVarList);
+                    newVarList[tokenIndex] = String.join(" ", varList);
                 }
+
+                currentPlace.addVarMapping(newVars, newVarList);
             }
         }
     }

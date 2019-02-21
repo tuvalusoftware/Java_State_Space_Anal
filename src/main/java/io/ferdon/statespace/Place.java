@@ -56,6 +56,10 @@ public class Place extends Node {
         return varMapping != null;
     }
 
+    void setVarMapping(Map<String, List<String>> vars) {
+        varMapping = vars;
+    }
+
     void addVarMapping(String[] newVars, String[] oldVars) {
         for (int i = 0; i < newVars.length; i++) {
             if (!varMapping.containsKey(newVars[i])) varMapping.put(newVars[i], new ArrayList<>());
