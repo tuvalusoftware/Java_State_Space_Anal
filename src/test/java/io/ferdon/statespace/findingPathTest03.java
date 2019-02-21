@@ -119,7 +119,7 @@ public class findingPathTest03 {
     @Test
     public void testCondition() {
         List<String> condition = paths.get(0).getConditions();
-        assertEquals(5, condition.size());
+        assertEquals(5, condition.size());  // #TODO: wrong here
         assertEquals("c d + 0 >", condition.get(0));
         assertEquals("c d - 0 >", condition.get(1));
     }
