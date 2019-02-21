@@ -3,13 +3,12 @@ package io.ferdon.statespace;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class generateVarMappingTest02 {
+public class findingPathTest02 {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -67,5 +66,27 @@ public class generateVarMappingTest02 {
         assertEquals(1, vars04.size());
         assertEquals(1, vars04.get("d").size());
         assertEquals("a 1 + 1 + 1 +", vars04.get("d").get(0));
+    }
+
+    @Test
+    public void testPath() {
+        Path path = new Path();
+        List<Path> res = new ArrayList<>();
+        net.findPathConditions(place00, place04, path, res);
+
+        assertEquals(1, res.size());
+        List<Node> foundPath = res.get(0).getPath();
+
+        assertEquals(9, foundPath.size());
+        assertEquals(0, foundPath.get(0).getID());
+        assertEquals(0, foundPath.get(1).getID());
+        assertEquals(1, foundPath.get(2).getID());
+        assertEquals(1, foundPath.get(3).getID());
+        assertEquals(2, foundPath.get(4).getID());
+        assertEquals(2, foundPath.get(5).getID());
+        assertEquals(3, foundPath.get(6).getID());
+        assertEquals(3, foundPath.get(7).getID());
+        assertEquals(4, foundPath.get(8).getID());
+
     }
 }

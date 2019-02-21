@@ -3,8 +3,10 @@ package io.ferdon.statespace;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
@@ -99,6 +101,4 @@ public class findingPathTest03 {
         assertEquals("c d -", vars07.get("x").get(1));
         assertEquals("e f *", vars07.get("x").get(2));
     }
-
-
 }

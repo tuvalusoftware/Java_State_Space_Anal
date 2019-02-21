@@ -2,10 +2,7 @@ package io.ferdon.statespace;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Path {
 
@@ -27,6 +24,10 @@ public class Path {
 
     public List<Node> getPath() {
         return path;
+    }
+
+    public void reversePath() {
+        Lists.reverse(path);
     }
 
     public List<String> getConditions() {

@@ -170,7 +170,9 @@ final class Utils {
 
     static String replaceVar(Map<String, String> currentMapping, String exp) {
 
-        String[] tokens = exp.split(" ");
+        if (exp.isEmpty()) return exp;
+
+        String[] tokens = exp.trim().split(" ");
         for(int i = 0; i < tokens.length; i++) {
 
             String token = tokens[i];

@@ -246,9 +246,11 @@ public class Petrinet implements Serializable {
     }
 
     public void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
-                                   Set<Path> result) {
+                                   List<Path> result) {
 
         if (startPlace.getID() == endPlace.getID()) {
+            currentPath.addPathNode(startPlace);
+            currentPath.reversePath();
             result.add(currentPath);
             return;
         }
@@ -257,11 +259,11 @@ public class Petrinet implements Serializable {
             for (Place previousPlace : inTran.getInPlaces()) {
 
                 Path path = new Path(currentPath);
-                path.addPathNode(startPlace);
+                path.addPathNode(endPlace);
                 path.addPathNode(inTran);
                 path.addCondition(inTran, previousPlace);
 
-                findPathConditions(startPlace, previousPlace, currentPath, result);
+                findPathConditions(startPlace, previousPlace, path, result);
             }
         }
     }
