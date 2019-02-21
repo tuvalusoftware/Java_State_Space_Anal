@@ -8,6 +8,7 @@
  */
 
 package io.ferdon.statespace;
+
 import io.ferdon.statespace.generator.*;
 import com.google.common.collect.Lists;
 import org.antlr.v4.runtime.CharStream;
@@ -22,7 +23,9 @@ import org.javatuples.Pair;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 final class Utils {
 
@@ -31,7 +34,7 @@ final class Utils {
         List<List<Token>> tokenWrapper = new ArrayList<>();
         List<Place> places = new ArrayList<>();
 
-        for(Marking m: markings) {
+        for (Marking m : markings) {
             tokenWrapper.add(m.getTokenList());
             places.add(m.getPlace());
         }
@@ -55,8 +58,8 @@ final class Utils {
     static List<String> parseMarkingString(String s) {
         List<String> result = new ArrayList<>();
         String[] e = s.replace("]", "]@").split("@");
-        for(String t: e) {
-            for(int i = 0; i < t.length(); i++) {
+        for (String t : e) {
+            for (int i = 0; i < t.length(); i++) {
                 if (t.charAt(i) == '[' || Character.isDigit(t.charAt(i))) {
                     result.add(t.substring(i));
                     break;
@@ -78,7 +81,6 @@ final class Utils {
         }
         return new Pair<>(tokenData, number);
     }
-
 
 
     static String convertPostfix(String infix) {
@@ -164,6 +166,32 @@ final class Utils {
         objPost.put("Variables", arr);
 
         return objPost.toString();
+    }
+
+    static String replaceVar(Map<String, String> currentMapping, String exp) {
+
+        String[] tokens = exp.split(" ");
+        for(int i = 0; i < tokens.length; i++) {
+
+            String token = tokens[i];
+            if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
+                tokens[i] = currentMapping.get(token);
+            }
+        }
+
+        return String.join(" ", tokens);
+    }
+
+    static Map<String, String> convertListToMap(Map<Integer, String> keyOrder, List<String> values) {
+
+        Map<String, String> result = new HashMap<>();
+        for(int varIndex = 0; varIndex < values.size(); varIndex++) {
+            String varName = keyOrder.get(varIndex);
+            String varValue = values.get(varIndex);
+            result.put(varName, varValue);
+        }
+
+        return result;
     }
 
     public static void main(String[] args) {

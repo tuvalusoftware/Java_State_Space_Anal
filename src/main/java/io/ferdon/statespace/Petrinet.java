@@ -195,7 +195,7 @@ public class Petrinet implements Serializable {
         if (currentPlace.isEmptyInput()) {
             Transition outTran = currentPlace.getOutTransition().get(0);
             String[] varList = outTran.getVars(currentPlace);
-            currentPlace.addVarMapping(varList, varList);
+            currentPlace.addSingleMapping(varList, varList);
             return;
         }
 
@@ -205,18 +205,10 @@ public class Petrinet implements Serializable {
                 if (!previousPlace.isCreateVarMapping()) generateVarMapping(previousPlace);
             }
 
-            String oldExpression = inTran.getExpression(currentPlace);
-            Map<String, List<String>> combinedMapping = new HashMap<>();
-
             /* combine values of all variables in previous places */
+            Map<String, List<String>> combinedMapping = new HashMap<>();
             for (Place previousPlace : inTran.getInPlaces()) {
-                Map<String, List<String>> previousPlaceMapping = previousPlace.getVarMapping();
-
-                for (String previousVar : previousPlaceMapping.keySet()) {
-                    if (!combinedMapping.containsKey(previousVar))
-                        combinedMapping.put(previousVar, new ArrayList<>());
-                    combinedMapping.get(previousVar).addAll(previousPlaceMapping.get(previousVar));
-                }
+                combinedMapping.putAll(previousPlace.getVarMapping());
             }
 
             /* end place then var mapping equals to all combined in place's var mappings */
@@ -227,39 +219,49 @@ public class Petrinet implements Serializable {
 
             /* generate all possible values of each variable */
             int index = 0;
-            Map<String, Integer> varOrder = new HashMap<>();  /* store variables's order */
+            Map<Integer, String> varOrder = new HashMap<>();  /* store variables's order */
             List<List<String>> allVars = new ArrayList<>();
 
             for (String var : combinedMapping.keySet()) {
                 allVars.add(combinedMapping.get(var));
-                varOrder.put(var, index);
+                varOrder.put(index, var);
                 index++;
             }
             List<List<String>> possibleValues = Lists.cartesianProduct(allVars);
 
-
-            /* update var mapping of current place by replace variables of expression with current var mapping */
+            /* update var mapping of current place by replace variables of expression
+             with current var mapping */
             Transition outTran = currentPlace.getOutTransition().get(0);
-            String[] newVars = outTran.getVars(currentPlace);
+            String oldExp = inTran.getExpression(currentPlace);
+            String[] fromVars = outTran.getVars(currentPlace);
 
             for (List<String> possibleValue : possibleValues) {
 
-                String[] tokenList = oldExpression.replace("[", "").replace("]", "").split(",");
-                String[] newVarList = new String[tokenList.length];
+                Map<String, String> currentMapping = Utils.convertListToMap(varOrder, possibleValue);
+                String replacedExp = Utils.replaceVar(currentMapping, oldExp);
+                String[] toVars = replacedExp.replace("[", "").replace("]", "").split(",");
+                currentPlace.addSingleMapping(fromVars, toVars);
+            }
+        }
+    }
 
-                for (int tokenIndex = 0; tokenIndex < tokenList.length; tokenIndex++) {
-                    String token = tokenList[tokenIndex];
-                    String[] varList = token.trim().split(" ");
-                    for (int i = 0; i < varList.length; i++) {
-                        String var = varList[i].trim();
-                        if (Interpreter.getValueType(var) == Interpreter.ValueType.VARIABLE) {
-                            varList[i] = possibleValue.get(varOrder.get(var));
-                        }
-                    }
-                    newVarList[tokenIndex] = String.join(" ", varList);
-                }
+    public void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
+                                   Set<Path> result) {
 
-                currentPlace.addVarMapping(newVars, newVarList);
+        if (startPlace.getID() == endPlace.getID()) {
+            result.add(currentPath);
+            return;
+        }
+
+        for (Transition inTran : endPlace.getInTransition()) {
+            for (Place previousPlace : inTran.getInPlaces()) {
+
+                Path path = new Path(currentPath);
+                path.addPathNode(startPlace);
+                path.addPathNode(inTran);
+                path.addCondition(inTran, previousPlace);
+
+                findPathConditions(startPlace, previousPlace, currentPath, result);
             }
         }
     }

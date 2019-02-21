@@ -9,7 +9,7 @@ import java.util.Map;
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class generateVarMappingTest03 {
+public class findingPathTest03 {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -99,4 +99,6 @@ public class generateVarMappingTest03 {
         assertEquals("c d -", vars07.get("x").get(1));
         assertEquals("e f *", vars07.get("x").get(2));
     }
+
+
 }
