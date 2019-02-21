@@ -13,6 +13,7 @@ public class findingPathTest02 {
     private PetrinetModel model;
     private Petrinet net;
     private Place place00, place01, place02, place03, place04;
+    private List<Path> paths;
 
     @Before
     public void setUp() {
@@ -26,6 +27,9 @@ public class findingPathTest02 {
         place02 = net.getPlace(2);
         place03 = net.getPlace(3);
         place04 = net.getPlace(4);
+
+        paths = new ArrayList<>();
+        net.findPathConditions(place00, place04, new Path(), paths);
     }
 
     @Test
@@ -70,12 +74,9 @@ public class findingPathTest02 {
 
     @Test
     public void testPath() {
-        Path path = new Path();
-        List<Path> res = new ArrayList<>();
-        net.findPathConditions(place00, place04, path, res);
 
-        assertEquals(1, res.size());
-        List<Node> foundPath = res.get(0).getPath();
+        assertEquals(1, paths.size());
+        List<Node> foundPath = paths.get(0).getPath();
 
         assertEquals(9, foundPath.size());
         assertEquals(0, foundPath.get(0).getID());
@@ -87,6 +88,15 @@ public class findingPathTest02 {
         assertEquals(3, foundPath.get(6).getID());
         assertEquals(3, foundPath.get(7).getID());
         assertEquals(4, foundPath.get(8).getID());
+    }
 
+    @Test
+    public void testCondition() {
+        List<String> condition = paths.get(0).getConditions();
+        assertEquals(4, condition.size());
+        assertEquals("a a ==", condition.get(0));
+        assertEquals("a 1 + 1 == a 1 + 3 > &&", condition.get(1));
+        assertEquals("a 1 + 1 + 0 >", condition.get(2));
+        assertEquals("a 1 + 1 + 1 + 0 >", condition.get(3));
     }
 }

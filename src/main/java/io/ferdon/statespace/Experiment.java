@@ -10,7 +10,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Experienment {
+public class Experiment {
 
     public static void main(String[] args) {
 

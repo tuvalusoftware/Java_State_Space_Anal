@@ -3,10 +3,7 @@ package io.ferdon.statespace;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
@@ -16,6 +13,7 @@ public class findingPathTest03 {
     private PetrinetModel model;
     private Petrinet net;
     private Place place00, place01, place02, place03, place04, place05, place06, place07;
+    private List<Path> paths;
 
     @Before
     public void setUp() {
@@ -32,6 +30,9 @@ public class findingPathTest03 {
         place05 = net.getPlace(5);
         place06 = net.getPlace(6);
         place07 = net.getPlace(7);
+
+        paths = new ArrayList<>();
+        net.findPathConditions(place02, place07, new Path(), paths);
     }
 
     @Test
@@ -100,5 +101,26 @@ public class findingPathTest03 {
         assertEquals("a b +", vars07.get("x").get(0));
         assertEquals("c d -", vars07.get("x").get(1));
         assertEquals("e f *", vars07.get("x").get(2));
+    }
+
+    @Test
+    public void testPath() {
+
+        assertEquals(1, paths.size());
+        List<Node> foundPath01 = paths.get(0).getPath();
+        
+        assertEquals(2, foundPath01.get(0).getID());
+        assertEquals(1, foundPath01.get(1).getID());
+        assertEquals(6, foundPath01.get(2).getID());
+        assertEquals(3, foundPath01.get(3).getID());
+        assertEquals(7, foundPath01.get(4).getID());
+    }
+
+    @Test
+    public void testCondition() {
+        List<String> condition = paths.get(0).getConditions();
+        assertEquals(5, condition.size());
+        assertEquals("c d + 0 >", condition.get(0));
+        assertEquals("c d - 0 >", condition.get(1));
     }
 }

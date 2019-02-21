@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 
 import java.util.*;
 
-public class Path {
+class Path {
 
     private List<Node> path;
     private List<String> conditions;
@@ -22,15 +22,16 @@ public class Path {
         conditions.addAll(x.getConditions());
     }
 
-    public List<Node> getPath() {
+    List<Node> getPath() {
         return path;
     }
 
-    public void reversePath() {
+    void reversePath() {
         path = Lists.reverse(path);
+        conditions = Lists.reverse(conditions);
     }
 
-    public List<String> getConditions() {
+    List<String> getConditions() {
         return conditions;
     }
 
