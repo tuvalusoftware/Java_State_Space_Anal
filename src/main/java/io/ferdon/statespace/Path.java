@@ -27,7 +27,7 @@ public class Path {
     }
 
     public void reversePath() {
-        Lists.reverse(path);
+        path = Lists.reverse(path);
     }
 
     public List<String> getConditions() {
