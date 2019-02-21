@@ -10,7 +10,6 @@
 package io.ferdon.statespace;
 
 import com.google.common.collect.Lists;
-import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import java.io.*;
@@ -46,7 +45,6 @@ public class Petrinet implements Serializable {
         this.numPlaces = markings.length;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
-//        this.conditions = new HashMap<>();
 
         for (int i = 0; i < numTransitions; i++) addTransition(i);
         for (int i = 0; i < numPlaces; i++) addPlace(i);
@@ -74,9 +72,8 @@ public class Petrinet implements Serializable {
             }
         }
 
-//        for (Place place : places.values()) conditions.put(place, new ConditionSet(place));
         for (Place place : places.values()) {
-            if (place.isEmptyOutput()) combineConditions(place);
+            if (place.isEmptyOutput()) generateVarMapping(place);
         }
 
         for (String placeID : placeToColor.keySet()) {
@@ -102,7 +99,6 @@ public class Petrinet implements Serializable {
         this.numPlaces = model.Markings.length;
         this.transitions = new HashMap<>();
         this.places = new HashMap<>();
-//        this.conditions = new HashMap<>();
 
         for (int i = 0; i < numTransitions; i++) addTransition(i);
         for (int i = 0; i < numPlaces; i++) addPlace(i);
@@ -130,9 +126,8 @@ public class Petrinet implements Serializable {
             }
         }
 
-//        for (Place place : places.values()) conditions.put(place, new ConditionSet(place));
         for (Place place : places.values()) {
-            if (place.isEmptyOutput()) combineConditions(place);
+            if (place.isEmptyOutput()) generateVarMapping(place);
         }
 
         for (String placeID : model.placeToColor.keySet()) {
@@ -193,7 +188,7 @@ public class Petrinet implements Serializable {
         places.get(placeID).addInputTransition(transition);
     }
 
-    public void combineConditions(Place currentPlace) {
+    public void generateVarMapping(Place currentPlace) {
 
         /* if the place has no transition, var name mapping to itself */
         currentPlace.createNewVarMapping();
@@ -207,7 +202,7 @@ public class Petrinet implements Serializable {
         /* combine var mapping from previous places */
         for (Transition inTran : currentPlace.getInTransition()) {
             for (Place previousPlace : inTran.getInPlaces()) {
-                if (!previousPlace.isCreateVarMapping()) combineConditions(previousPlace);
+                if (!previousPlace.isCreateVarMapping()) generateVarMapping(previousPlace);
             }
 
             String oldExpression = inTran.getExpression(currentPlace);

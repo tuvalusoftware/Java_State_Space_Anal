@@ -35,9 +35,12 @@
   "placeToColor": {
     "0": "INT",
     "1": "INT",
-    "2": "INT",
+    "2": "INT*INT",
     "3": "INT",
-    "4": "INT"
+    "4": "INT*INT",
+    "5": "INT*INT",
+    "6": "INT",
+    "7": "INT"
   }
 }
 
