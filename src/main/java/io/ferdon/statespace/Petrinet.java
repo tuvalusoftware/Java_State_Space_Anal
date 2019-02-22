@@ -12,6 +12,7 @@ package io.ferdon.statespace;
 
 import java.io.*;
 import java.util.*;
+
 import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
@@ -188,12 +189,12 @@ public class Petrinet implements Serializable {
 
     /**
      * Create a var mapping for each place.
-     *
+     * <p>
      * Each place has a number of input transition(s) and output transition(s) (possibly zero),
      * the output transition specify the variable's names, which is created by other variables from
      * the input transition. If we map each variable recursively from output place to input place, we
      * will get the var mapping from variable of end place to be expressed by variables of start place.
-     *
+     * <p>
      * This function generates the var mapping of all places which respects to its input places.
      *
      * @param currentPlace The Place is processing (which is called recursively).
@@ -236,7 +237,7 @@ public class Petrinet implements Serializable {
             String oldExp = inTran.getExpression(currentPlace);
             String[] fromVars = outTran.getVars(currentPlace);
 
-            for(Map<String, String> currentMapping: possibleMappings) {
+            for (Map<String, String> currentMapping : possibleMappings) {
                 String replacedExp = Utils.replaceVar(currentMapping, oldExp);
                 String[] toVars = Utils.parseExpressionToStringArray(replacedExp);
                 currentPlace.addSingleMapping(fromVars, toVars);
@@ -245,7 +246,7 @@ public class Petrinet implements Serializable {
     }
 
     void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
-                                   List<Path> result) {
+                            List<Path> result) {
 
         if (startPlace.getID() == endPlace.getID()) {
             currentPath.addPathNode(startPlace);
