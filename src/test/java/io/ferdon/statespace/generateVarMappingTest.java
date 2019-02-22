@@ -10,7 +10,7 @@ import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class generateVarMappingTest01 {
+public class generateVarMappingTest {
     private PetrinetModel model;
     private Petrinet net;
     private Place place00, place01, place02, place03, place04, place05, place06, place07;
