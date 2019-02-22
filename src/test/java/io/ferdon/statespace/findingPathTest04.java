@@ -19,7 +19,7 @@ public class findingPathTest04 {
 
     @Before
     public void setUp() {
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/twoways.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/threeWays.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
@@ -68,7 +68,7 @@ public class findingPathTest04 {
     public void testFindPath() {
 
         net.findPathConditions(place00, place03, new Path(), paths);
-        assertEquals(2, paths.size());
+        assertEquals(3, paths.size());
 
         List<Node> path01 = paths.get(0).getPath();
         assertEquals(5, path01.size());
@@ -82,16 +82,24 @@ public class findingPathTest04 {
         assertEquals(5, path02.size());
         assertEquals(0, path02.get(0).getID());
         assertEquals(0, path02.get(1).getID());
-        assertEquals(2, path02.get(2).getID());
+        assertEquals(1, path02.get(2).getID());
         assertEquals(2, path02.get(3).getID());
         assertEquals(3, path02.get(4).getID());
+
+        List<Node> path03 = paths.get(2).getPath();
+        assertEquals(5, path03.size());
+        assertEquals(0, path03.get(0).getID());
+        assertEquals(0, path03.get(1).getID());
+        assertEquals(2, path03.get(2).getID());
+        assertEquals(2, path03.get(3).getID());
+        assertEquals(3, path03.get(4).getID());
     }
 
     @Test
     public void testCondition() {
 
         net.findPathConditions(place00, place03, new Path(), paths);
-        assertEquals(2, paths.size());
+        assertEquals(3, paths.size());
         
         List<String> condition01 = paths.get(0).getConditions();
         assertEquals(2, condition01.size());
@@ -101,6 +109,11 @@ public class findingPathTest04 {
         List<String> condition02 = paths.get(1).getConditions();
         assertEquals(2, condition02.size());
         assertEquals("a 0 >", condition02.get(0));
-        assertEquals("a 2 + 0 >", condition02.get(1));
+        assertEquals("a 2 + a 1 + + 0 >", condition02.get(1));
+
+        List<String> condition03 = paths.get(2).getConditions();
+        assertEquals(2, condition03.size());
+        assertEquals("a 0 >", condition03.get(0));
+        assertEquals("a 2 + a 1 + + 0 >", condition03.get(1));
     }
 }
