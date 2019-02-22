@@ -212,6 +212,13 @@ public class Petrinet implements Serializable {
         /* combine var mapping from previous places */
         for (Transition inTran : currentPlace.getInTransition()) {
             for (Place previousPlace : inTran.getInPlaces()) {
+
+                if (previousPlace.getID() == currentPlace.getID()) { /* special case: loop */
+                    String[] toVars = Utils.parseExpressionToStringArray(inTran.getExpression(previousPlace));
+                    String[] fromVars = inTran.getVars(currentPlace);
+                    previousPlace.addSingleMapping(fromVars, toVars);
+                }
+
                 if (!previousPlace.isCreateVarMapping()) generateVarMapping(previousPlace);
             }
 
@@ -231,7 +238,7 @@ public class Petrinet implements Serializable {
 
             for(Map<String, String> currentMapping: possibleMappings) {
                 String replacedExp = Utils.replaceVar(currentMapping, oldExp);
-                String[] toVars = replacedExp.replace("[", "").replace("]", "").split(",");
+                String[] toVars = Utils.parseExpressionToStringArray(replacedExp);
                 currentPlace.addSingleMapping(fromVars, toVars);
             }
         }

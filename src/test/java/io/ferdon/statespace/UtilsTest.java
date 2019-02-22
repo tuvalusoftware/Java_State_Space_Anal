@@ -186,8 +186,8 @@ public class UtilsTest {
         String output03 = Utils.convertPostfix(infix03).trim();
         assertEquals(postfix03, output03);
 
-        String infix04 = "\"thong\"^^\"one1\"";
-        String postfix04 = "\"thong\" \"one1\" concat";
+        String infix04 = "'thong' concat 'one1'";
+        String postfix04 = "'thongone1'";
         String output04 = Utils.convertPostfix(infix04).trim();
         assertEquals(postfix04, output04);
     }
@@ -204,7 +204,7 @@ public class UtilsTest {
         assertEquals(postfix02, output02);
 
         String infix03 = "(a + 3 = 2) andalso (x + 2 < 3) oralso (x + 3 = 2)";
-        String postfix03 = "a 3 + 2 == x 2 + 3 < and x 3 + 2 == or";
+        String postfix03 = "a 3 + 2 == x 2 + 3 < && x 3 + 2 == ||";
         String output03 = Utils.convertPostfix(infix03).trim();
         assertEquals(postfix03, output03);
     }

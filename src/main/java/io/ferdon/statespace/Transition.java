@@ -127,7 +127,14 @@ public class Transition extends Node {
 
         Map<String, List<String>> result = new HashMap<>();
         for (Place previousPlace : getInPlaces()) {
-            result.putAll(previousPlace.getVarMapping());
+
+            Map<String, List<String>> currentMapping = previousPlace.getVarMapping();
+            for(String varName : currentMapping.keySet()) {
+
+                if (!result.containsKey(varName)) result.put(varName, new ArrayList<>());
+                result.get(varName).addAll(currentMapping.get(varName));
+            }
+
         }
 
         return result;

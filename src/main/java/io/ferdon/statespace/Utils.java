@@ -175,13 +175,17 @@ final class Utils {
         String[] tokens = exp.trim().split(" ");
         for(int i = 0; i < tokens.length; i++) {
 
-            String token = tokens[i];
+            String token = tokens[i].trim();
             if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
-                tokens[i] = currentMapping.get(token);
+                tokens[i] = currentMapping.get(token).trim();
             }
         }
 
         return String.join(" ", tokens);
+    }
+
+    static String[] parseExpressionToStringArray(String expression) {
+        return expression.replace("]", "").replace("[", "").split(",");
     }
 
     static List<Map<String, String>> generateAllPossibleVarMapping(Map<String, List<String>> combinedMapping) {

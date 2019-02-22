@@ -103,15 +103,19 @@ public class generateVarMappingTest {
     @Test
     public void testVarMappingPlace7() {
         Map<String, List<String>> vars07 = place07.getVarMapping();
+
         assertEquals(3, vars07.size());
         assertEquals(3, vars07.get("e").size());
         assertEquals(1, vars07.get("d").size());
         assertEquals(2, vars07.get("f").size());
+
         assertEquals("a b -", vars07.get("e").get(0));
         assertEquals("c 1 +", vars07.get("e").get(1));
         assertEquals("e", vars07.get("e").get(2));
+
         assertEquals("d", vars07.get("d").get(0));
         assertEquals("a b +", vars07.get("f").get(0));
+
         assertEquals("c 1 -", vars07.get("f").get(1));
         assertFalse(vars07.containsKey("a"));
     }
