@@ -19,7 +19,7 @@ public class findingPathTest04 {
 
     @Before
     public void setUp() {
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/threeWays.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/threePaths.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
