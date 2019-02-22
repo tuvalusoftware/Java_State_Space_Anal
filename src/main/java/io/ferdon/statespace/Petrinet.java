@@ -221,7 +221,7 @@ public class Petrinet implements Serializable {
             /* end place then var mapping equals to all combined in place's var mappings */
             if (currentPlace.isEmptyOutput()) {
                 currentPlace.setVarMapping(combinedMapping);
-                return;
+                continue;
             }
 
             List<Map<String, String>> possibleMappings = Utils.generateAllPossibleVarMapping(combinedMapping);
