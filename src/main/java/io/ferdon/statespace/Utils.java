@@ -184,13 +184,28 @@ final class Utils {
         return String.join(" ", tokens);
     }
 
-    static Map<String, String> convertListToMap(Map<Integer, String> keyOrder, List<String> values) {
+    static List<Map<String, String>> generateAllPossibleVarMapping(Map<String, List<String>> combinedMapping) {
 
-        Map<String, String> result = new HashMap<>();
-        for(int varIndex = 0; varIndex < values.size(); varIndex++) {
-            String varName = keyOrder.get(varIndex);
-            String varValue = values.get(varIndex);
-            result.put(varName, varValue);
+        List<String> varOrder = new ArrayList<>();
+        List<List<String>> allVars = new ArrayList<>();
+
+        for (String var : combinedMapping.keySet()) {
+            allVars.add(combinedMapping.get(var));
+            varOrder.add(var);
+        }
+        List<List<String>> possibleMapping = Lists.cartesianProduct(allVars);
+
+        List<Map<String, String>> result = new ArrayList<>();
+        for(List<String> mapping: possibleMapping) {
+
+            Map<String, String> varMap = new HashMap<>();
+            for(int index = 0; index < mapping.size(); index++) {
+                String varKey = varOrder.get(index);
+                String varValue = mapping.get(index);
+                varMap.put(varKey, varValue);
+            }
+
+            result.add(varMap);
         }
 
         return result;

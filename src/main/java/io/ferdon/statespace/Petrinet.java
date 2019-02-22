@@ -9,11 +9,10 @@
 
 package io.ferdon.statespace;
 
-import com.google.common.collect.Lists;
-import org.json.JSONObject;
 
 import java.io.*;
 import java.util.*;
+import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
 import static io.ferdon.statespace.main.parseJson;
@@ -26,7 +25,6 @@ public class Petrinet implements Serializable {
 
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
-//    private Map<Place, ConditionSet> conditions;
 
     private StateSpace stateSpace;
     private static Interpreter interpreter;
@@ -188,7 +186,19 @@ public class Petrinet implements Serializable {
         places.get(placeID).addInputTransition(transition);
     }
 
-    public void generateVarMapping(Place currentPlace) {
+    /**
+     * Create a var mapping for each place.
+     *
+     * Each place has a number of input transition(s) and output transition(s) (possibly zero),
+     * the output transition specify the variable's names, which is created by other variables from
+     * the input transition. If we map each variable recursively from output place to input place, we
+     * will get the var mapping from variable of end place to be expressed by variables of start place.
+     *
+     * This function generates the var mapping of all places which respects to its input places.
+     *
+     * @param currentPlace The Place is processing (which is called recursively).
+     */
+    void generateVarMapping(Place currentPlace) {
 
         /* if the place has no transition, var name mapping to itself */
         currentPlace.createNewVarMapping();
@@ -206,10 +216,7 @@ public class Petrinet implements Serializable {
             }
 
             /* combine values of all variables in previous places */
-            Map<String, List<String>> combinedMapping = new HashMap<>();
-            for (Place previousPlace : inTran.getInPlaces()) {
-                combinedMapping.putAll(previousPlace.getVarMapping());
-            }
+            Map<String, List<String>> combinedMapping = inTran.combineVars();
 
             /* end place then var mapping equals to all combined in place's var mappings */
             if (currentPlace.isEmptyOutput()) {
@@ -217,27 +224,12 @@ public class Petrinet implements Serializable {
                 return;
             }
 
-            /* generate all possible values of each variable */
-            int index = 0;
-            Map<Integer, String> varOrder = new HashMap<>();  /* store variables's order */
-            List<List<String>> allVars = new ArrayList<>();
-
-            for (String var : combinedMapping.keySet()) {
-                allVars.add(combinedMapping.get(var));
-                varOrder.put(index, var);
-                index++;
-            }
-            List<List<String>> possibleValues = Lists.cartesianProduct(allVars);
-
-            /* update var mapping of current place by replace variables of expression
-             with current var mapping */
+            List<Map<String, String>> possibleMappings = Utils.generateAllPossibleVarMapping(combinedMapping);
             Transition outTran = currentPlace.getOutTransition().get(0);
             String oldExp = inTran.getExpression(currentPlace);
             String[] fromVars = outTran.getVars(currentPlace);
 
-            for (List<String> possibleValue : possibleValues) {
-
-                Map<String, String> currentMapping = Utils.convertListToMap(varOrder, possibleValue);
+            for(Map<String, String> currentMapping: possibleMappings) {
                 String replacedExp = Utils.replaceVar(currentMapping, oldExp);
                 String[] toVars = replacedExp.replace("[", "").replace("]", "").split(",");
                 currentPlace.addSingleMapping(fromVars, toVars);
@@ -245,7 +237,7 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
+    void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
                                    List<Path> result) {
 
         if (startPlace.getID() == endPlace.getID()) {
@@ -261,14 +253,14 @@ public class Petrinet implements Serializable {
                 Path path = new Path(currentPath);
                 path.addPathNode(endPlace);
                 path.addPathNode(inTran);
-                path.addCondition(inTran, previousPlace);
+                path.addCondition(inTran);
 
                 findPathConditions(startPlace, previousPlace, path, result);
             }
         }
     }
 
-    public State generateCurrentState() throws IOException, ClassNotFoundException {
+    State generateCurrentState() throws IOException, ClassNotFoundException {
         Map<Place, Marking> data = new HashMap<>();
 
         for (Place place : places.values()) {
@@ -281,11 +273,11 @@ public class Petrinet implements Serializable {
         return state;
     }
 
-    public StateSpace getStateSpace() {
+    StateSpace getStateSpace() {
         return stateSpace;
     }
 
-    public void applyState(State state) throws IOException, ClassNotFoundException {
+    void applyState(State state) throws IOException, ClassNotFoundException {
 
         for (Place place : places.values()) {
             Marking marking = state.getMarking(place).deepCopy();
@@ -293,7 +285,7 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public void generateStateSpace(State startState) throws ClassNotFoundException, IOException {
+    void generateStateSpace(State startState) throws ClassNotFoundException, IOException {
 
         Queue<State> stateQueue = new LinkedList<>();
         stateQueue.add(startState);
@@ -327,12 +319,12 @@ public class Petrinet implements Serializable {
         }
     }
 
-    public State executeWithBinding(Transition transition, Binding b) throws IOException, ClassNotFoundException {
+    State executeWithBinding(Transition transition, Binding b) throws IOException, ClassNotFoundException {
         transition.executeWithBinding(b, interpreter);
         return generateCurrentState();
     }
 
-    public State executeWithID(int tranID, int bindID) throws IOException, ClassNotFoundException {
+    State executeWithID(int tranID, int bindID) throws IOException, ClassNotFoundException {
         transitions.get(tranID).executeWithID(bindID, interpreter);
         return generateCurrentState();
     }

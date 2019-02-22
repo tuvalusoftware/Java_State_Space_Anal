@@ -123,6 +123,16 @@ public class Transition extends Node {
         return result;
     }
 
+    Map<String, List<String>> combineVars() {
+
+        Map<String, List<String>> result = new HashMap<>();
+        for (Place previousPlace : getInPlaces()) {
+            result.putAll(previousPlace.getVarMapping());
+        }
+
+        return result;
+    }
+
     boolean stopByGuard(Map<String, String> varMappipng, Interpreter interpreter) {
         if (guard.isEmpty()) return false;
         Interpreter.Value isPass = interpreter.interpretFromString(guard, varMappipng);

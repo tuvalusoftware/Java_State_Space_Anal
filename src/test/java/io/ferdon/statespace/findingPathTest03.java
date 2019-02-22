@@ -108,7 +108,8 @@ public class findingPathTest03 {
 
         assertEquals(1, paths.size());
         List<Node> foundPath01 = paths.get(0).getPath();
-        
+
+        assertEquals(5 , foundPath01.size());
         assertEquals(2, foundPath01.get(0).getID());
         assertEquals(1, foundPath01.get(1).getID());
         assertEquals(6, foundPath01.get(2).getID());
@@ -119,8 +120,13 @@ public class findingPathTest03 {
     @Test
     public void testCondition() {
         List<String> condition = paths.get(0).getConditions();
-        assertEquals(5, condition.size());  // #TODO: wrong here
+
+        assertEquals(4, condition.size());
         assertEquals("c d + 0 >", condition.get(0));
-        assertEquals("c d - 0 >", condition.get(1));
+        assertEquals("e f * 0 >", condition.get(1));
+        assertEquals("c d - 0 >", condition.get(2));
+        assertEquals("a b + 0 >", condition.get(3));
+
+
     }
 }
