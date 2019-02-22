@@ -32,7 +32,6 @@ public class findingPathTest03 {
         place07 = net.getPlace(7);
 
         paths = new ArrayList<>();
-        net.findPathConditions(place02, place07, new Path(), paths);
     }
 
     @Test
@@ -104,7 +103,9 @@ public class findingPathTest03 {
     }
 
     @Test
-    public void testPath() {
+    public void testPath01() {
+
+        net.findPathConditions(place02, place07, new Path(), paths);
 
         assertEquals(1, paths.size());
         List<Node> foundPath01 = paths.get(0).getPath();
@@ -118,7 +119,9 @@ public class findingPathTest03 {
     }
 
     @Test
-    public void testCondition() {
+    public void testCondition01() {
+
+        net.findPathConditions(place02, place07, new Path(), paths);
         List<String> condition = paths.get(0).getConditions();
 
         assertEquals(4, condition.size());
@@ -126,7 +129,27 @@ public class findingPathTest03 {
         assertEquals("e f * 0 >", condition.get(1));
         assertEquals("c d - 0 >", condition.get(2));
         assertEquals("a b + 0 >", condition.get(3));
+    }
 
+    @Test
+    public void testPath02() {
 
+        net.findPathConditions(place00, place06, new Path(), paths);
+
+        assertEquals(1, paths.size());
+        List<Node> foundPath01 = paths.get(0).getPath();
+
+        assertEquals(3 , foundPath01.size());
+        assertEquals(0, foundPath01.get(0).getID());
+        assertEquals(0, foundPath01.get(1).getID());
+        assertEquals(6, foundPath01.get(2).getID());
+    }
+
+    @Test
+    public void testCondition02() {
+        net.findPathConditions(place00, place06, new Path(), paths);
+        List<String> condition = paths.get(0).getConditions();
+
+        assertEquals(0, condition.size());
     }
 }

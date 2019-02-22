@@ -40,9 +40,10 @@ class Path {
 
     void addCondition(Transition inTran) {
 
-        Map<String, List<String>> vars = inTran.combineVars();
         String guard = inTran.getGuard();
+        if (guard.isEmpty()) return;
 
+        Map<String, List<String>> vars = inTran.combineVars();
         List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(vars);
         for (Map<String, String> mapping : possibleMapping) {
             String newGuard = Utils.replaceVar(mapping, guard);
