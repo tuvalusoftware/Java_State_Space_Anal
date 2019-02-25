@@ -141,9 +141,7 @@ class Interpreter implements Serializable {
             return new IntegerExpression(this.value - x.getInt());
         }
 
-        public ArithmeticValue mul(ArithmeticValue x) {
-            return new IntegerExpression(this.value * x.getInt());
-        }
+        public ArithmeticValue mul(ArithmeticValue x) { return new IntegerExpression(this.value * x.getInt()); }
 
         public ArithmeticValue div(ArithmeticValue x) {
             return new IntegerExpression(this.value / x.getInt());
@@ -489,11 +487,11 @@ class Interpreter implements Serializable {
         }
 
         public int getInt() {
-            throw new UnsupportedOperationException("Method have not implemented yet");
+            return coefficient.getInt();
         }
 
         public double getReal() {
-            throw new UnsupportedOperationException("Method have not implemented yet");
+            return coefficient.getReal();
         }
 
         public boolean getBoolean() {
@@ -528,6 +526,11 @@ class Interpreter implements Serializable {
 
         public ArithmeticValue mod(ArithmeticValue x) {
             return new VariableExpression(name, coefficient.getReal() % x.getReal());
+        }
+
+        @Override
+        public String toString() {
+            return "VariableExpression: " + name + " = " + coefficient.getReal();
         }
     }
 
@@ -787,7 +790,7 @@ class Interpreter implements Serializable {
      * @param token String
      * @throws Exception token's grammar is wrong
      */
-    private void pushOperandToStack(String token) throws IllegalArgumentException {
+    private void pushOperandToStack(String token, boolean requiredVarValue) throws IllegalArgumentException {
 
         ValueType valueType = getValueType(token);
         if (valueType == null) throw new IllegalArgumentException("Syntax Error");
@@ -795,8 +798,14 @@ class Interpreter implements Serializable {
         switch (valueType) {
             case VARIABLE: {
                 String variableValue = variables.get(token);
+                if (!requiredVarValue) {
+                    VariableExpression arg = new VariableExpression(token);
+                    valueStack.push(arg);
+                    break;
+                }
+
                 if (variableValue == null) throw new IllegalArgumentException("Variable's values are not provided");
-                pushOperandToStack(variableValue);  /* change variable with value, so next time valueType != VARIABLE */
+                pushOperandToStack(variableValue, true);
                 break;
             }
             case INTEGER: {
@@ -837,7 +846,7 @@ class Interpreter implements Serializable {
             if (isOperatorToken(token)) {
                 doOperation(token);
             } else {
-                pushOperandToStack(token);
+                pushOperandToStack(token, true);
             }
         }
 
@@ -865,14 +874,18 @@ class Interpreter implements Serializable {
     private void calcCoefficient(String token) {
         ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
         ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
-        if (arg1 instanceof VariableExpression || arg2 instanceof VariableExpression) {  /* keep operator as we only need to find coefficients */
-            valueStack.push(arg2);
-            valueStack.push(arg1);
-            return;
+        OperationType opType = getOperationType(token);
+
+        if (arg1 instanceof VariableExpression || arg2 instanceof VariableExpression) {
+            if (!(opType == OperationType.MUL)) {  /* keep operator as we only need to find coefficients */
+                valueStack.push(arg2);
+                valueStack.push(arg1);
+                return;
+            }
+            if (!(arg2 instanceof VariableExpression)) { ArithmeticValue tmp = arg1; arg1 = arg2; arg2 = tmp; }
         }
 
-        OperationType operationType = getOperationType(token);
-        switch (operationType) {
+        switch (opType) {
             case ADD: { valueStack.push(arg2.add(arg1)); break;  }
             case SUB: { valueStack.push(arg2.sub(arg1)); break;  }
             case MUL: { valueStack.push(arg2.mul(arg1)); break;  }
@@ -896,7 +909,7 @@ class Interpreter implements Serializable {
             if (isOperatorToken(token)) {
                 calcCoefficient(token);
             } else {
-                pushOperandToStack(token);
+                pushOperandToStack(token, false);
             }
         }
 

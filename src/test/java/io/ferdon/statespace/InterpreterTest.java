@@ -603,4 +603,66 @@ public class InterpreterTest {
         assertTrue(res.getList().get(2).getBoolean());
         assertEquals(3, res.getList().get(3).getInt());
     }
+
+    @Test
+    public void testCalcCoeffcient01() {
+        expression = "1 a * 2 b * + 0 >";
+
+        Map<String, Double> res = interpreter.interpretCoffiecient(expression);
+        assertEquals(2, res.size());
+        assertEquals(1, res.get("a"), precision);
+        assertEquals(2, res.get("b"), precision);
+    }
+
+    @Test
+    public void testCalcCoeffcient02() {
+        expression = "a 1 * b 2 * + 0 >";
+
+        Map<String, Double> res = interpreter.interpretCoffiecient(expression);
+        assertEquals(2, res.size());
+        assertEquals(1, res.get("a"), precision);
+        assertEquals(2, res.get("b"), precision);
+    }
+
+    @Test
+    public void testCalcCoeffcient03() {
+        expression = "a 2 3 * * b 2 -10 * * + 0 >";
+
+        Map<String, Double> res = interpreter.interpretCoffiecient(expression);
+        assertEquals(2, res.size());
+        assertEquals(6, res.get("a"), precision);
+        assertEquals(-20, res.get("b"), precision);
+    }
+
+    @Test
+    public void testCalcCoeffcient04() {
+        expression = "4 a * 1 * 5 b * 2 * + 0 >";
+
+        Map<String, Double> res = interpreter.interpretCoffiecient(expression);
+        assertEquals(2, res.size());
+        assertEquals(4, res.get("a"), precision);
+        assertEquals(10, res.get("b"), precision);
+    }
+
+    @Test
+    public void testCalcCoeffcient05() {
+        expression = "4 a * 1 * 5 b * 2 * + 1 1 + c * 1 1 + * + > ";
+
+        Map<String, Double> res = interpreter.interpretCoffiecient(expression);
+        assertEquals(3, res.size());
+        assertEquals(4, res.get("a"), precision);
+        assertEquals(10, res.get("b"), precision);
+        assertEquals(4, res.get("c"), precision);
+    }
+
+    @Test
+    public void testCalcCoeffcient06() {
+        expression = "4.0 a * 1 * 5 b * 2 * + 1 1 + c * 1 1 + * + > ";
+
+        Map<String, Double> res = interpreter.interpretCoffiecient(expression);
+        assertEquals(3, res.size());
+        assertEquals(4.0, res.get("a"), precision);
+        assertEquals(10, res.get("b"), precision);
+        assertEquals(4, res.get("c"), precision);
+    }
 }
