@@ -275,7 +275,7 @@ public class Petrinet implements Serializable {
 
         List<double[]> resultPoints = new ArrayList<>();
         for(Path path: paths) {
-            double[] point = Utils.solveLinearInequalities(path.getCoefficients());
+            double[] point = Utils.solveLinearInequalities(path.getCoefficients(interpreter));
             resultPoints.add(point);
         }
 

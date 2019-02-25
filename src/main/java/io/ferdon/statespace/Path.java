@@ -52,9 +52,8 @@ class Path {
         }
     }
 
-    double[][] getCoefficients() {
+    double[][] getCoefficients(Interpreter interpreter) {
 
-        /* arrange the order for variable's names */
         Map<String, Integer> varOrders = new HashMap<>();
         for (String condition : conditions) {
             String[] tokens = condition.split(" ");
@@ -65,25 +64,23 @@ class Path {
             }
         }
 
-        /* get coefficients */
         int row = -1;
+        double[][] result = new double[conditions.size()][];
+
         for (String condition : conditions) {
-
             row += 1;
-            String[] tokens = condition.split(" ");
             double[] coeff = new double[varOrders.size()];
+            Map<String, Double> varCoeffs = interpreter.interpretCoffiecient(condition);
 
-            for (String token : tokens) {
-                if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
-                    int col = varOrders.get(token);
-                    coeff[col] = 
-                }
+            for(String var: varOrders.keySet()) {
+                int col = varOrders.get(var);
+                double coeff_item = varCoeffs.get(var);
+                coeff[col] = coeff_item;
             }
+
+            result[row] = coeff;
         }
 
-        /* arrange coefficients in the right order */
-
-
-        double[][] result = new double[]
+        return result;
     }
 }

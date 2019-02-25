@@ -473,6 +473,64 @@ class Interpreter implements Serializable {
         }
     }
 
+    class VariableExpression implements ArithmeticValue {
+
+        private RealExpression coefficient;
+        private String name;
+
+        VariableExpression(String name) {
+            this.name = name;
+            this.coefficient = new RealExpression(1.0);
+        }
+
+        VariableExpression(String name, double coefficient) {
+            this.name = name;
+            this.coefficient = new RealExpression(coefficient);
+        }
+
+        public int getInt() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        public double getReal() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        public boolean getBoolean() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        public String getString() {  return name + " " + coefficient.getReal() + " *"; }
+
+        public String getVariableName() { return name; }
+
+        public RealExpression getCoefficient() { return coefficient; }
+
+        public List<Value> getList() {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        public ArithmeticValue add(ArithmeticValue x) {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        public ArithmeticValue sub(ArithmeticValue x) {
+            throw new UnsupportedOperationException("Method have not implemented yet");
+        }
+
+        public ArithmeticValue mul(ArithmeticValue x) {
+            return new VariableExpression(name, coefficient.getReal() * x.getReal());
+        }
+
+        public ArithmeticValue div(ArithmeticValue x) {
+            return new VariableExpression(name, coefficient.getReal() / x.getReal());
+        }
+
+        public ArithmeticValue mod(ArithmeticValue x) {
+            return new VariableExpression(name, coefficient.getReal() % x.getReal());
+        }
+    }
+
     /*
      * operator: operation name ~> operationType
      * variables: variable name ~> variable value
@@ -786,6 +844,7 @@ class Interpreter implements Serializable {
         return (Value) valueStack.pop();
     }
 
+
     /**
      * Interface for run expression from String
      *
@@ -803,42 +862,65 @@ class Interpreter implements Serializable {
         return interpret(tokens, variables);
     }
 
+    private void calcCoefficient(String token) {
+        ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
+        ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
+        if (arg1 instanceof VariableExpression || arg2 instanceof VariableExpression) {  /* keep operator as we only need to find coefficients */
+            valueStack.push(arg2);
+            valueStack.push(arg1);
+            return;
+        }
+
+        OperationType operationType = getOperationType(token);
+        switch (operationType) {
+            case ADD: { valueStack.push(arg2.add(arg1)); break;  }
+            case SUB: { valueStack.push(arg2.sub(arg1)); break;  }
+            case MUL: { valueStack.push(arg2.mul(arg1)); break;  }
+            case DIV: { valueStack.push(arg2.div(arg1)); break;  }
+            case MOD: { valueStack.push(arg2.mod(arg1)); break;  }
+        }
+    }
+
+    /**
+     * Return a string which coefficients is specified for each variables
+     * @param expression String
+     * @return Map variable's name ~> coefficient
+     */
+    public Map<String, Double> interpretCoffiecient(String expression) {
+        if (expression.isEmpty()) return new HashMap<>();
+
+        String[] tokens = StringEscapeUtils.escapeJava(expression).trim().split(" ");
+        this.valueStack.empty();
+
+        for(String token: tokens) {
+            if (isOperatorToken(token)) {
+                calcCoefficient(token);
+            } else {
+                pushOperandToStack(token);
+            }
+        }
+
+        Map<String, Double> result = new HashMap<>();
+        while (!valueStack.empty()) {
+
+            Value value = (Value) valueStack.pop();
+            if (!(value instanceof VariableExpression)) continue;
+
+            String valueName = ((VariableExpression) value).getVariableName();
+            Double coefficient = ((VariableExpression) value).getCoefficient().getReal();
+            result.put(valueName, coefficient);
+        }
+
+        return result;
+    }
+
     public static void main(String args[]) throws IllegalArgumentException {
+
         Interpreter interpreter = new Interpreter();
         Map<String, String> vars = new HashMap<>();
         vars.put("a", "2");
 
         Interpreter.Value a = interpreter.interpretFromString("[ 1 , '2' , 1 3 + ]", vars);
         System.out.println(a.toString());
-
-
-//        Multiset<String> b = HashMultiset.create();
-//        b.add("t");
-//        b.add("t");
-//        b.add("t");
-//
-//        for(String t: b.elementSet()) {
-//            System.out.println(t);
-//        }
-
-//        Map<Integer, Integer> f = new HashMap<>();
-//        Map<Integer, Integer> b = new HashMap<>();
-//
-//        f.put(1, 1);
-//        b.put(1, 1);
-//
-//        System.out.println("1232".hashCode());
-//        System.out.println(f.hashCode());
-//        System.out.println(b.hashCode());
-//        System.out.println(f.equals(b));
-
-//        List<String> t = new ArrayList<>();
-//        t.add("thong");
-//        List<String> b = t;
-//        t.add("tam");
-//
-//        String aa = "asfasd";
-//
-//        System.out.println(b.size());
     }
 }
