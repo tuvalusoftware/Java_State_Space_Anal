@@ -14,7 +14,7 @@ public class Experiment {
 
     public static void main(String[] args) {
 
-                // objective f = 30x + 40y + 0
+        // objective f = 30x + 40y + 0
         LinearObjectiveFunction f = new LinearObjectiveFunction(new double[] {0, 0, 0},0);
 
 
@@ -32,6 +32,7 @@ public class Experiment {
         if (solution != null) {
             System.out.println("Opt: " + solution.getValue());
             System.out.println(solution.getPoint().length);
+            for(int i = 0; i < solution.getPoint().length; i++) System.out.println(solution.getPoint()[i]);
         }
     }
 }

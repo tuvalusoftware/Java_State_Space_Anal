@@ -268,6 +268,26 @@ public class Petrinet implements Serializable {
         }
     }
 
+    List<Token> getFireableToken(Place startPlace, Place endPlace) {
+
+        List<Path> paths = new ArrayList<>();
+        findPathConditions(startPlace, endPlace, new Path(), paths);
+
+        List<List<Double>> resultPoints = new ArrayList<>();
+        for(Path path: paths) {
+            List<Double> point = solveLinearInequalities(path.getCoefficient());
+            resultPoints.add(point);
+        }
+
+        List<Token> tokens = new ArrayList<>();
+        for(List<Double> point: resultPoints) {
+
+            // #TODO: add way to create token by variables
+        }
+
+        return tokens;
+    }
+
     State generateCurrentState() throws IOException, ClassNotFoundException {
         Map<Place, Marking> data = new HashMap<>();
 
