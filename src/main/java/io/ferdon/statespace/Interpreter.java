@@ -920,7 +920,7 @@ class Interpreter implements Serializable {
             if (!(value instanceof VariableExpression)) continue;
 
             String valueName = ((VariableExpression) value).getVariableName();
-            Double coefficient = ((VariableExpression) value).getCoefficient().getReal();
+            Double coefficient = ((VariableExpression) value).getCoefficient().getReal();  // #TODO: change sign when moving between two side of inequalities
             result.put(valueName, coefficient);
         }
 
