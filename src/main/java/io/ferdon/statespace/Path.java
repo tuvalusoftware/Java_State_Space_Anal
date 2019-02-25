@@ -1,6 +1,7 @@
 package io.ferdon.statespace;
 
 import com.google.common.collect.Lists;
+
 import java.util.*;
 
 class Path {
@@ -51,4 +52,38 @@ class Path {
         }
     }
 
+    double[][] getCoefficients() {
+
+        /* arrange the order for variable's names */
+        Map<String, Integer> varOrders = new HashMap<>();
+        for (String condition : conditions) {
+            String[] tokens = condition.split(" ");
+            for (String token : tokens) {
+                if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE && !varOrders.containsKey(token)) {
+                    varOrders.put(token, varOrders.size());
+                }
+            }
+        }
+
+        /* get coefficients */
+        int row = -1;
+        for (String condition : conditions) {
+
+            row += 1;
+            String[] tokens = condition.split(" ");
+            double[] coeff = new double[varOrders.size()];
+
+            for (String token : tokens) {
+                if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
+                    int col = varOrders.get(token);
+                    coeff[col] = 
+                }
+            }
+        }
+
+        /* arrange coefficients in the right order */
+
+
+        double[][] result = new double[]
+    }
 }

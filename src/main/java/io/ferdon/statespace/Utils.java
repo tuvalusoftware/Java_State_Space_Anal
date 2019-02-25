@@ -16,16 +16,17 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.optim.MaxIter;
+import org.apache.commons.math3.optim.PointValuePair;
+import org.apache.commons.math3.optim.linear.*;
+import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.javatuples.Pair;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 final class Utils {
 
@@ -213,6 +214,24 @@ final class Utils {
         }
 
         return result;
+    }
+
+    static double[] solveLinearInequalities(double[][] coeffs) {
+        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[] {0, 0, 0},0);
+
+        List<LinearConstraint> constraints = new ArrayList();
+
+        NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);
+        for(double[] coeff: coeffs) {
+            double[] x = Arrays.copyOfRange(coeff, 0, coeffs.length - 1);
+            constraints.add(new LinearConstraint(x, Relationship.GEQ, coeff[coeffs.length - 1]));  /* x + y >= 20 */
+        }
+
+        LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
+        SimplexSolver linearOptimizer = new SimplexSolver();
+        PointValuePair solution = linearOptimizer.optimize(new MaxIter(1), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
+
+        return solution.getPoint();
     }
 
     public static void main(String[] args) {

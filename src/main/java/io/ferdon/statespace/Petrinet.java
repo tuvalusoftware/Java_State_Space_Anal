@@ -273,14 +273,14 @@ public class Petrinet implements Serializable {
         List<Path> paths = new ArrayList<>();
         findPathConditions(startPlace, endPlace, new Path(), paths);
 
-        List<List<Double>> resultPoints = new ArrayList<>();
+        List<double[]> resultPoints = new ArrayList<>();
         for(Path path: paths) {
-            List<Double> point = solveLinearInequalities(path.getCoefficient());
+            double[] point = Utils.solveLinearInequalities(path.getCoefficients());
             resultPoints.add(point);
         }
 
         List<Token> tokens = new ArrayList<>();
-        for(List<Double> point: resultPoints) {
+        for(double[] point: resultPoints) {
 
             // #TODO: add way to create token by variables
         }
