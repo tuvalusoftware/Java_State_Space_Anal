@@ -231,15 +231,14 @@ final class Utils {
 
             Relationship op = Relationship.GEQ;
             String c = conditions.get(index);
-            if (c.contains("<=")) op = Relationship.LEQ;
-            if (c.contains(">=")) op = Relationship.GEQ;
 
             /* linear programming not allow > and < operators */
-            if (c.contains("<") && !c.contains("=")) {
+            if (c.contains("<=")) op = Relationship.LEQ;
+            else if (c.contains(">=")) op = Relationship.GEQ;
+            else if (c.contains("<")) {
                 op = Relationship.LEQ;
                 co[co.length - 1] -= precision;
-            }
-            if (c.contains(">") && !c.contains("=")) {
+            } else if (c.contains(">")) {
                 op = Relationship.GEQ;
                 co[co.length - 1] += precision;
             }
