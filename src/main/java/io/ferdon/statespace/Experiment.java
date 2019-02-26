@@ -15,13 +15,13 @@ public class Experiment {
     public static void main(String[] args) {
 
         // objective f = 30x + 40y + 0
-        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[] {0, 0, 0},0);
+
+        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[] {0},0);
 
 
         List<LinearConstraint> constraints = new ArrayList();
-        constraints.add(new LinearConstraint(new double[] {1, 1, 1}, Relationship.GEQ, -20));  // x + y >= -20
-        constraints.add(new LinearConstraint(new double[] {1, 1, 1}, Relationship.GEQ, -1));  // x + y >= 0
-        NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);  // x,y >= 0
+        constraints.add(new LinearConstraint(new double[] {1}, Relationship.GEQ, 4));  // x >= 4
+        NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);  // x >= 0
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
         SimplexSolver linearOptimizer = new SimplexSolver();

@@ -24,6 +24,7 @@ public class InterpreterTest {
     private Map<String, String> vars = new HashMap<>();
     private String expression;
     private double precision = 0.00001;
+    private String CONSTANT_NAME = "@constant";
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
@@ -608,7 +609,7 @@ public class InterpreterTest {
     public void testCalcCoefficient01() {
         expression = "1 a * 2 b * + 0 >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(2, res.size());
         assertEquals(1, res.get("a"), precision);
         assertEquals(2, res.get("b"), precision);
@@ -618,7 +619,7 @@ public class InterpreterTest {
     public void testCalcCoefficient02() {
         expression = "a 1 * b 2 * + 0 >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(2, res.size());
         assertEquals(1, res.get("a"), precision);
         assertEquals(2, res.get("b"), precision);
@@ -628,7 +629,7 @@ public class InterpreterTest {
     public void testCalcCoefficient03() {
         expression = "a 2 3 * * b 2 -10 * * + 0 >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(2, res.size());
         assertEquals(6, res.get("a"), precision);
         assertEquals(-20, res.get("b"), precision);
@@ -638,7 +639,7 @@ public class InterpreterTest {
     public void testCalcCoefficient04() {
         expression = "4 a * 1 * 5 b * 2 * + 0 >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(2, res.size());
         assertEquals(4, res.get("a"), precision);
         assertEquals(10, res.get("b"), precision);
@@ -648,7 +649,7 @@ public class InterpreterTest {
     public void testCalcCoefficient05() {
         expression = "4 a * 1 * 5 b * 2 * + 1 1 + c * 1 1 + * + > ";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(3, res.size());
         assertEquals(4, res.get("a"), precision);
         assertEquals(10, res.get("b"), precision);
@@ -659,7 +660,7 @@ public class InterpreterTest {
     public void testCalcCoefficient06() {
         expression = "4.0 a * 1 * 5 b * 2 * + 1 1 + c * 1 1 + * + > ";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(3, res.size());
         assertEquals(4.0, res.get("a"), precision);
         assertEquals(10, res.get("b"), precision);
@@ -670,7 +671,7 @@ public class InterpreterTest {
     public void testCalcCoefficient07() {
         expression = "1 a * 2 b * + 3 c * >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(3, res.size());
         assertEquals(1, res.get("a"), precision);
         assertEquals(2, res.get("b"), precision);
@@ -681,7 +682,7 @@ public class InterpreterTest {
     public void testCalcCoefficient08() {
         expression = "1 a * 2 c * + 2 b * + 3 c * >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(3, res.size());
         assertEquals(1, res.get("a"), precision);
         assertEquals(2, res.get("b"), precision);
@@ -692,7 +693,7 @@ public class InterpreterTest {
     public void testCalcCoefficient09() {
         expression = "1 a * 2 b * 2 a * + + 3 c * >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(3, res.size());
         assertEquals(3, res.get("a"), precision);
         assertEquals(2, res.get("b"), precision);
@@ -703,7 +704,7 @@ public class InterpreterTest {
     public void testCalcCoefficient10() {
         expression = "1 a * 2 a * 3 a * + + 4 a * >";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(1, res.size());
         assertEquals(2, res.get("a"), precision);
     }
@@ -712,7 +713,7 @@ public class InterpreterTest {
     public void testCalcCoefficient11() {
         expression = "a 3 * b -4 * <";
 
-        Map<String, Double> res = interpreter.interpretCoefficient(expression);
+        Map<String, Double> res = interpreter.interpretCoefficient(expression, CONSTANT_NAME);
         assertEquals(2, res.size());
         assertEquals(3, res.get("a"), precision);
         assertEquals(4, res.get("b"), precision);

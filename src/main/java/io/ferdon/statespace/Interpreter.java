@@ -934,7 +934,7 @@ class Interpreter implements Serializable {
      * @param expression String
      * @return Map variable's name ~> coefficient
      */
-    public Map<String, Double> interpretCoefficient(String expression) {
+    public Map<String, Double> interpretCoefficient(String expression, String constantName) {
         if (expression.isEmpty()) return new HashMap<>();
         String[] tokens = StringEscapeUtils.escapeJava(expression).trim().split(" ");
 
@@ -963,19 +963,26 @@ class Interpreter implements Serializable {
 
         int sign = -1;
         Map<String, Double> result = new HashMap<>();
+
         while (!valueStack.isEmpty()) {
 
             if (op2FromTop.intValue() == -1) sign = 1;  /* change sign of coefficient on the right side */
             op2FromTop.subtract(1);
 
             Value value = (Value) valueStack.pop();
-            if (!(value instanceof VariableExpression)) continue;
 
-            String valueName = ((VariableExpression) value).getVariableName();
-            double coefficient = ((VariableExpression) value).getCoefficient().getReal();
+            if (value instanceof VariableExpression) {
 
-            Double currentCoeff = result.getOrDefault(valueName, 0.0);
-            result.put(valueName, coefficient * sign + currentCoeff);
+                String valueName = ((VariableExpression) value).getVariableName();
+                double coefficient = ((VariableExpression) value).getCoefficient().getReal();
+
+                Double currentCoeff = result.getOrDefault(valueName, 0.0);
+                result.put(valueName, coefficient * sign + currentCoeff);
+            }
+            else {
+                Double currentCoeff = result.getOrDefault(constantName, 0.0);
+                result.put(constantName, value.getReal() + currentCoeff);
+            }
         }
 
         return result;

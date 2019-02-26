@@ -64,15 +64,13 @@ class Path {
         }
 
         int row = -1;
+        String CONSTANT_NAME = "@constant";
         double[][] result = new double[conditions.size()][];
-        Map<String, String> allZeros = new HashMap<>();
-
-        for(String var: varOrders.keySet()) allZeros.put(var, "0");
 
         for (String condition : conditions) {
             row += 1;
             double[] coeff = new double[varOrders.size() + 1];
-            Map<String, Double> varCoeffs = interpreter.interpretCoefficient(condition);
+            Map<String, Double> varCoeffs = interpreter.interpretCoefficient(condition, CONSTANT_NAME);
 
             for(String var: varOrders.keySet()) {
                 int col = varOrders.get(var);
@@ -80,8 +78,7 @@ class Path {
                 coeff[col] = coeff_item;
             }
 
-            /* bias */
-            coeff[varOrders.size()] = interpreter.interpretFromString(condition, allZeros).getReal();
+            coeff[varOrders.size()] = varCoeffs.get(CONSTANT_NAME);
 
             result[row] = coeff;
         }

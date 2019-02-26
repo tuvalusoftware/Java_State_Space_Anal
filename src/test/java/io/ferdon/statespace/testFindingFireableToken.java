@@ -31,5 +31,6 @@ public class testFindingFireableToken {
     public void testFindFireableToken() {
         List<Token> tokens = net.getFireableToken(place00, place02);
         assertEquals(1, tokens.size());
+        System.out.println(tokens.get(0));
     }
 }

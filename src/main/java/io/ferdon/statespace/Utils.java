@@ -217,20 +217,21 @@ final class Utils {
     }
 
     static double[] solveLinearInequalities(double[][] coeffs, List<String> conditions) {
-        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[] {0, 0, 0},0);
+
+        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[coeffs.length],0);
 
         List<LinearConstraint> constraints = new ArrayList();
 
         NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);
         int index = 0;
         for(double[] coeff: coeffs) {
-            double[] x = Arrays.copyOfRange(coeff, 0, coeffs.length - 1);
+            double[] x = Arrays.copyOfRange(coeff, 0, coeffs.length);
 
             Relationship op = Relationship.GEQ;
             String c = conditions.get(index);
             if (c.contains("<=") || c.contains("<")) op = Relationship.LEQ;
 
-            constraints.add(new LinearConstraint(x, op, coeff[coeffs.length - 1]));  /* x + y >= 20 */
+            constraints.add(new LinearConstraint(x, op, coeff[coeff.length - 1]));  /* x + y >= 20 */
         }
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
