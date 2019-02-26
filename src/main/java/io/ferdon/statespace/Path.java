@@ -70,7 +70,7 @@ class Path {
         for (String condition : conditions) {
             row += 1;
             double[] coeff = new double[varOrders.size()];
-            Map<String, Double> varCoeffs = interpreter.interpretCoffiecient(condition);
+            Map<String, Double> varCoeffs = interpreter.interpretCoefficient(condition);
 
             for(String var: varOrders.keySet()) {
                 int col = varOrders.get(var);

@@ -10,7 +10,9 @@
 
 package io.ferdon.statespace;
 
+import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.mutable.MutableInt;
 
 import java.io.Serializable;
 import java.util.*;
@@ -141,7 +143,9 @@ class Interpreter implements Serializable {
             return new IntegerExpression(this.value - x.getInt());
         }
 
-        public ArithmeticValue mul(ArithmeticValue x) { return new IntegerExpression(this.value * x.getInt()); }
+        public ArithmeticValue mul(ArithmeticValue x) {
+            return new IntegerExpression(this.value * x.getInt());
+        }
 
         public ArithmeticValue div(ArithmeticValue x) {
             return new IntegerExpression(this.value / x.getInt());
@@ -498,11 +502,17 @@ class Interpreter implements Serializable {
             throw new UnsupportedOperationException("Method have not implemented yet");
         }
 
-        public String getString() {  return name + " " + coefficient.getReal() + " *"; }
+        public String getString() {
+            return name + " " + coefficient.getReal() + " *";
+        }
 
-        public String getVariableName() { return name; }
+        public String getVariableName() {
+            return name;
+        }
 
-        public RealExpression getCoefficient() { return coefficient; }
+        public RealExpression getCoefficient() {
+            return coefficient;
+        }
 
         public List<Value> getList() {
             throw new UnsupportedOperationException("Method have not implemented yet");
@@ -871,7 +881,7 @@ class Interpreter implements Serializable {
         return interpret(tokens, variables);
     }
 
-    private void calcCoefficient(String token) {
+    private void calcCoefficient(String token, MutableInt op2FromTop) {
         ArithmeticValue arg1 = (ArithmeticValue) valueStack.pop();
         ArithmeticValue arg2 = (ArithmeticValue) valueStack.pop();
         OperationType opType = getOperationType(token);
@@ -882,46 +892,90 @@ class Interpreter implements Serializable {
                 valueStack.push(arg1);
                 return;
             }
-            if (!(arg2 instanceof VariableExpression)) { ArithmeticValue tmp = arg1; arg1 = arg2; arg2 = tmp; }
+            if (!(arg2 instanceof VariableExpression)) {
+                ArithmeticValue tmp = arg1;
+                arg1 = arg2;
+                arg2 = tmp;
+            }
         }
 
         switch (opType) {
-            case ADD: { valueStack.push(arg2.add(arg1)); break;  }
-            case SUB: { valueStack.push(arg2.sub(arg1)); break;  }
-            case MUL: { valueStack.push(arg2.mul(arg1)); break;  }
-            case DIV: { valueStack.push(arg2.div(arg1)); break;  }
-            case MOD: { valueStack.push(arg2.mod(arg1)); break;  }
+            case ADD: {
+                valueStack.push(arg2.add(arg1));
+                op2FromTop.subtract(1);
+                break;
+            }
+            case SUB: {
+                valueStack.push(arg2.sub(arg1));
+                op2FromTop.subtract(1);
+                break;
+            }
+            case MUL: {
+                valueStack.push(arg2.mul(arg1));
+                op2FromTop.subtract(1);
+                break;
+            }
+            case DIV: {
+                valueStack.push(arg2.div(arg1));
+                op2FromTop.subtract(1);
+                break;
+            }
+            case MOD: {
+                valueStack.push(arg2.mod(arg1));
+                op2FromTop.subtract(1);
+                break;
+            }
         }
     }
 
     /**
      * Return a string which coefficients is specified for each variables
+     *
      * @param expression String
      * @return Map variable's name ~> coefficient
      */
-    public Map<String, Double> interpretCoffiecient(String expression) {
+    public Map<String, Double> interpretCoefficient(String expression) {
         if (expression.isEmpty()) return new HashMap<>();
-
         String[] tokens = StringEscapeUtils.escapeJava(expression).trim().split(" ");
-        this.valueStack.empty();
 
-        for(String token: tokens) {
+        /* find the beginning of the right hand side */
+        this.valueStack.empty();
+        int mark = 0;
+        MutableInt op2FromTop = new MutableInt(-1);  /* use object for updating value inside function */
+
+        for (int i = 0; i < tokens.length; i++) {
+
+            String token = tokens[i];
             if (isOperatorToken(token)) {
-                calcCoefficient(token);
+                if (i < tokens.length - 1) calcCoefficient(token, op2FromTop);
+                mark = (Math.abs(mark) - 1) * -1;
+
             } else {
                 pushOperandToStack(token, false);
+                mark = Math.abs(mark) + 1;
+                if (mark == 2) {
+                    op2FromTop.setValue(0);
+                } else {
+                    op2FromTop.increment();
+                }
             }
         }
 
+        int sign = -1;
         Map<String, Double> result = new HashMap<>();
-        while (!valueStack.empty()) {
+        while (!valueStack.isEmpty()) {
+
+            if (op2FromTop.intValue() == -1) sign = 1;  /* change sign of coefficient on the right side */
+            op2FromTop.subtract(1);
 
             Value value = (Value) valueStack.pop();
             if (!(value instanceof VariableExpression)) continue;
 
             String valueName = ((VariableExpression) value).getVariableName();
-            Double coefficient = ((VariableExpression) value).getCoefficient().getReal();  // #TODO: change sign when moving between two side of inequalities
-            result.put(valueName, coefficient);
+            double coefficient = ((VariableExpression) value).getCoefficient().getReal();
+
+            Double currentCoeff = result.getOrDefault(valueName, 0.0);
+            result.put(valueName, coefficient * sign + currentCoeff);
         }
 
         return result;
