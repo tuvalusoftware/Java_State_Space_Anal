@@ -234,12 +234,12 @@ final class Utils {
             if (c.contains("<=")) op = Relationship.LEQ;
             if (c.contains(">=")) op = Relationship.GEQ;
 
-            /* linear programming not allow > or <, this is Thong's trick (by research on StackOverflow) :) */
-            if (c.contains("<")) {
+            /* linear programming not allow > and < operators */
+            if (c.contains("<") && !c.contains("=")) {
                 op = Relationship.LEQ;
                 co[co.length - 1] -= precision;
             }
-            if (c.contains(">")) {
+            if (c.contains(">") && !c.contains("=")) {
                 op = Relationship.GEQ;
                 co[co.length - 1] += precision;
             }

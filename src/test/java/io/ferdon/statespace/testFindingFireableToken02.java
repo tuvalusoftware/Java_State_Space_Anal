@@ -35,7 +35,8 @@ public class testFindingFireableToken02 {
 
         double res = new Double(tokens.get(0).get(0));
         System.out.println(tokens.get(0));
-        assertTrue(res >= 6.0);
         assertTrue(res <= 10.0);
+        assertTrue(res >= 4.0);
+
     }
 }
