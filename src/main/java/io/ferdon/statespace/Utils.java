@@ -224,14 +224,15 @@ final class Utils {
 
         NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);
         int index = 0;
-        for(double[] coeff: coeffs) {
-            double[] x = Arrays.copyOfRange(coeff, 0, coeffs.length);
+        for(double[] co: coeffs) {
+            double[] x = Arrays.copyOfRange(co, 0, co.length - 1);
 
             Relationship op = Relationship.GEQ;
             String c = conditions.get(index);
             if (c.contains("<=") || c.contains("<")) op = Relationship.LEQ;
 
-            constraints.add(new LinearConstraint(x, op, coeff[coeff.length - 1]));  /* x + y >= 20 */
+            constraints.add(new LinearConstraint(x, op, co[co.length - 1]));  /* x + y >= 20 */
+            index++;
         }
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
