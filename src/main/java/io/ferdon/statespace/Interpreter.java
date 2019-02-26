@@ -10,7 +10,6 @@
 
 package io.ferdon.statespace;
 
-import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 
@@ -586,7 +585,6 @@ class Interpreter implements Serializable {
         operators.put("ifelse", OperationType.IFELSE);
     }
 
-
     private boolean isOperatorToken(String token) {
         return operators.containsKey(token);
     }
@@ -860,7 +858,7 @@ class Interpreter implements Serializable {
             }
         }
 
-        return (Value) valueStack.pop();
+        return (Value) valueStack.peek();
     }
 
 
@@ -979,11 +977,17 @@ class Interpreter implements Serializable {
                 Double currentCoeff = result.getOrDefault(valueName, 0.0);
                 result.put(valueName, coefficient * sign + currentCoeff);
             }
-            else {
-                Double currentCoeff = result.getOrDefault(constantName, 0.0);
-                result.put(constantName, value.getReal() + currentCoeff);
-            }
         }
+
+        Map<String, String> allZeros = new HashMap<>();
+        for(String var: result.keySet()) allZeros.put(var, "0");
+
+        String tmpCondition = expression.replaceAll("[<=>]", "").trim();
+        interpretFromString(tmpCondition, allZeros);
+
+        double rightConstant = ((Value) valueStack.pop()).getReal();  /* the constant value that is on the right side */
+        double leftConstant = ((Value) valueStack.pop()).getReal();   /* the constant value that is on the left side */
+        result.put(constantName, leftConstant * -1 + rightConstant);
 
         return result;
     }

@@ -218,7 +218,8 @@ final class Utils {
 
     static double[] solveLinearInequalities(double[][] coeffs, List<String> conditions) {
 
-        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[coeffs.length],0);
+        int numCoeffs = coeffs[0].length;
+        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs],0);
 
         List<LinearConstraint> constraints = new ArrayList();
 
@@ -237,7 +238,7 @@ final class Utils {
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
         SimplexSolver linearOptimizer = new SimplexSolver();
-        PointValuePair solution = linearOptimizer.optimize(new MaxIter(1), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
+        PointValuePair solution = linearOptimizer.optimize(new MaxIter(numCoeffs), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
 
         return solution.getPoint();
     }
