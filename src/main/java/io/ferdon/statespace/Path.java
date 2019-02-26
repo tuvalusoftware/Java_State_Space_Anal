@@ -52,9 +52,8 @@ class Path {
         }
     }
 
-    double[][] getCoefficients(Interpreter interpreter) {
+    double[][] getCoefficients(Interpreter interpreter, Map<String, Integer> varOrders) {
 
-        Map<String, Integer> varOrders = new HashMap<>();
         for (String condition : conditions) {
             String[] tokens = condition.split(" ");
             for (String token : tokens) {
@@ -82,7 +81,7 @@ class Path {
             }
 
             /* bias */
-            coeff[varOrders.size() + 1] = interpreter.interpretFromString(condition, allZeros).getReal();
+            coeff[varOrders.size()] = interpreter.interpretFromString(condition, allZeros).getReal();
 
             result[row] = coeff;
         }

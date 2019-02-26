@@ -273,19 +273,27 @@ public class Petrinet implements Serializable {
         List<Path> paths = new ArrayList<>();
         findPathConditions(startPlace, endPlace, new Path(), paths);
 
-        List<double[]> resultPoints = new ArrayList<>();
+        List<Token> result = new ArrayList<>();
+
         for(Path path: paths) {
-            double[] point = Utils.solveLinearInequalities(path.getCoefficients(interpreter), path.getConditions());
-            resultPoints.add(point);
+
+            Map<String, Integer> varOrders = new HashMap<>();
+            double[] point = Utils.solveLinearInequalities(
+                    path.getCoefficients(interpreter, varOrders),
+                    path.getConditions()
+            );
+
+            Transition startTran = (Transition) path.getPath().get(1);
+            List<String> tokenData = new ArrayList<>();
+
+            for(String var: startTran.getVars(startPlace)) {
+                tokenData.add(String.valueOf(point[varOrders.get(var)]));
+            }
+
+            result.add(new Token(tokenData));
         }
 
-        List<Token> tokens = new ArrayList<>();
-        for(double[] point: resultPoints) {
-
-            // #TODO: add way to create token by variables
-        }
-
-        return tokens;
+        return result;
     }
 
     State generateCurrentState() throws IOException, ClassNotFoundException {
