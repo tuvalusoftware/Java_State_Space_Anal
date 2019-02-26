@@ -38,17 +38,17 @@ public class testFindingFireableToken03 {
 
         res = new Double(tokens.get(0).get(0));
         System.out.println(tokens.get(0));
-        assertTrue(res >= 0.0);
+        assertTrue(res >= 2);
         assertTrue(res + 1 >= 0.0);
 
         res = new Double(tokens.get(1).get(0));
         System.out.println(tokens.get(1));
-        assertTrue(res >= 0.0);
+        assertTrue(res > 2);
         assertTrue(2 * res + 3 < 10.0);
 
         res = new Double(tokens.get(2).get(0));
         System.out.println(tokens.get(2));
-        assertTrue(res >= 0.0);
+        assertTrue(res > 2);
         assertTrue(2 * res + 3 < 10.0);
     }
 }
