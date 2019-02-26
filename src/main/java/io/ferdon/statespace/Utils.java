@@ -219,6 +219,7 @@ final class Utils {
     static double[] solveLinearInequalities(double[][] coeffs, List<String> conditions) {
 
         int numCoeffs = coeffs[0].length;
+        double precision = 0.00001;
         LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs],0);
 
         List<LinearConstraint> constraints = new ArrayList();
@@ -230,9 +231,20 @@ final class Utils {
 
             Relationship op = Relationship.GEQ;
             String c = conditions.get(index);
-            if (c.contains("<=") || c.contains("<")) op = Relationship.LEQ;
+            if (c.contains("<=")) op = Relationship.LEQ;
+            if (c.contains(">=")) op = Relationship.GEQ;
 
-            constraints.add(new LinearConstraint(x, op, co[co.length - 1]));  /* x + y >= 20 */
+            /* linear programming not allow > or <, this is Thong's trick (by research on StackOverflow) :) */
+            if (c.contains("<")) {
+                op = Relationship.LEQ;
+                co[co.length - 1] -= precision;
+            }
+            if (c.contains(">")) {
+                op = Relationship.GEQ;
+                co[co.length - 1] += precision;
+            }
+
+            constraints.add(new LinearConstraint(x, op, co[co.length - 1]));  /* x1 * a + x2 * b + ... >= co[co.length - 1] */
             index++;
         }
 

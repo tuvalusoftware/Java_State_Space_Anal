@@ -103,17 +103,17 @@ public class findingPathTest04 {
         
         List<String> condition01 = paths.get(0).getConditions();
         assertEquals(2, condition01.size());
-        assertEquals("a 0 >", condition01.get(0));
+        assertEquals("a 2 >", condition01.get(0));
         assertEquals("a 1 + 0 >", condition01.get(1));
 
         List<String> condition02 = paths.get(1).getConditions();
         assertEquals(2, condition02.size());
-        assertEquals("a 0 >", condition02.get(0));
-        assertEquals("a 2 + a 1 + + 10 >", condition02.get(1));
+        assertEquals("a 2 >", condition02.get(0));
+        assertEquals("a 2 + a 1 + + 10 <", condition02.get(1));
 
         List<String> condition03 = paths.get(2).getConditions();
         assertEquals(2, condition03.size());
-        assertEquals("a 0 >", condition03.get(0));
-        assertEquals("a 2 + a 1 + + 10 >", condition03.get(1));
+        assertEquals("a 2 >", condition03.get(0));
+        assertEquals("a 2 + a 1 + + 10 <", condition03.get(1));
     }
 }
