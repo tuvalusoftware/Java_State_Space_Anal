@@ -66,9 +66,9 @@ class Path {
 
         int row = -1;
         double[][] result = new double[conditions.size()][];
-        Map<String, String> allOne = new HashMap<>();
+        Map<String, String> allZeros = new HashMap<>();
 
-        for(String var: varOrders.keySet()) allOne.put(var, "1");
+        for(String var: varOrders.keySet()) allZeros.put(var, "0");
 
         for (String condition : conditions) {
             row += 1;
@@ -82,7 +82,7 @@ class Path {
             }
 
             /* bias */
-            coeff[varOrders.size() + 1] = interpreter.interpretFromString(condition, allOne).getReal();
+            coeff[varOrders.size() + 1] = interpreter.interpretFromString(condition, allZeros).getReal();
 
             result[row] = coeff;
         }
