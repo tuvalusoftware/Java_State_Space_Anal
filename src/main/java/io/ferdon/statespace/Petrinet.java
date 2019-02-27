@@ -270,6 +270,7 @@ public class Petrinet implements Serializable {
 
     List<Binding> getFireableToken(Place startPlace, Place endPlace) {
 
+        // #TODO: conditions of other branches do not combined
         List<Path> paths = new ArrayList<>();
         findPathConditions(startPlace, endPlace, new Path(), paths);
 
