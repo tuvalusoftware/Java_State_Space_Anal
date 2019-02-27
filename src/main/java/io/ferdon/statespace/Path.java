@@ -74,7 +74,7 @@ class Path {
 
             for(String var: varOrders.keySet()) {
                 int col = varOrders.get(var);
-                double coeff_item = varCoeffs.get(var);
+                double coeff_item = varCoeffs.getOrDefault(var, 0.0);
                 coeff[col] = coeff_item;
             }
 
