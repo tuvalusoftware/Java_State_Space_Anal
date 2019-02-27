@@ -20,6 +20,9 @@ public class Binding implements Serializable {
     private Map<Place, Token> data;
     private Transition transition;
 
+    Map<String, String> vars;
+
+
     Binding() {
         this.data = new HashMap<>();
         this.transition = null;
@@ -28,6 +31,10 @@ public class Binding implements Serializable {
     Binding(Transition transition) {
         this.data = new HashMap<>();
         this.transition = transition;
+    }
+
+    Binding(Map<String, String> vars) {
+        this.vars = vars;
     }
 
     boolean isEmpty() {
@@ -39,12 +46,15 @@ public class Binding implements Serializable {
     }
 
     void addToken(Place place, Token token) {
+        if (data == null) return;
         data.put(place, token);
     }
 
     Map<String, String> assignValueToVariables() {
-        Map<String, String> vars = new HashMap<>();
 
+        if (data == null) return vars;
+
+        Map<String, String> vars = new HashMap<>();
         for (Place place : data.keySet()) {
 
             Token token = data.get(place);

@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.ferdon.statespace.main.parseJson;
 import static junit.framework.TestCase.assertTrue;
@@ -15,6 +16,7 @@ public class testFindingFireableToken01 {
     private Petrinet net;
     private Place place00, place01, place02;
     private Transition transition00;
+    private Interpreter interpreter;
 
     @Before
     public void setUp() {
@@ -26,14 +28,16 @@ public class testFindingFireableToken01 {
         place01 = net.getPlace(1);
         place02 = net.getPlace(2);
         transition00 = net.getTransition(0);
+        interpreter = new Interpreter();
     }
 
     @Test
     public void testFindFireableToken() {
-        List<Token> tokens = net.getFireableToken(place00, place02);
-        assertEquals(1, tokens.size());
+        List<Binding> bindings = net.getFireableToken(place00, place02);
+        assertEquals(1, bindings.size());
 
-        double res = new Double(tokens.get(0).get(0));
-        assertTrue(res >= 4.0);
+        Map<String, String> res = bindings.get(0).assignValueToVariables();
+        String guard = place00.getOutTransition().get(0).getGuard();
+        assertTrue(interpreter.interpretFromString(guard, res).getBoolean());
     }
 }

@@ -268,12 +268,12 @@ public class Petrinet implements Serializable {
         }
     }
 
-    List<Token> getFireableToken(Place startPlace, Place endPlace) {
+    List<Binding> getFireableToken(Place startPlace, Place endPlace) {
 
         List<Path> paths = new ArrayList<>();
         findPathConditions(startPlace, endPlace, new Path(), paths);
 
-        List<Token> result = new ArrayList<>();
+        List<Binding> result = new ArrayList<>();
 
         for(Path path: paths) {
 
@@ -283,14 +283,11 @@ public class Petrinet implements Serializable {
                     path.getConditions()
             );
 
-            Transition startTran = (Transition) path.getPath().get(1);
-            List<String> tokenData = new ArrayList<>();
-
-            for(String var: startTran.getVars(startPlace)) {
-                tokenData.add(String.valueOf(point[varOrders.get(var)]));
+            Map<String, String> varMappingResult = new HashMap<>();
+            for(String var: varOrders.keySet()) {
+                varMappingResult.put(var, String.valueOf(point[varOrders.get(var)]));
+                result.add(new Binding(varMappingResult));
             }
-
-            result.add(new Token(tokenData));
         }
 
         return result;
