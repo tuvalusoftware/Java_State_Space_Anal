@@ -3,6 +3,7 @@ package io.ferdon.statespace;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -118,6 +119,24 @@ public class generateVarMappingTest {
 
         assertEquals("c 1 -", vars07.get("f").get(1));
         assertFalse(vars07.containsKey("a"));
+    }
+
+    @Test
+    public void testFindingPath01() {
+        List<Path> paths = new ArrayList<>();
+        net.findPathConditions(place00, place07, new Path(), paths);
+        assertEquals(1, paths.size());
+
+        List<String> condition01 = paths.get(0).getConditions();
+        assertEquals(7, condition01.size());
+
+        assertEquals("a b + 0 >", condition01.get(0));
+        assertEquals("c 1 - e d + + 0 <", condition01.get(1));
+        assertEquals("a b + e d + + 0 <", condition01.get(2));
+        assertEquals("c 1 - c 1 + d + + 0 <", condition01.get(3));
+        assertEquals("a b + c 1 + d + + 0 <", condition01.get(4));
+        assertEquals("c 1 - a b - d + + 0 <", condition01.get(5));
+        assertEquals("a b + a b - d + + 0 <", condition01.get(6));
     }
 }
 
