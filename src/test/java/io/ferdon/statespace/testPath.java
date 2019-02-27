@@ -34,10 +34,10 @@ public class testPath {
     }
 
     @Test
-    public void testGetCoefficients() {
+    public void testGetCoeffcients() {
         List<Path> paths = new ArrayList<>();
-        net.findPathConditions(place07, new Path(), paths);
-        assertEquals(4, paths.size());
+        net.findPathConditions(place00, place07, new Path(), paths);
+        assertEquals(1, paths.size());
 
         Interpreter interpreter = new Interpreter();
         Map<String, Integer> varOrders = new HashMap<>();

@@ -29,7 +29,7 @@ public class findingPathTest02 {
         place04 = net.getPlace(4);
 
         paths = new ArrayList<>();
-        net.findPathConditions(place04, new Path(), paths);
+        net.findPathConditions(place00, place04, new Path(), paths);
     }
 
     @Test

@@ -11,7 +11,6 @@
 package io.ferdon.statespace;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,24 +28,6 @@ public class Binding implements Serializable {
     Binding(Transition transition) {
         this.data = new HashMap<>();
         this.transition = transition;
-    }
-
-    Binding(List<Place> inputPlaces, Map<String, Integer> varOrders, double[] point) {
-
-        this.data = new HashMap<>();
-        this.transition = null;
-
-        for(Place place: inputPlaces) {
-            String[] vars = place.getOutTransition().get(0).getVars(place);
-
-            Token token = new Token();
-            for(String var: vars) {
-                String tokenItem = (varOrders.containsKey(var)) ? String.valueOf(point[varOrders.get(var)]) : "0";
-                token.addData(tokenItem);
-            }
-
-            this.data.put(place, token);
-        }
     }
 
     boolean isEmpty() {

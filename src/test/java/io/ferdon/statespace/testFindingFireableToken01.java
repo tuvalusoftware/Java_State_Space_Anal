@@ -30,10 +30,10 @@ public class testFindingFireableToken01 {
 
     @Test
     public void testFindFireableToken() {
-        List<Binding> bindings = net.getFireableBinding(place02);
-        assertEquals(2, bindings.size());
+        List<Token> tokens = net.getFireableToken(place00, place02);
+        assertEquals(1, tokens.size());
 
-        double res = new Double(bindings.get(0).getToken(place00).get(0));
+        double res = new Double(tokens.get(0).get(0));
         assertTrue(res >= 4.0);
     }
 }

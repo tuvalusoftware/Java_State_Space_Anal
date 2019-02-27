@@ -245,11 +245,11 @@ public class Petrinet implements Serializable {
         }
     }
 
-    void findPathConditions(Place endPlace, Path currentPath, List<Path> result) {
+    void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
+                            List<Path> result) {
 
-        if (endPlace.isEmptyInput()) {
-            currentPath.addPathNode(endPlace);
-            currentPath.addInputPlace(endPlace);
+        if (startPlace.getID() == endPlace.getID()) {
+            currentPath.addPathNode(startPlace);
             currentPath.reversePath();
             result.add(currentPath);
             return;
@@ -263,19 +263,19 @@ public class Petrinet implements Serializable {
                 path.addPathNode(inTran);
                 path.addCondition(inTran);
 
-                findPathConditions(previousPlace, path, result);
+                findPathConditions(startPlace, previousPlace, path, result);
             }
         }
     }
 
-    List<Binding> getFireableBinding(Place endPlace) {
+    List<Token> getFireableToken(Place startPlace, Place endPlace) {
 
         List<Path> paths = new ArrayList<>();
-        findPathConditions(endPlace, new Path(), paths);
+        findPathConditions(startPlace, endPlace, new Path(), paths);
 
-        List<Binding> result = new ArrayList<>();
+        List<Token> result = new ArrayList<>();
 
-        for (Path path : paths) {
+        for(Path path: paths) {
 
             Map<String, Integer> varOrders = new HashMap<>();
             double[] point = Utils.solveLinearInequalities(
@@ -283,8 +283,14 @@ public class Petrinet implements Serializable {
                     path.getConditions()
             );
 
-            Binding b = new Binding(path.getInputPlaces(), varOrders, point);
-            result.add(b);
+            Transition startTran = (Transition) path.getPath().get(1);
+            List<String> tokenData = new ArrayList<>();
+
+            for(String var: startTran.getVars(startPlace)) {
+                tokenData.add(String.valueOf(point[varOrders.get(var)]));
+            }
+
+            result.add(new Token(tokenData));
         }
 
         return result;
