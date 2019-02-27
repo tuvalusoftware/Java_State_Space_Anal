@@ -245,11 +245,11 @@ public class Petrinet implements Serializable {
         }
     }
 
-    void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
-                            List<Path> result) {
+    void findPathConditions(Place endPlace, Path currentPath, List<Path> result) {
 
-        if (startPlace.getID() == endPlace.getID()) {
-            currentPath.addPathNode(startPlace);
+        if (endPlace.isEmptyInput()) {
+            currentPath.addPathNode(endPlace);
+            currentPath.addInputPlace(endPlace);
             currentPath.reversePath();
             result.add(currentPath);
             return;
@@ -263,19 +263,19 @@ public class Petrinet implements Serializable {
                 path.addPathNode(inTran);
                 path.addCondition(inTran);
 
-                findPathConditions(startPlace, previousPlace, path, result);
+                findPathConditions(previousPlace, path, result);
             }
         }
     }
 
-    List<Token> getFireableToken(Place startPlace, Place endPlace) {
+    List<Binding> getFireableBinding(Place endPlace) {
 
         List<Path> paths = new ArrayList<>();
-        findPathConditions(startPlace, endPlace, new Path(), paths);
+        findPathConditions(endPlace, new Path(), paths);
 
-        List<Token> result = new ArrayList<>();
+        List<Binding> result = new ArrayList<>();
 
-        for(Path path: paths) {
+        for (Path path : paths) {
 
             Map<String, Integer> varOrders = new HashMap<>();
             double[] point = Utils.solveLinearInequalities(
@@ -283,14 +283,8 @@ public class Petrinet implements Serializable {
                     path.getConditions()
             );
 
-            Transition startTran = (Transition) path.getPath().get(1);
-            List<String> tokenData = new ArrayList<>();
-
-            for(String var: startTran.getVars(startPlace)) {
-                tokenData.add(String.valueOf(point[varOrders.get(var)]));
-            }
-
-            result.add(new Token(tokenData));
+            Binding b = new Binding(path.getInputPlaces(), varOrders, point);
+            result.add(b);
         }
 
         return result;

@@ -31,23 +31,23 @@ public class testFindingFireableToken03 {
 
     @Test
     public void testFindFireableToken() {
-        List<Token> tokens = net.getFireableToken(place00, place03);
-        assertEquals(3, tokens.size());
 
+        List<Binding> bindings = net.getFireableBinding(place03);
+        assertEquals(3, bindings.size());
         double res;
 
-        res = new Double(tokens.get(0).get(0));
-        System.out.println(tokens.get(0));
+        res = new Double(bindings.get(0).getToken(place00).get(0));
+        System.out.println(bindings.get(0));
         assertTrue(res >= 2);
         assertTrue(res + 1 >= 0.0);
 
-        res = new Double(tokens.get(1).get(0));
-        System.out.println(tokens.get(1));
+        res = new Double(bindings.get(1).getToken(place00).get(0));
+        System.out.println(bindings.get(1));
         assertTrue(res > 2);
         assertTrue(2 * res + 3 < 10.0);
 
-        res = new Double(tokens.get(2).get(0));
-        System.out.println(tokens.get(2));
+        res = new Double(bindings.get(2).getToken(place00).get(0));
+        System.out.println(bindings.get(2));
         assertTrue(res > 2);
         assertTrue(2 * res + 3 < 10.0);
     }

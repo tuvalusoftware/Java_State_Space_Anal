@@ -6,20 +6,16 @@ import java.util.*;
 
 class Path {
 
-    private List<Node> path;
-    private List<String> conditions;
+    private List<Node> path = new ArrayList<>();
+    private List<String> conditions = new ArrayList<>();
+    private List<Place> inputPlaces = new ArrayList<>();
 
-    Path() {
-        path = new ArrayList<>();
-        conditions = new ArrayList<>();
-    }
+    Path() {}
 
     Path(Path x) {
-        path = new ArrayList<>();
-        conditions = new ArrayList<>();
-
         path.addAll(x.getPath());
         conditions.addAll(x.getConditions());
+        inputPlaces.addAll(x.getInputPlaces());
     }
 
     List<Node> getPath() {
@@ -35,8 +31,16 @@ class Path {
         return conditions;
     }
 
+    List<Place> getInputPlaces() {
+        return inputPlaces;
+    }
+
     void addPathNode(Node node) {
         path.add(node);
+    }
+
+    void addInputPlace(Place place) {
+        inputPlaces.add(place);
     }
 
     void addCondition(Transition inTran) {
@@ -72,7 +76,7 @@ class Path {
             double[] coeff = new double[varOrders.size() + 1];
             Map<String, Double> varCoeffs = interpreter.interpretCoefficient(condition, CONSTANT_NAME);
 
-            for(String var: varOrders.keySet()) {
+            for (String var : varOrders.keySet()) {
                 int col = varOrders.get(var);
                 double coeff_item = varCoeffs.getOrDefault(var, 0.0);
                 coeff[col] = coeff_item;

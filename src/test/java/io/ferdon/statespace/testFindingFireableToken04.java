@@ -37,17 +37,23 @@ public class testFindingFireableToken04 {
     @Test
     public void testFindingFireableToken01() {
 
-        List<Token> tokens01 = net.getFireableToken(place00, place06);
-        assertEquals(1, tokens01.size());
+        List<Binding> bindings = net.getFireableBinding(place06);
+        assertEquals(2, bindings.size());
 
-        List<Token> tokens02 = net.getFireableToken(place01, place06);
-        assertEquals(1, tokens02.size());
+        Double a, b;
+        Binding binding;
 
-        System.out.println(tokens01.get(0).get(0));
-        System.out.println(tokens02.get(0).get(0));
+        binding = bindings.get(0);
+        a = new Double(binding.getToken(place00).get(0));
+        b = new Double(binding.getToken(place01).get(0));
 
-        double a = new Double(tokens01.get(0).get(0));
-        double b = new Double(tokens02.get(0).get(0));
+        assertTrue(a + b >= 1);
+        assertTrue(a + b > 0);
+
+        binding = bindings.get(1);
+        a = new Double(binding.getToken(place00).get(0));
+        b = new Double(binding.getToken(place01).get(0));
+
         assertTrue(a + b >= 1);
         assertTrue(a + b > 0);
     }
@@ -55,21 +61,34 @@ public class testFindingFireableToken04 {
     @Test
     public void testFindingFireableToken02() {
 
-        List<Token> tokens01 = net.getFireableToken(place00, place07);
-        assertEquals(1, tokens01.size());
-        System.out.println(tokens01.get(0).get(0));
-
-        List<Token> tokens02 = net.getFireableToken(place01, place07);
-        assertEquals(1, tokens02.size());
-        System.out.println(tokens02.get(0).get(0));
-
-        List<Token> tokens03 = net.getFireableToken(place03, place07);
-        assertEquals(1, tokens03.size());
-        System.out.println(tokens03.get(0).get(0));
-
-        List<Token> tokens04 = net.getFireableToken(place05, place07);
-        assertEquals(1, tokens04.size());
-        System.out.println(tokens04.get(0).get(0));
-
+//        List<Token> tokens01 = net.getFireableBinding(place00, place07);
+//        assertEquals(1, tokens01.size());
+//        System.out.println("a = " + tokens01.get(0).get(0));
+//        double a = new Double(tokens01.get(0).get(0));
+//
+//        List<Token> tokens02 = net.getFireableBinding(place01, place07);
+//        assertEquals(1, tokens02.size());
+//        System.out.println("b = " + tokens02.get(0).get(0));
+//        double b = new Double(tokens02.get(0).get(0));
+//
+//        List<Token> tokens03 = net.getFireableBinding(place03, place07);
+//        assertEquals(1, tokens03.size());
+//        System.out.println("c = " + tokens03.get(0).get(0));
+//        double c = new Double(tokens03.get(0).get(0));
+//
+//        List<Token> tokens04 = net.getFireableBinding(place05, place07);
+//        assertEquals(1, tokens04.size());
+//        System.out.println("e = " + tokens04.get(0).get(0));
+//        System.out.println("d = " + tokens04.get(0).get(1));
+//        double e = new Double(tokens04.get(0).get(0));
+//        double d = new Double(tokens04.get(0).get(1));
+//
+//        assertTrue(a + b > 0);
+//        assertTrue(2 * a + d < 0);
+//        assertTrue(a + b + c + d < -1);
+//        assertTrue(a + b + e + d < 0);
+//        assertTrue(a - b + c + d < 1);
+//        assertTrue(2 * c + d < 0);
+//        assertTrue(c + d + e < 1);
     }
 }

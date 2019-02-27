@@ -124,8 +124,8 @@ public class generateVarMappingTest {
     @Test
     public void testFindingPath01() {
         List<Path> paths = new ArrayList<>();
-        net.findPathConditions(place00, place07, new Path(), paths);
-        assertEquals(1, paths.size());
+        net.findPathConditions(place07, new Path(), paths);
+        assertEquals(4, paths.size());
 
         List<String> condition01 = paths.get(0).getConditions();
         assertEquals(7, condition01.size());
