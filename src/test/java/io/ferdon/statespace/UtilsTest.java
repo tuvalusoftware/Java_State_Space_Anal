@@ -32,7 +32,8 @@ public class UtilsTest {
         List<String> tokenData03 = new ArrayList<>();
 
         tokenData01.add("1");
-        tokenData02.add("'thong'"); tokenData02.add("'awesome'");
+        tokenData02.add("'thong'");
+        tokenData02.add("'awesome'");
         tokenData03.add("True");
 
         Token token01 = new Token(tokenData01);
@@ -191,6 +192,7 @@ public class UtilsTest {
         String output04 = Utils.convertPostfix(infix04).trim();
         assertEquals(postfix04, output04);
     }
+
     @Test
     public void testConvertPostfixWithCond() {
         String infix01 = "4 > 3";
@@ -208,6 +210,7 @@ public class UtilsTest {
         String output03 = Utils.convertPostfix(infix03).trim();
         assertEquals(postfix03, output03);
     }
+
     @Test
     public void testConvertPostfixToken() {
         String infix01 = "(2, 3 + 3, a * 43)";
@@ -215,6 +218,7 @@ public class UtilsTest {
         String output01 = Utils.convertPostfix(infix01).trim();
         assertEquals(postfix01, output01);
     }
+
     @Test
     public void testConvertPostfixIfElse() {
         String infix01 = "if a = 2 then (3, 4) else (a, b)";
