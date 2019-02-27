@@ -10,7 +10,7 @@ import static io.ferdon.statespace.main.parseJson;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class testFindingFireableToken01 {
+public class FindingFireableToken02Test {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -20,7 +20,7 @@ public class testFindingFireableToken01 {
 
     @Before
     public void setUp() {
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/simple.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/onePath02.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
@@ -37,7 +37,7 @@ public class testFindingFireableToken01 {
         assertEquals(1, bindings.size());
 
         Map<String, String> res = bindings.get(0).assignValueToVariables();
-        String guard = place00.getOutTransition().get(0).getGuard();
-        assertTrue(interpreter.interpretFromString(guard, res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a 10 <=", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a 1 + 5 >=", res).getBoolean());
     }
 }

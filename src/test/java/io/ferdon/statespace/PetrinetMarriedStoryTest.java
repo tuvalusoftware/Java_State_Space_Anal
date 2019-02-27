@@ -10,7 +10,7 @@ import java.util.List;
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class PetrinetMarriedStory {
+public class PetrinetMarriedStoryTest {
 
     private PetrinetModel model;
     private Petrinet net;

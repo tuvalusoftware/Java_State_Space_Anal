@@ -286,8 +286,8 @@ public class Petrinet implements Serializable {
             Map<String, String> varMappingResult = new HashMap<>();
             for(String var: varOrders.keySet()) {
                 varMappingResult.put(var, String.valueOf(point[varOrders.get(var)]));
-                result.add(new Binding(varMappingResult));
             }
+            result.add(new Binding(varMappingResult));
         }
 
         return result;

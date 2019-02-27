@@ -10,7 +10,7 @@ import java.util.Map;
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class findingPathTest04 {
+public class FindingPath04Test {
 
     private PetrinetModel model;
     private Petrinet net;

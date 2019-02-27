@@ -249,7 +249,7 @@ final class Utils {
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
         SimplexSolver linearOptimizer = new SimplexSolver();
-        PointValuePair solution = linearOptimizer.optimize(new MaxIter(numCoeffs), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
+        PointValuePair solution = linearOptimizer.optimize(new MaxIter(numCoeffs + 1), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
 
         return solution.getPoint();
     }
