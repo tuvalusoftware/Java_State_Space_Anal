@@ -218,6 +218,8 @@ final class Utils {
 
     static double[] solveLinearInequalities(double[][] coeffs, List<String> conditions) {
 
+        if (coeffs.length == 0) return new double[1];
+
         int numCoeffs = coeffs[0].length - 1;
         double precision = 0.00001;
         LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs],0);

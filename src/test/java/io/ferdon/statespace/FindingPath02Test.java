@@ -8,7 +8,7 @@ import java.util.*;
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class findingPath02Test {
+public class FindingPath02Test {
 
     private PetrinetModel model;
     private Petrinet net;

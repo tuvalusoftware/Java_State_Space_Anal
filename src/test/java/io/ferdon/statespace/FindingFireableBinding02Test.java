@@ -10,7 +10,7 @@ import static io.ferdon.statespace.main.parseJson;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class FindingFireableToken02Test {
+public class FindingFireableBinding02Test {
 
     private PetrinetModel model;
     private Petrinet net;
