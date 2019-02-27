@@ -10,6 +10,8 @@
 
 package io.ferdon.statespace;
 
+import com.google.errorprone.annotations.Var;
+import com.sun.org.apache.xpath.internal.operations.Variable;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.mutable.MutableInt;
 
@@ -885,9 +887,19 @@ class Interpreter implements Serializable {
         OperationType opType = getOperationType(token);
 
         if (arg1 instanceof VariableExpression || arg2 instanceof VariableExpression) {
-            if (!(opType == OperationType.MUL)) {  /* keep operator as we only need to find coefficients */
+            if (!(opType == OperationType.MUL)) {  /* keep operands as we only need to find coefficients */
+
                 valueStack.push(arg2);
-                valueStack.push(arg1);
+
+                if (arg1 instanceof VariableExpression && opType == OperationType.SUB) {  /* case: "a b -", need to change sign of b's coefficient */
+                    String signVarName = ((VariableExpression) arg1).getVariableName();
+                    double signVarCoeff = ((VariableExpression) arg1).getCoefficient().getReal() * -1;
+                    valueStack.push(new VariableExpression(signVarName, signVarCoeff));
+
+                } else {
+                    valueStack.push(arg1);
+                }
+
                 return;
             }
             if (!(arg2 instanceof VariableExpression)) {
@@ -980,7 +992,7 @@ class Interpreter implements Serializable {
         }
 
         Map<String, String> allZeros = new HashMap<>();
-        for(String var: result.keySet()) allZeros.put(var, "0");
+        for (String var : result.keySet()) allZeros.put(var, "0");
 
         String tmpCondition = expression.replaceAll("[<=>]", "").trim();
         interpretFromString(tmpCondition, allZeros);
