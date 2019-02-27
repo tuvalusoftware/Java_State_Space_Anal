@@ -40,7 +40,7 @@ public class FindingFireableBinding05Test {
 
         Map<String, String> res;
 
-//        res = bindings.get(0).assignValueToVariables();
+        res = bindings.get(0).assignValueToVariables();
 //        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
 //        assertTrue(interpreter.interpretFromString("a 1 + 0 >", res).getBoolean());
 //
