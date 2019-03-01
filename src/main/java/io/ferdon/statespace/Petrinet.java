@@ -245,34 +245,59 @@ public class Petrinet implements Serializable {
         }
     }
 
-    void findPathConditions(Place startPlace, Place endPlace, Path currentPath,
-                            List<Path> result) {
+    /**
+     * Finding paths from the startPlaces (set of place) to the endPlace.
+     * The path contains:
+     *      1. List of Places and Transitions in order.
+     *      2. List of Conditions from any place of startPlaces to current place
+     * @param startPlace set of input Places
+     * @param endPlace the end place
+     * @param currentPath parameter for running recursive (new Path())
+     * @param pathMap the map from place ~> list of path start from that place to the end place
+     */
+     void findPathConditions(Place startPlace, Place endPlace, Map<Place, List<Path>> pathMap) {
 
-        if (startPlace.getID() == endPlace.getID()) {
-            currentPath.addPathNode(startPlace);
-            currentPath.reversePath();
-            result.add(currentPath);
+         pathMap.put(endPlace, new ArrayList<>());
+
+        if (endPlace.isEmptyInput()) {
+            Path path = new Path();
+            path.addPathNode(startPlace);
+            pathMap.get(startPlace).add(path);
             return;
         }
 
-        for (Transition inTran : endPlace.getInTransition()) {
-            for (Place previousPlace : inTran.getInPlaces()) {
+        for (Transition inTran : endPlace.getInTransition()) {  /* each transition is a independent path */
 
-                Path path = new Path(currentPath);
-                path.addPathNode(endPlace);
-                path.addPathNode(inTran);
-                path.addCondition(inTran);
-
-                findPathConditions(startPlace, previousPlace, path, result);
+            for (Place previousPlace : inTran.getInPlaces()) {  /* each place is a dependent path */
+                findPathConditions(startPlace, previousPlace, pathMap);
             }
+
+            /*  check if in those input places of [inTran], does any contain the [startPlace]?
+                If not, we can safely early return here.
+                There is not path lead to [startPlace] from [inTran] */
+
+            boolean isContainStartPlace = false;
+            for(Place previousPlace: inTran.getInPlaces()) {
+                for(Path previousPath: pathMap.get(previousPlace)) {
+                    if (previousPath.getStartPlace() == startPlace) {
+                        isContainStartPlace = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isContainStartPlace) continue; /* this transition doesn't lead to [startPlace] */
+
+            List<Path> newPaths = Utils.generateAllPath(inTran.getInPlaces(), pathMap, inTran, endPlace);
+            pathMap.get(endPlace).addAll(newPaths);
         }
     }
 
-    List<Binding> getFireableToken(Place startPlace, Place endPlace) {
+    List<Binding> getFireableToken(Set<Place> startPlaces, Place endPlace) {
 
         // #TODO: conditions of other branches do not combined
         List<Path> paths = new ArrayList<>();
-        findPathConditions(startPlace, endPlace, new Path(), paths);
+        findPathConditions(startPlaces, endPlace, new Path(), paths);
 
         List<Binding> result = new ArrayList<>();
 

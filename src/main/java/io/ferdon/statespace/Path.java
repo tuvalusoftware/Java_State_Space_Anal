@@ -8,15 +8,18 @@ class Path {
 
     private List<Node> path;
     private List<String> conditions;
+    private List<Place> dependentPlaces;
 
     Path() {
         path = new ArrayList<>();
         conditions = new ArrayList<>();
+        dependentPlaces = new ArrayList<>();
     }
 
     Path(Path x) {
         path = new ArrayList<>();
         conditions = new ArrayList<>();
+        dependentPlaces = new ArrayList<>();
 
         path.addAll(x.getPath());
         conditions.addAll(x.getConditions());
@@ -26,6 +29,10 @@ class Path {
         return path;
     }
 
+    List<Place> getDependentPlaces() {
+        return dependentPlaces;
+    }
+
     void reversePath() {
         path = Lists.reverse(path);
         conditions = Lists.reverse(conditions);
@@ -33,6 +40,10 @@ class Path {
 
     List<String> getConditions() {
         return conditions;
+    }
+
+    Place getStartPlace() {
+        return (Place) path.get(0);
     }
 
     void addPathNode(Node node) {
