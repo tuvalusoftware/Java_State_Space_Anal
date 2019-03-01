@@ -125,12 +125,19 @@ public class Transition extends Node {
         return result;
     }
 
-    Map<String, List<String>> combineVars() {
+    Map<String, List<String>> combineVars(Place injectedPlace,
+                                          Map<String, List<String>> injectedMapping) {
 
         Map<String, List<String>> result = new HashMap<>();
         for (Place previousPlace : getInPlaces()) {
 
-            Map<String, List<String>> currentMapping = previousPlace.getVarMapping();
+            Map<String, List<String>> currentMapping;
+            if (injectedPlace == null || injectedPlace.getID() != previousPlace.getID()) {
+                currentMapping = previousPlace.getVarMapping();
+            } else {
+                currentMapping = injectedMapping;
+            }
+
             for(String varName : currentMapping.keySet()) {
 
                 if (!result.containsKey(varName)) result.put(varName, new ArrayList<>());

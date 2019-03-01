@@ -225,7 +225,7 @@ public class Petrinet implements Serializable {
             }
 
             /* combine values of all variables in previous places */
-            Map<String, List<String>> combinedMapping = inTran.combineVars();
+            Map<String, List<String>> combinedMapping = inTran.combineVars(null, null);
 
             /* end place then var mapping equals to all combined in place's var mappings */
             if (currentPlace.isEmptyOutput()) {

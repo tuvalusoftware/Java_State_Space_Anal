@@ -63,16 +63,24 @@ class Path {
         String oldExp = prevTran.getExpression(currPlace);
         String[] fromVars = nextTran.getVars(currPlace);
 
-        Map<String, List<String>> vars = prevTran.combineVars();
+        Map<String, List<String>> vars = prevTran.combineVars(null, null);
         List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(vars);
+        Map<String, List<String>> currMapping = new HashMap<>();
 
         for (Map<String, String> mapping : possibleMapping) {
             String replacedExp = Utils.replaceVar(mapping, oldExp);
             String[] toVars = Utils.parseExpressionToStringArray(replacedExp);
 
-            Map<String, String> nextMapping = new HashMap<>();
-            for(int i = 0; i < fromVars.length; i++) nextMapping.put(fromVars[i], toVars[i]);
-            String newGuard = Utils.replaceVar(nextMapping, guard);
+            for (int i = 0; i < fromVars.length; i++) {
+                if (!currMapping.containsKey(fromVars[i])) currMapping.put(fromVars[i], new ArrayList<>());
+                currMapping.get(fromVars[i]).add(toVars[i]);
+            }
+        }
+
+        vars = nextTran.combineVars(currPlace, currMapping);
+        possibleMapping = Utils.generateAllPossibleVarMapping(vars);
+        for (Map<String, String> mapping: possibleMapping) {
+            String newGuard = Utils.replaceVar(mapping, guard);
             conditions.add(newGuard);
         }
     }
