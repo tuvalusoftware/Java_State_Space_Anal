@@ -262,6 +262,7 @@ public class Petrinet implements Serializable {
         if (toPlace.isEmptyInput()) {
             Path path = new Path();
             path.addPathNode(toPlace);
+            path.addDependentPlace(toPlace);
             pathMap.get(toPlace).add(path);
             return;
         }

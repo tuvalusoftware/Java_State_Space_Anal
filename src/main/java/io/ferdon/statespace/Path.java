@@ -25,6 +25,8 @@ class Path {
         return dependentPlaces;
     }
 
+    void addDependentPlace(Place place) { dependentPlaces.add(place); }
+
     void reversePath() {
         path = Lists.reverse(path);
         conditions = Lists.reverse(conditions);
@@ -52,7 +54,7 @@ class Path {
 
     void addPureCondition(Transition inTran) {
         if (inTran.getGuard().isEmpty()) return;
-        conditions.add(inTran.getGuard());
+        if (!conditions.contains(inTran.getGuard())) conditions.add(inTran.getGuard());
     }
 
     void addUpdatedCondition(Transition prevTran, Place currPlace, Transition nextTran) {
@@ -81,7 +83,7 @@ class Path {
         possibleMapping = Utils.generateAllPossibleVarMapping(vars);
         for (Map<String, String> mapping: possibleMapping) {
             String newGuard = Utils.replaceVar(mapping, guard);
-            conditions.add(newGuard);
+            if (!conditions.contains(newGuard)) conditions.add(newGuard);
         }
     }
 

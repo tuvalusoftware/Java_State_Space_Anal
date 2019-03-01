@@ -43,12 +43,9 @@ public class PathTest {
         Map<String, Integer> varOrders = new HashMap<>();
         double[][] coeffs = pathMap.get(place07).get(0).getCoefficients(interpreter, varOrders);
 
-        assertEquals(Arrays.toString(new double[] {1, 1, 0, 0, 0, 0}), Arrays.toString(coeffs[0]));
-        assertEquals(Arrays.toString(new double[] {0, 0, 1, 1, 1, 1}), Arrays.toString(coeffs[1]));
-        assertEquals(Arrays.toString(new double[] {1, 1, 0, 1, 1, 0}), Arrays.toString(coeffs[2]));
-        assertEquals(Arrays.toString(new double[] {0, 0, 2, 0, 1, 0}), Arrays.toString(coeffs[3]));
-        assertEquals(Arrays.toString(new double[] {1, 1, 1, 0, 1, -1}), Arrays.toString(coeffs[4]));
-        assertEquals(Arrays.toString(new double[] {1, -1, 1, 0, 1, 1}), Arrays.toString(coeffs[5]));
-        assertEquals(Arrays.toString(new double[] {2, 0, 0, 0, 1, 0}), Arrays.toString(coeffs[6]));
+        assertEquals(Arrays.toString(new double[] {1, 1, 0, 0, 0}), Arrays.toString(coeffs[0]));
+        assertEquals(Arrays.toString(new double[] {2, 0, 1, 0, 0}), Arrays.toString(coeffs[1]));
+        assertEquals(Arrays.toString(new double[] {1, 1, 1, 1, 0}), Arrays.toString(coeffs[2]));
+        assertEquals(Arrays.toString(new double[] {1, 1, 0, 0, 0}), Arrays.toString(coeffs[3]));
     }
 }
