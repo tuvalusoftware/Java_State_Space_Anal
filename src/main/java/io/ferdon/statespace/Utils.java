@@ -189,8 +189,7 @@ final class Utils {
         return expression.replace("]", "").replace("[", "").split(",");
     }
 
-    static List<Map<String, String>> generateAllPossibleVarMapping(
-            Map<String, List<String>> combinedMapping) {
+    static List<Map<String, String>> generateAllPossibleVarMapping(Map<String, List<String>> combinedMapping) {
 
         List<String> varOrder = new ArrayList<>();
         List<List<String>> allVars = new ArrayList<>();
@@ -278,7 +277,12 @@ final class Utils {
                 if (mainPath.getStartPlace().getID() != fromPlace.getID()) continue;
 
                 Path path = new Path(mainPath);
-                path.addCondition(path.getEndTransition(), inTran);
+
+                if (path.getPath().size() < 2) {
+                    path.addPureCondition(inTran);
+                } else {
+                    path.addUpdatedCondition(path.getEndTransition(), path.getEndPlace(), inTran);
+                }
                 path.addPathNode(inTran);
                 path.addPathNode(toPlace);
                 path.combinePath(listPath);

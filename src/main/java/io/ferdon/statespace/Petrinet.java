@@ -288,7 +288,10 @@ public class Petrinet implements Serializable {
 
             if (!isContainStartPlace) continue; /* this transition doesn't lead to [fromPlace] */
 
-            List<Path> newPaths = Utils.generateAllPath(inTran.getInPlaces(), pathMap, inTran, fromPlace, toPlace);
+            List<Path> newPaths = Utils.generateAllPath(
+                    inTran.getInPlaces(), pathMap,
+                    inTran, fromPlace, toPlace
+            );
             pathMap.get(toPlace).addAll(newPaths);
         }
     }

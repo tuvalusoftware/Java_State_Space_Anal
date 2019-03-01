@@ -38,19 +38,41 @@ class Path {
         return (Place) path.get(0);
     }
 
+    Transition getEndTransition() {
+        return (Transition) path.get(path.size() - 2);
+    }
+
+    Place getEndPlace() {
+        return (Place) path.get(path.size() - 1);
+    }
+
     void addPathNode(Node node) {
         path.add(node);
     }
 
-    void addCondition(Transition inTran) {
+    void addPureCondition(Transition inTran) {
+        if (inTran.getGuard().isEmpty()) return;
+        conditions.add(inTran.getGuard());
+    }
 
-        String guard = inTran.getGuard();
+    void addUpdatedCondition(Transition prevTran, Place currPlace, Transition nextTran) {
+
+        String guard = nextTran.getGuard();
         if (guard.isEmpty()) return;
 
-        Map<String, List<String>> vars = inTran.combineVars();
+        String oldExp = prevTran.getExpression(currPlace);
+        String[] fromVars = nextTran.getVars(currPlace);
+
+        Map<String, List<String>> vars = prevTran.combineVars();
         List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(vars);
+
         for (Map<String, String> mapping : possibleMapping) {
-            String newGuard = Utils.replaceVar(mapping, guard);
+            String replacedExp = Utils.replaceVar(mapping, oldExp);
+            String[] toVars = Utils.parseExpressionToStringArray(replacedExp);
+
+            Map<String, String> nextMapping = new HashMap<>();
+            for(int i = 0; i < fromVars.length; i++) nextMapping.put(fromVars[i], toVars[i]);
+            String newGuard = Utils.replaceVar(nextMapping, guard);
             conditions.add(newGuard);
         }
     }
