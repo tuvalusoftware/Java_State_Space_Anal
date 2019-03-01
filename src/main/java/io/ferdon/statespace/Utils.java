@@ -256,6 +256,34 @@ final class Utils {
         return solution.getPoint();
     }
 
+    static List<Path> generateAllPath(List<Place> inputPlaces,
+                                      Map<Place, List<Path>> pathMap,
+                                      Transition inTran,
+                                      Place endPlace) {
+
+        List<List<Path>> paths = new ArrayList<>();
+        for(Place inputPlace: inputPlaces) {
+            paths.add(pathMap.get(inputPlace));
+        }
+
+        List<List<Path>> combinedPaths = Lists.cartesianProduct(paths);
+
+        List<Path> result = new ArrayList<>();
+
+        for(List<Path> listPath: combinedPaths) {
+            for(Path mainPath: listPath) {
+
+                Path path = new Path(mainPath);
+                path.addPathNode(inTran);
+                path.addPathNode(endPlace);
+                path.combinePath(listPath);
+                result.add(path);
+            }
+        }
+
+        return result;
+    }
+
     public static void main(String[] args) {
     }
 

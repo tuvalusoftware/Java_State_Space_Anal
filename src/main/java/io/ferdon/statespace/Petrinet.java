@@ -252,7 +252,6 @@ public class Petrinet implements Serializable {
      *      2. List of Conditions from any place of startPlaces to current place
      * @param startPlace set of input Places
      * @param endPlace the end place
-     * @param currentPath parameter for running recursive (new Path())
      * @param pathMap the map from place ~> list of path start from that place to the end place
      */
      void findPathConditions(Place startPlace, Place endPlace, Map<Place, List<Path>> pathMap) {
@@ -293,15 +292,14 @@ public class Petrinet implements Serializable {
         }
     }
 
-    List<Binding> getFireableToken(Set<Place> startPlaces, Place endPlace) {
+    List<Binding> getFireableToken(Place startPlace, Place endPlace) {
 
-        // #TODO: conditions of other branches do not combined
-        List<Path> paths = new ArrayList<>();
-        findPathConditions(startPlaces, endPlace, new Path(), paths);
+        Map<Place, List<Path>> pathMap = new HashMap<>();
+        findPathConditions(startPlace, endPlace, pathMap);
 
         List<Binding> result = new ArrayList<>();
 
-        for(Path path: paths) {
+        for(Path path: pathMap.get(startPlace)) {
 
             Map<String, Integer> varOrders = new HashMap<>();
             double[] point = Utils.solveLinearInequalities(

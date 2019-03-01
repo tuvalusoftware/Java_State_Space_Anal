@@ -6,21 +6,13 @@ import java.util.*;
 
 class Path {
 
-    private List<Node> path;
-    private List<String> conditions;
-    private List<Place> dependentPlaces;
+    private List<Node> path = new ArrayList<>();;
+    private List<String> conditions = new ArrayList<>();
+    private Set<Place> dependentPlaces = new HashSet<>();
 
-    Path() {
-        path = new ArrayList<>();
-        conditions = new ArrayList<>();
-        dependentPlaces = new ArrayList<>();
-    }
+    Path() { }
 
     Path(Path x) {
-        path = new ArrayList<>();
-        conditions = new ArrayList<>();
-        dependentPlaces = new ArrayList<>();
-
         path.addAll(x.getPath());
         conditions.addAll(x.getConditions());
     }
@@ -29,7 +21,7 @@ class Path {
         return path;
     }
 
-    List<Place> getDependentPlaces() {
+    Set<Place> getDependentPlaces() {
         return dependentPlaces;
     }
 
@@ -60,6 +52,13 @@ class Path {
         for (Map<String, String> mapping : possibleMapping) {
             String newGuard = Utils.replaceVar(mapping, guard);
             conditions.add(newGuard);
+        }
+    }
+
+    void combinePath(List<Path> listPath) {
+        for(Path otherPath: listPath) {
+            conditions.addAll(otherPath.getConditions());
+            dependentPlaces.addAll(otherPath.getDependentPlaces());
         }
     }
 
