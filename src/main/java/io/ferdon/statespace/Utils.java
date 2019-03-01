@@ -189,7 +189,8 @@ final class Utils {
         return expression.replace("]", "").replace("[", "").split(",");
     }
 
-    static List<Map<String, String>> generateAllPossibleVarMapping(Map<String, List<String>> combinedMapping) {
+    static List<Map<String, String>> generateAllPossibleVarMapping(
+            Map<String, List<String>> combinedMapping) {
 
         List<String> varOrder = new ArrayList<>();
         List<List<String>> allVars = new ArrayList<>();
@@ -259,7 +260,8 @@ final class Utils {
     static List<Path> generateAllPath(List<Place> inputPlaces,
                                       Map<Place, List<Path>> pathMap,
                                       Transition inTran,
-                                      Place endPlace) {
+                                      Place fromPlace,
+                                      Place toPlace) {
 
         List<List<Path>> paths = new ArrayList<>();
         for(Place inputPlace: inputPlaces) {
@@ -273,9 +275,12 @@ final class Utils {
         for(List<Path> listPath: combinedPaths) {
             for(Path mainPath: listPath) {
 
+                if (mainPath.getStartPlace().getID() != fromPlace.getID()) continue;
+
                 Path path = new Path(mainPath);
+                path.addCondition(path.getEndTransition(), inTran);
                 path.addPathNode(inTran);
-                path.addPathNode(endPlace);
+                path.addPathNode(toPlace);
                 path.combinePath(listPath);
                 result.add(path);
             }

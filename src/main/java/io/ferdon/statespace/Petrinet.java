@@ -13,6 +13,7 @@ package io.ferdon.statespace;
 import java.io.*;
 import java.util.*;
 
+import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
@@ -250,45 +251,45 @@ public class Petrinet implements Serializable {
      * The path contains:
      *      1. List of Places and Transitions in order.
      *      2. List of Conditions from any place of startPlaces to current place
-     * @param startPlace set of input Places
-     * @param endPlace the end place
+     * @param fromPlace set of input Places
+     * @param toPlace the end place
      * @param pathMap the map from place ~> list of path start from that place to the end place
      */
-     void findPathConditions(Place startPlace, Place endPlace, Map<Place, List<Path>> pathMap) {
+     void findPathConditions(Place fromPlace, Place toPlace, Map<Place, List<Path>> pathMap) {
 
-         pathMap.put(endPlace, new ArrayList<>());
+         pathMap.put(toPlace, new ArrayList<>());
 
-        if (endPlace.isEmptyInput()) {
+        if (toPlace.isEmptyInput()) {
             Path path = new Path();
-            path.addPathNode(startPlace);
-            pathMap.get(startPlace).add(path);
+            path.addPathNode(toPlace);
+            pathMap.get(toPlace).add(path);
             return;
         }
 
-        for (Transition inTran : endPlace.getInTransition()) {  /* each transition is a independent path */
+        for (Transition inTran : toPlace.getInTransition()) {  /* each transition is a independent path */
 
             for (Place previousPlace : inTran.getInPlaces()) {  /* each place is a dependent path */
-                findPathConditions(startPlace, previousPlace, pathMap);
+                findPathConditions(fromPlace, previousPlace, pathMap);
             }
 
-            /*  check if in those input places of [inTran], does any contain the [startPlace]?
+            /*  check if in those input places of [inTran], does any contain the [fromPlace]?
                 If not, we can safely early return here.
-                There is not path lead to [startPlace] from [inTran] */
+                There is not path lead to [fromPlace] from [inTran] */
 
             boolean isContainStartPlace = false;
             for(Place previousPlace: inTran.getInPlaces()) {
                 for(Path previousPath: pathMap.get(previousPlace)) {
-                    if (previousPath.getStartPlace() == startPlace) {
+                    if (previousPath.getStartPlace() == fromPlace) {
                         isContainStartPlace = true;
                         break;
                     }
                 }
             }
 
-            if (!isContainStartPlace) continue; /* this transition doesn't lead to [startPlace] */
+            if (!isContainStartPlace) continue; /* this transition doesn't lead to [fromPlace] */
 
-            List<Path> newPaths = Utils.generateAllPath(inTran.getInPlaces(), pathMap, inTran, endPlace);
-            pathMap.get(endPlace).addAll(newPaths);
+            List<Path> newPaths = Utils.generateAllPath(inTran.getInPlaces(), pathMap, inTran, fromPlace, toPlace);
+            pathMap.get(toPlace).addAll(newPaths);
         }
     }
 
@@ -297,8 +298,11 @@ public class Petrinet implements Serializable {
         Map<Place, List<Path>> pathMap = new HashMap<>();
         findPathConditions(startPlace, endPlace, pathMap);
 
-        List<Binding> result = new ArrayList<>();
+        for(List<Path> paths: pathMap.values()) {   /* reverse the path for the right order */
+            for(Path path: paths) path.reversePath();
+        }
 
+        List<Binding> result = new ArrayList<>();
         for(Path path: pathMap.get(startPlace)) {
 
             Map<String, Integer> varOrders = new HashMap<>();

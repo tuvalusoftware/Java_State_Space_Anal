@@ -11,6 +11,8 @@
 
 package io.ferdon.statespace;
 
+import org.javatuples.Pair;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
