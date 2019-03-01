@@ -278,7 +278,7 @@ final class Utils {
 
                 Path path = new Path(mainPath);
 
-                if (path.getPath().size() < 2) {
+                if (path.getNodePath().size() < 2) {
                     path.addPureCondition(inTran);
                 } else {
                     path.addUpdatedCondition(path.getEndTransition(), path.getEndPlace(), inTran);

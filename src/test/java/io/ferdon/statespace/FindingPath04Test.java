@@ -70,7 +70,7 @@
 //        net.findPathConditions(place00, place03, new Path(), paths);
 //        assertEquals(3, paths.size());
 //
-//        List<Node> path01 = paths.get(0).getPath();
+//        List<Node> path01 = paths.get(0).getNodePath();
 //        assertEquals(5, path01.size());
 //        assertEquals(0, path01.get(0).getID());
 //        assertEquals(0, path01.get(1).getID());
@@ -78,7 +78,7 @@
 //        assertEquals(1, path01.get(3).getID());
 //        assertEquals(3, path01.get(4).getID());
 //
-//        List<Node> path02 = paths.get(1).getPath();
+//        List<Node> path02 = paths.get(1).getNodePath();
 //        assertEquals(5, path02.size());
 //        assertEquals(0, path02.get(0).getID());
 //        assertEquals(0, path02.get(1).getID());
@@ -86,7 +86,7 @@
 //        assertEquals(2, path02.get(3).getID());
 //        assertEquals(3, path02.get(4).getID());
 //
-//        List<Node> path03 = paths.get(2).getPath();
+//        List<Node> path03 = paths.get(2).getNodePath();
 //        assertEquals(5, path03.size());
 //        assertEquals(0, path03.get(0).getID());
 //        assertEquals(0, path03.get(1).getID());

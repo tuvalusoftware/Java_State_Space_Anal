@@ -13,11 +13,11 @@ class Path {
     Path() { }
 
     Path(Path x) {
-        path.addAll(x.getPath());
+        path.addAll(x.getNodePath());
         conditions.addAll(x.getConditions());
     }
 
-    List<Node> getPath() {
+    List<Node> getNodePath() {
         return path;
     }
 

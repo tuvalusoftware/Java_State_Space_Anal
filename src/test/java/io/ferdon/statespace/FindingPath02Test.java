@@ -76,7 +76,7 @@
 //    public void testPath() {
 //
 //        assertEquals(1, paths.size());
-//        List<Node> foundPath = paths.get(0).getPath();
+//        List<Node> foundPath = paths.get(0).getNodePath();
 //
 //        assertEquals(9, foundPath.size());
 //        assertEquals(0, foundPath.get(0).getID());

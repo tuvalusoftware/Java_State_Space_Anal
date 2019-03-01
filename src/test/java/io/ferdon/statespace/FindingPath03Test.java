@@ -107,10 +107,10 @@ public class FindingPath03Test {
 
         net.findPathConditions(place02, place07, pathMap);
 
-        assertEquals(1, pathMap.size());
-        List<Node> foundPath01 = pathMap.get(place02).get(0).getPath();
+        assertEquals(1, pathMap.get(place07).size());
 
-        assertEquals(5 , foundPath01.size());
+        List<Node> foundPath01 = pathMap.get(place07).get(0).getNodePath();
+        assertEquals(5, foundPath01.size());
         assertEquals(2, foundPath01.get(0).getID());
         assertEquals(1, foundPath01.get(1).getID());
         assertEquals(6, foundPath01.get(2).getID());
@@ -118,38 +118,37 @@ public class FindingPath03Test {
         assertEquals(7, foundPath01.get(4).getID());
     }
 
-//    @Test
-//    public void testCondition01() {
-//
-//        net.findPathConditions(place02, place07, pathMap);
-//        List<String> condition = pathMap.get(0).getConditions();
-//
-//        assertEquals(4, condition.size());
-//        assertEquals("c d + 0 >", condition.get(0));
-//        assertEquals("e f * 0 >", condition.get(1));
-//        assertEquals("c d - 0 >", condition.get(2));
-//        assertEquals("a b + 0 >", condition.get(3));
-//    }
-//
-//    @Test
-//    public void testPath02() {
-//
-//        net.findPathConditions(place00, place06, pathMap);
-//
-//        assertEquals(1, pathMap.size());
-//        List<Node> foundPath01 = pathMap.get(0).getPath();
-//
-//        assertEquals(3 , foundPath01.size());
-//        assertEquals(0, foundPath01.get(0).getID());
-//        assertEquals(0, foundPath01.get(1).getID());
-//        assertEquals(6, foundPath01.get(2).getID());
-//    }
-//
-//    @Test
-//    public void testCondition02() {
-//        net.findPathConditions(place00, place06, pathMap);
-//        List<String> condition = pathMap.get(0).getConditions();
-//
-//        assertEquals(0, condition.size());
-//    }
+    @Test
+    public void testCondition01() {
+
+        net.findPathConditions(place02, place07, pathMap);
+        List<String> condition = pathMap.get(place07).get(0).getConditions();
+
+        assertEquals(3, condition.size());
+        assertEquals("c d + 0 >", condition.get(0));
+        assertEquals("c d - 0 >", condition.get(1));
+        assertEquals("c d + 0 >", condition.get(2));
+    }
+
+    @Test
+    public void testPath02() {
+
+        net.findPathConditions(place00, place06, pathMap);
+
+        assertEquals(1, pathMap.get(place06).size());
+        List<Node> foundPath01 = pathMap.get(place06).get(0).getNodePath();
+
+        assertEquals(3 , foundPath01.size());
+        assertEquals(0, foundPath01.get(0).getID());
+        assertEquals(0, foundPath01.get(1).getID());
+        assertEquals(6, foundPath01.get(2).getID());
+    }
+
+    @Test
+    public void testCondition02() {
+        net.findPathConditions(place00, place06, pathMap);
+        List<String> condition = pathMap.get(place06).get(0).getConditions();
+
+        assertEquals(0, condition.size());
+    }
 }
