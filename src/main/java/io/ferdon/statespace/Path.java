@@ -7,7 +7,7 @@ import java.util.*;
 class Path {
 
     private List<Node> path = new ArrayList<>();;
-    private List<String> conditions = new ArrayList<>();
+    private Set<String> conditions = new HashSet<>();
     private Set<Place> dependentPlaces = new HashSet<>();
 
     Path() { }
@@ -29,10 +29,10 @@ class Path {
 
     void reversePath() {
         path = Lists.reverse(path);
-        conditions = Lists.reverse(conditions);
+//        conditions = Lists.reverse(conditions);
     }
 
-    List<String> getConditions() {
+    Set<String> getConditions() {
         return conditions;
     }
 

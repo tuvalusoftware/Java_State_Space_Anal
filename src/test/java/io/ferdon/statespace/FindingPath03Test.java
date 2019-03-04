@@ -122,12 +122,13 @@ public class FindingPath03Test {
     public void testCondition01() {
 
         net.findPathConditions(place02, place07, pathMap);
-        List<String> condition = pathMap.get(place07).get(0).getConditions();
-
+        Set<String> condition = pathMap.get(place07).get(0).getConditions();
         assertEquals(3, condition.size());
-        assertEquals("c d + 0 >", condition.get(0));
-        assertEquals("c d - 0 >", condition.get(1));
-        assertEquals("c d + 0 >", condition.get(2));
+
+        Iterator it = condition.iterator();
+        assertEquals("c d + 0 >", it.next());
+        assertEquals("c d - 0 >", it.next());
+        assertEquals("c d + 0 >", it.next());
     }
 
     @Test
@@ -147,7 +148,7 @@ public class FindingPath03Test {
     @Test
     public void testCondition02() {
         net.findPathConditions(place00, place06, pathMap);
-        List<String> condition = pathMap.get(place06).get(0).getConditions();
+        Set<String> condition = pathMap.get(place06).get(0).getConditions();
 
         assertEquals(0, condition.size());
     }

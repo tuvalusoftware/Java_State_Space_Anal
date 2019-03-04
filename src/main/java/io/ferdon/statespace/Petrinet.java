@@ -285,6 +285,7 @@ public class Petrinet implements Serializable {
                         break;
                     }
                 }
+                if (isContainStartPlace) break;
             }
 
             if (!isContainStartPlace) continue; /* this transition doesn't lead to [fromPlace] */

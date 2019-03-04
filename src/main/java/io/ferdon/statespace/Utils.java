@@ -216,7 +216,7 @@ final class Utils {
         return result;
     }
 
-    static double[] solveLinearInequalities(double[][] coeffs, List<String> conditions) {
+    static double[] solveLinearInequalities(double[][] coeffs, Set<String> conditions) {
 
         if (coeffs.length == 0) return new double[1];
 
@@ -225,14 +225,14 @@ final class Utils {
         LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs],0);
 
         List<LinearConstraint> constraints = new ArrayList();
-
         NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);
-        int index = 0;
-        for(double[] co: coeffs) {
-            double[] x = Arrays.copyOfRange(co, 0, co.length - 1);
+        Iterator it = conditions.iterator();
 
+        for(double[] co: coeffs) {
+
+            double[] x = Arrays.copyOfRange(co, 0, co.length - 1);
+            String c = (String) it.next();
             Relationship op = Relationship.GEQ;
-            String c = conditions.get(index);
 
             /* linear programming not allow > and < operators */
             if (c.contains("<=")) op = Relationship.LEQ;
@@ -246,7 +246,6 @@ final class Utils {
             }
 
             constraints.add(new LinearConstraint(x, op, co[co.length - 1]));  /* x1 * a + x2 * b + ... >= co[co.length - 1] */
-            index++;
         }
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
