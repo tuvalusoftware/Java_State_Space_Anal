@@ -7,6 +7,7 @@ import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PathTest {
 
@@ -47,5 +48,17 @@ public class PathTest {
         assertEquals(Arrays.toString(new double[] {2, 0, 1, 0, 0}), Arrays.toString(coeffs[1]));
         assertEquals(Arrays.toString(new double[] {1, 1, 1, 1, 0}), Arrays.toString(coeffs[2]));
         assertEquals(Arrays.toString(new double[] {1, 1, 0, 0, 0}), Arrays.toString(coeffs[3]));
+    }
+
+    @Test
+    public void testDependentPlaces() {
+        Map<Place, List<Path>> pathMap = new HashMap<>();
+        net.findPathConditions(place00, place07, pathMap);
+
+        Set<Place> places = pathMap.get(place07).get(0).getDependentPlaces();
+        assertEquals(3, places.size());
+        assertTrue(places.contains(place00));
+        assertTrue(places.contains(place01));
+        assertTrue(places.contains(place05));
     }
 }
