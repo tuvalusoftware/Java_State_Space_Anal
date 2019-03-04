@@ -77,8 +77,9 @@ public class GenerateVarMappingTest {
         assertEquals(2, vars04.getValueList("f").size());
         assertEquals("a b -", vars04.getValueList("e").get(0));
         assertEquals("c 1 +", vars04.getValueList("e").get(1));
-        assertEquals("a b +", vars04.getValueList("f").get(0));
-        assertEquals("c 1 -", vars04.getValueList("f").get(1));
+        assertEquals("c 1 -", vars04.getValueList("f").get(0));
+        assertEquals("a b +", vars04.getValueList("f").get(1));
+
     }
 
     @Test
@@ -110,14 +111,15 @@ public class GenerateVarMappingTest {
         assertEquals(1, vars07.getValueList("d").size());
         assertEquals(2, vars07.getValueList("f").size());
 
-        assertEquals("a b -", vars07.getValueList("e").get(0));
-        assertEquals("c 1 +", vars07.getValueList("e").get(1));
-        assertEquals("e", vars07.getValueList("e").get(2));
+        assertEquals("e", vars07.getValueList("e").get(0));
+        assertEquals("a b -", vars07.getValueList("e").get(1));
+        assertEquals("c 1 +", vars07.getValueList("e").get(2));
+
 
         assertEquals("d", vars07.getValueList("d").get(0));
-        assertEquals("a b +", vars07.getValueList("f").get(0));
+        assertEquals("c 1 -", vars07.getValueList("f").get(0));
+        assertEquals("a b +", vars07.getValueList("f").get(1));
 
-        assertEquals("c 1 -", vars07.getValueList("f").get(1));
     }
 
     @Test

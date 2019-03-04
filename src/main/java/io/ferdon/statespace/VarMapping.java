@@ -5,13 +5,13 @@ import com.google.common.collect.Lists;
 import java.util.*;
 
 public class VarMapping {
-    private Map<String, List<String>> data;
+    private Map<String, Set<String>> data;
 
     VarMapping() {
         data = new HashMap<>();
     }
 
-    public Map<String, List<String>> getData() {
+    public Map<String, Set<String>> getData() {
         return data;
     }
 
@@ -36,8 +36,8 @@ public class VarMapping {
             combinedMapping.addVarsMapping(fromTransition.combineVars());
 
             if (place.isEmptyOutput()) {
-                data = combinedMapping.getData();
-                return;
+                place.getVarMapping().addVarsMapping(combinedMapping);
+                continue;
             }
 
             for (String var : combinedMapping.getVarSet()) {
@@ -79,24 +79,22 @@ public class VarMapping {
     }
 
     List<String> getValueList(String key) {
-        return data.get(key);
+        List<String> result = new ArrayList<>();
+        for(String x: data.get(key)) result.add(x);
+        return result;
     }
 
     void addSingleMapping(String[] newVars, String[] oldVars) {
         for (int i = 0; i < newVars.length; i++) {
-            if (!data.containsKey(newVars[i])) data.put(newVars[i], new ArrayList<>());
+            if (!data.containsKey(newVars[i])) data.put(newVars[i], new HashSet<>());
             data.get(newVars[i]).add(oldVars[i].trim());
         }
     }
 
     void addVarsMapping(VarMapping vars) {
         for(String varName: vars.getVarSet()) {
-            if (!data.containsKey(varName)) data.put(varName, new ArrayList<>());
+            if (!data.containsKey(varName)) data.put(varName, new HashSet<>());
             data.get(varName).addAll(vars.getValueList(varName));
         }
-    }
-
-    void addNewVar(Transition prevTran, Place currPlace, Transition nextTran) {
-
     }
 }

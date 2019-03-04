@@ -70,7 +70,7 @@ public class FindingPath04Test {
     public void testFindPath() {
 
         net.findPathConditions(startPlaces, place00, place03, pathMap);
-        assertEquals(3, pathMap.get(place03).size());
+        assertEquals(2, pathMap.get(place03).size());
 
         List<Node> path01 = pathMap.get(place03).get(0).getNodePath();
         assertEquals(5, path01.size());
@@ -84,24 +84,16 @@ public class FindingPath04Test {
         assertEquals(5, path02.size());
         assertEquals(0, path02.get(0).getID());
         assertEquals(0, path02.get(1).getID());
-        assertEquals(1, path02.get(2).getID());
+        assertEquals(2, path02.get(2).getID());
         assertEquals(2, path02.get(3).getID());
         assertEquals(3, path02.get(4).getID());
-
-        List<Node> path03 = pathMap.get(place03).get(2).getNodePath();
-        assertEquals(5, path03.size());
-        assertEquals(0, path03.get(0).getID());
-        assertEquals(0, path03.get(1).getID());
-        assertEquals(2, path03.get(2).getID());
-        assertEquals(2, path03.get(3).getID());
-        assertEquals(3, path03.get(4).getID());
     }
 
     @Test
     public void testCondition() {
 
         net.findPathConditions(startPlaces, place00, place03, pathMap);
-        assertEquals(3, pathMap.get(place03).size());
+        assertEquals(2, pathMap.get(place03).size());
 
         Set<String> condition01 = pathMap.get(place03).get(0).getConditions();
         Iterator it = condition01.iterator();
@@ -112,13 +104,6 @@ public class FindingPath04Test {
         Set<String> condition02 = pathMap.get(place03).get(1).getConditions();
         it = condition02.iterator();
         assertEquals(2, condition02.size());
-        assertEquals("a 2 + a 1 + + 10 <", it.next());
-        assertEquals("a 2 >", it.next());
-
-
-        Set<String> condition03 = pathMap.get(place03).get(2).getConditions();
-        it = condition03.iterator();
-        assertEquals(2, condition03.size());
         assertEquals("a 2 + a 1 + + 10 <", it.next());
         assertEquals("a 2 >", it.next());
 

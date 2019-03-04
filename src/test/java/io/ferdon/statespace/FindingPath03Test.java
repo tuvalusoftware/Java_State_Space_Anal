@@ -93,8 +93,9 @@ public class FindingPath03Test {
         VarMapping vars06 = place06.getVarMapping();
         assertEquals(1, vars06.size());
         assertEquals(3, vars06.getValueList("x").size());
-        assertEquals("a b +", vars06.getValueList("x").get(0));
-        assertEquals("c d -", vars06.getValueList("x").get(1));
+        assertEquals("c d -", vars06.getValueList("x").get(0));
+        assertEquals("a b +", vars06.getValueList("x").get(1));
+
         assertEquals("e f *", vars06.getValueList("x").get(2));
     }
 
@@ -103,8 +104,9 @@ public class FindingPath03Test {
         VarMapping vars07 = place07.getVarMapping();
         assertEquals(1, vars07.size());
         assertEquals(3, vars07.getValueList("x").size());
-        assertEquals("a b +", vars07.getValueList("x").get(0));
-        assertEquals("c d -", vars07.getValueList("x").get(1));
+        assertEquals("c d -", vars07.getValueList("x").get(0));
+        assertEquals("a b +", vars07.getValueList("x").get(1));
+
         assertEquals("e f *", vars07.getValueList("x").get(2));
     }
 

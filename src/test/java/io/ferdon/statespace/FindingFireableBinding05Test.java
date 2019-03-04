@@ -44,15 +44,9 @@ public class FindingFireableBinding05Test {
         Map<String, String> res;
 
         res = bindings.get(0).assignValueToVariables();
-        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
-        assertTrue(interpreter.interpretFromString("a 1 + 0 >", res).getBoolean());
-
-        res = bindings.get(1).assignValueToVariables();
-        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
-        assertTrue(interpreter.interpretFromString("a 1 + a 2 + + 0 >", res).getBoolean());
-
-        res = bindings.get(2).assignValueToVariables();
-        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
-        assertTrue(interpreter.interpretFromString("a 1 + a 2 + + 0 >", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a b + 0 >", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("d 1 + 0 >", res).getBoolean());
+        System.out.println(interpreter.interpretFromString("a b + d 1 + - 0 >", res).getReal());
+        assertTrue(interpreter.interpretFromString("a b + d 1 + - 0 >", res).getBoolean());
     }
 }

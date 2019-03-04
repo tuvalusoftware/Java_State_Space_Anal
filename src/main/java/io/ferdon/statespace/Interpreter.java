@@ -887,7 +887,7 @@ class Interpreter implements Serializable {
         OperationType opType = getOperationType(token);
 
         if (arg1 instanceof VariableExpression || arg2 instanceof VariableExpression) {
-            if (!(opType == OperationType.MUL)) {  /* keep operands as we only need to find coefficients */
+            if (opType != OperationType.MUL) {  /* keep operands as we only need to find coefficients */
 
                 valueStack.push(arg2);
 
