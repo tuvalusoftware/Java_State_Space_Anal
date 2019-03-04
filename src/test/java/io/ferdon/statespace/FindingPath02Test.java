@@ -29,47 +29,49 @@ public class FindingPath02Test {
         place04 = net.getPlace(4);
 
         pathMap = new HashMap<>();
-        net.findPathConditions(place00, place04, pathMap);
+        Set<Place> startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00);
+        net.findPathConditions(startPlaces, place00, place04, pathMap);
     }
 
     @Test
     public void testVarMappingPlace0() {
-        Map<String, List<String>> vars00 = place00.getVarMapping();
+        VarMapping vars00 = place00.getVarMapping();
         assertEquals(1, vars00.size());
-        assertEquals(1, vars00.get("a").size());
-        assertEquals("a", vars00.get("a").get(0));
+        assertEquals(1, vars00.getValueList("a").size());
+        assertEquals("a", vars00.getValueList("a").get(0));
     }
 
     @Test
     public void testVarMappingPlace1() {
-        Map<String, List<String>> vars01 = place01.getVarMapping();
+        VarMapping vars01 = place01.getVarMapping();
         assertEquals(1, vars01.size());
-        assertEquals(1, vars01.get("b").size());
-        assertEquals("a 1 +", vars01.get("b").get(0));
+        assertEquals(1, vars01.getValueList("b").size());
+        assertEquals("a 1 +", vars01.getValueList("b").get(0));
     }
 
     @Test
     public void testVarMappingPlace2() {
-        Map<String, List<String>> vars02 = place02.getVarMapping();
+        VarMapping vars02 = place02.getVarMapping();
         assertEquals(1, vars02.size());
-        assertEquals(1, vars02.get("c").size());
-        assertEquals("a 1 + 1 +", vars02.get("c").get(0));
+        assertEquals(1, vars02.getValueList("c").size());
+        assertEquals("a 1 + 1 +", vars02.getValueList("c").get(0));
     }
 
     @Test
     public void testVarMappingPlace3() {
-        Map<String, List<String>> vars03 = place03.getVarMapping();
+        VarMapping vars03 = place03.getVarMapping();
         assertEquals(1, vars03.size());
-        assertEquals(1, vars03.get("d").size());
-        assertEquals("a 1 + 1 + 1 +", vars03.get("d").get(0));
+        assertEquals(1, vars03.getValueList("d").size());
+        assertEquals("a 1 + 1 + 1 +", vars03.getValueList("d").get(0));
     }
 
     @Test
     public void testVarMappingPlace4() {
-        Map<String, List<String>> vars04 = place04.getVarMapping();
+        VarMapping vars04 = place04.getVarMapping();
         assertEquals(1, vars04.size());
-        assertEquals(1, vars04.get("d").size());
-        assertEquals("a 1 + 1 + 1 +", vars04.get("d").get(0));
+        assertEquals(1, vars04.getValueList("d").size());
+        assertEquals("a 1 + 1 + 1 +", vars04.getValueList("d").get(0));
     }
 
     @Test

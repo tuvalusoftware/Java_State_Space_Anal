@@ -8,7 +8,6 @@ class Path {
 
     private List<Node> path = new ArrayList<>();;
     private Set<String> conditions = new HashSet<>();
-    private Set<Place> dependentPlaces = new HashSet<>();
 
     Path() { }
 
@@ -20,12 +19,6 @@ class Path {
     List<Node> getNodePath() {
         return path;
     }
-
-    Set<Place> getDependentPlaces() {
-        return dependentPlaces;
-    }
-
-    void addDependentPlace(Place place) { dependentPlaces.add(place); }
 
     void reversePath() {
         path = Lists.reverse(path);
@@ -54,44 +47,33 @@ class Path {
 
     void addPureCondition(Transition inTran) {
         if (inTran.getGuard().isEmpty()) return;
-        if (!conditions.contains(inTran.getGuard())) conditions.add(inTran.getGuard());
+        conditions.add(inTran.getGuard());
     }
 
-    void addUpdatedCondition(Transition prevTran, Place currPlace, Transition nextTran) {
+    void addUpdatedCondition(VarMapping currVarMapping, String guard) {
 
-        String guard = nextTran.getGuard();
         if (guard.isEmpty()) return;
 
-        String oldExp = prevTran.getExpression(currPlace);
-        String[] fromVars = nextTran.getVars(currPlace);
-
-        Map<String, List<String>> vars = prevTran.combineVars(null, null);
-        List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(vars);
-        Map<String, List<String>> currMapping = new HashMap<>();
-
-        for (Map<String, String> mapping : possibleMapping) {
-            String replacedExp = Utils.replaceVar(mapping, oldExp);
-            String[] toVars = Utils.parseExpressionToStringArray(replacedExp);
-
-            for (int i = 0; i < fromVars.length; i++) {
-                if (!currMapping.containsKey(fromVars[i])) currMapping.put(fromVars[i], new ArrayList<>());
-                currMapping.get(fromVars[i]).add(toVars[i]);
-            }
-        }
-
-        vars = nextTran.combineVars(currPlace, currMapping);
-        possibleMapping = Utils.generateAllPossibleVarMapping(vars);
+        List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(currVarMapping);
         for (Map<String, String> mapping: possibleMapping) {
             String newGuard = Utils.replaceVar(mapping, guard);
-            if (!conditions.contains(newGuard)) conditions.add(newGuard);
+            conditions.add(newGuard);
         }
     }
 
     void combinePath(List<Path> listPath) {
         for(Path otherPath: listPath) {
             conditions.addAll(otherPath.getConditions());
-            dependentPlaces.addAll(otherPath.getDependentPlaces());
         }
+    }
+
+    VarMapping getVarMappingOnPath(Transition nextTransition) {
+        if (path.size() < 2) return ((Place) path.get(0)).getVarMapping();
+
+        List<Transition> fromTransitions = new ArrayList<>();
+        fromTransitions.add(getEndTransition());
+
+        return new VarMapping(fromTransitions, getEndPlace(), nextTransition);
     }
 
     double[][] getCoefficients(Interpreter interpreter, Map<String, Integer> varOrders) {

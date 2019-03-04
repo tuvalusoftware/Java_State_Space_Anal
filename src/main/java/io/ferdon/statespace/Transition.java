@@ -13,10 +13,7 @@ package io.ferdon.statespace;
 
 import org.javatuples.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
 
@@ -125,25 +122,30 @@ public class Transition extends Node {
         return result;
     }
 
-    Map<String, List<String>> combineVars(Place injectedPlace,
-                                          Map<String, List<String>> injectedMapping) {
+//    void addVarsMapping(Map<String, List<String>> vars, Map<String, List<String>> result) {
+//        for(String varName: vars.keySet()) {
+//            if (!result.containsKey(varName)) result.put(varName, new ArrayList<>());
+//            result.get(varName).addAll(vars.get(varName));
+//        }
+//    }
+//
+//    Map<String, List<String>> combineVarsMapping(List<Place> fromPlace) {
+//
+//        Set<Place> inPlaceSet = new HashSet<>(getInPlaces());
+//        Map<String, List<String>> result = new HashMap<>();
+//
+//        for(Place place: fromPlace) {
+//            if (!inPlaceSet.contains(place)) continue;
+//            Map<String, List<String>> currMapping = place.getVarMapping();
+//            addVarsMapping(currMapping, result);
+//        }
+//    }
 
-        Map<String, List<String>> result = new HashMap<>();
+    VarMapping combineVars() {
+
+        VarMapping result = new VarMapping();
         for (Place previousPlace : getInPlaces()) {
-
-            Map<String, List<String>> currentMapping;
-            if (injectedPlace == null || injectedPlace.getID() != previousPlace.getID()) {
-                currentMapping = previousPlace.getVarMapping();
-            } else {
-                currentMapping = injectedMapping;
-            }
-
-            for(String varName : currentMapping.keySet()) {
-
-                if (!result.containsKey(varName)) result.put(varName, new ArrayList<>());
-                result.get(varName).addAll(currentMapping.get(varName));
-            }
-
+            result.addVarsMapping(previousPlace.getVarMapping());
         }
 
         return result;

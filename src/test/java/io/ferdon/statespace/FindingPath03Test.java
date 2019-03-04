@@ -14,6 +14,7 @@ public class FindingPath03Test {
     private Petrinet net;
     private Place place00, place01, place02, place03, place04, place05, place06, place07;
     private Map<Place, List<Path>> pathMap;
+    private Set<Place> startPlaces;
 
     @Before
     public void setUp() {
@@ -31,81 +32,88 @@ public class FindingPath03Test {
         place06 = net.getPlace(6);
         place07 = net.getPlace(7);
 
+
+        startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00);
+
+
         pathMap = new HashMap<>();
     }
 
     @Test
     public void testVarMappingPlace0() {
-        Map<String, List<String>> vars00 = place00.getVarMapping();
+        VarMapping vars00 = place00.getVarMapping();
         assertEquals(1, vars00.size());
-        assertEquals(1, vars00.get("a").size());
-        assertEquals("a", vars00.get("a").get(0));
+        assertEquals(1, vars00.getValueList("a").size());
+        assertEquals("a", vars00.getValueList("a").get(0));
     }
 
     @Test
     public void testVarMappingPlace1() {
-        Map<String, List<String>> vars01 = place01.getVarMapping();
+        VarMapping vars01 = place01.getVarMapping();
         assertEquals(1, vars01.size());
-        assertEquals(1, vars01.get("b").size());
-        assertEquals("b", vars01.get("b").get(0));
+        assertEquals(1, vars01.getValueList("b").size());
+        assertEquals("b", vars01.getValueList("b").get(0));
     }
 
     @Test
     public void testVarMappingPlace2() {
-        Map<String, List<String>> vars02 = place02.getVarMapping();
+        VarMapping vars02 = place02.getVarMapping();
         assertEquals(1, vars02.size());
-        assertEquals(1, vars02.get("c").size());
-        assertEquals("c", vars02.get("c").get(0));
+        assertEquals(1, vars02.getValueList("c").size());
+        assertEquals("c", vars02.getValueList("c").get(0));
     }
 
     @Test
     public void testVarMappingPlace3() {
-        Map<String, List<String>> vars03 = place03.getVarMapping();
+        VarMapping vars03 = place03.getVarMapping();
         assertEquals(1, vars03.size());
-        assertEquals(1, vars03.get("d").size());
-        assertEquals("d", vars03.get("d").get(0));
+        assertEquals(1, vars03.getValueList("d").size());
+        assertEquals("d", vars03.getValueList("d").get(0));
     }
 
     @Test
     public void testVarMappingPlace4() {
-        Map<String, List<String>> vars04 = place04.getVarMapping();
+        VarMapping vars04 = place04.getVarMapping();
         assertEquals(1, vars04.size());
-        assertEquals(1, vars04.get("e").size());
-        assertEquals("e", vars04.get("e").get(0));
+        assertEquals(1, vars04.getValueList("e").size());
+        assertEquals("e", vars04.getValueList("e").get(0));
     }
 
     @Test
     public void testVarMappingPlace5() {
-        Map<String, List<String>> vars05 = place05.getVarMapping();
+        VarMapping vars05 = place05.getVarMapping();
         assertEquals(1, vars05.size());
-        assertEquals(1, vars05.get("f").size());
-        assertEquals("f", vars05.get("f").get(0));
+        assertEquals(1, vars05.getValueList("f").size());
+        assertEquals("f", vars05.getValueList("f").get(0));
     }
 
     @Test
     public void testVarMappingPlace6() {
-        Map<String, List<String>> vars06 = place06.getVarMapping();
+        VarMapping vars06 = place06.getVarMapping();
         assertEquals(1, vars06.size());
-        assertEquals(3, vars06.get("x").size());
-        assertEquals("a b +", vars06.get("x").get(0));
-        assertEquals("c d -", vars06.get("x").get(1));
-        assertEquals("e f *", vars06.get("x").get(2));
+        assertEquals(3, vars06.getValueList("x").size());
+        assertEquals("a b +", vars06.getValueList("x").get(0));
+        assertEquals("c d -", vars06.getValueList("x").get(1));
+        assertEquals("e f *", vars06.getValueList("x").get(2));
     }
 
     @Test
     public void testVarMappingPlace7() {
-        Map<String, List<String>> vars07 = place07.getVarMapping();
+        VarMapping vars07 = place07.getVarMapping();
         assertEquals(1, vars07.size());
-        assertEquals(3, vars07.get("x").size());
-        assertEquals("a b +", vars07.get("x").get(0));
-        assertEquals("c d -", vars07.get("x").get(1));
-        assertEquals("e f *", vars07.get("x").get(2));
+        assertEquals(3, vars07.getValueList("x").size());
+        assertEquals("a b +", vars07.getValueList("x").get(0));
+        assertEquals("c d -", vars07.getValueList("x").get(1));
+        assertEquals("e f *", vars07.getValueList("x").get(2));
     }
 
     @Test
     public void testPath01() {
 
-        net.findPathConditions(place02, place07, pathMap);
+        startPlaces.clear();
+        startPlaces.add(place02);
+        net.findPathConditions(startPlaces, place02, place07, pathMap);
 
         assertEquals(1, pathMap.get(place07).size());
 
@@ -121,20 +129,23 @@ public class FindingPath03Test {
     @Test
     public void testCondition01() {
 
-        net.findPathConditions(place02, place07, pathMap);
+        startPlaces.clear();
+        startPlaces.add(place02);
+        net.findPathConditions(startPlaces, place02, place07, pathMap);
         Set<String> condition = pathMap.get(place07).get(0).getConditions();
-        assertEquals(3, condition.size());
+        assertEquals(2, condition.size());
 
         Iterator it = condition.iterator();
-        assertEquals("c d + 0 >", it.next());
         assertEquals("c d - 0 >", it.next());
         assertEquals("c d + 0 >", it.next());
+
     }
 
     @Test
     public void testPath02() {
 
-        net.findPathConditions(place00, place06, pathMap);
+
+        net.findPathConditions(startPlaces, place00, place06, pathMap);
 
         assertEquals(1, pathMap.get(place06).size());
         List<Node> foundPath01 = pathMap.get(place06).get(0).getNodePath();
@@ -147,7 +158,7 @@ public class FindingPath03Test {
 
     @Test
     public void testCondition02() {
-        net.findPathConditions(place00, place06, pathMap);
+        net.findPathConditions(startPlaces, place00, place06, pathMap);
         Set<String> condition = pathMap.get(place06).get(0).getConditions();
 
         assertEquals(0, condition.size());

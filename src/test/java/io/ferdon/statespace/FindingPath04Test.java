@@ -14,6 +14,7 @@ public class FindingPath04Test {
     private Petrinet net;
     private Place place00, place01, place02, place03;
     private Map<Place, List<Path>> pathMap;
+    private Set<Place> startPlaces;
 
     @Before
     public void setUp() {
@@ -27,45 +28,48 @@ public class FindingPath04Test {
         place02 = net.getPlace(2);
         place03 = net.getPlace(3);
 
+        startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00);
+
         pathMap = new HashMap<>();
     }
 
     @Test
     public void testVarMappingPlace0() {
-        Map<String, List<String>> vars00 = place00.getVarMapping();
+        VarMapping vars00 = place00.getVarMapping();
         assertEquals(1, vars00.size());
-        assertEquals(1, vars00.get("a").size());
-        assertEquals("a", vars00.get("a").get(0));
+        assertEquals(1, vars00.getValueList("a").size());
+        assertEquals("a", vars00.getValueList("a").get(0));
     }
 
     @Test
     public void testVarMappingPlace1() {
-        Map<String, List<String>> vars01 = place01.getVarMapping();
+        VarMapping vars01 = place01.getVarMapping();
         assertEquals(1, vars01.size());
-        assertEquals(1, vars01.get("b").size());
-        assertEquals("a 1 +", vars01.get("b").get(0));
+        assertEquals(1, vars01.getValueList("b").size());
+        assertEquals("a 1 +", vars01.getValueList("b").get(0));
     }
 
     @Test
     public void testVarMappingPlace2() {
-        Map<String, List<String>> vars02 = place02.getVarMapping();
+        VarMapping vars02 = place02.getVarMapping();
         assertEquals(1, vars02.size());
-        assertEquals(1, vars02.get("c").size());
-        assertEquals("a 2 +", vars02.get("c").get(0));
+        assertEquals(1, vars02.getValueList("c").size());
+        assertEquals("a 2 +", vars02.getValueList("c").get(0));
     }
 
     @Test
     public void testVarMappingPlace3() {
-        Map<String, List<String>> vars03 = place03.getVarMapping();
+        VarMapping vars03 = place03.getVarMapping();
         assertEquals(2, vars03.size());
-        assertEquals("a 1 +", vars03.get("b").get(0));
-        assertEquals("a 2 +", vars03.get("c").get(0));
+        assertEquals("a 1 +", vars03.getValueList("b").get(0));
+        assertEquals("a 2 +", vars03.getValueList("c").get(0));
     }
 
     @Test
     public void testFindPath() {
 
-        net.findPathConditions(place00, place03, pathMap);
+        net.findPathConditions(startPlaces, place00, place03, pathMap);
         assertEquals(3, pathMap.get(place03).size());
 
         List<Node> path01 = pathMap.get(place03).get(0).getNodePath();
@@ -96,7 +100,7 @@ public class FindingPath04Test {
     @Test
     public void testCondition() {
 
-        net.findPathConditions(place00, place03, pathMap);
+        net.findPathConditions(startPlaces, place00, place03, pathMap);
         assertEquals(3, pathMap.get(place03).size());
 
         Set<String> condition01 = pathMap.get(place03).get(0).getConditions();

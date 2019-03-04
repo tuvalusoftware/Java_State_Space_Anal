@@ -3,8 +3,7 @@ package io.ferdon.statespace;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
 import static junit.framework.TestCase.assertTrue;
@@ -33,7 +32,10 @@ public class FindingFireableBinding01Test {
 
     @Test
     public void testFindFireableToken() {
-        List<Binding> bindings = net.getFireableToken(place00, place02);
+        Set<Place> startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00);
+        List<Binding> bindings = net.getFireableToken(startPlaces, place00, place02);
+
         assertEquals(1, bindings.size());
 
         Map<String, String> res = bindings.get(0).assignValueToVariables();

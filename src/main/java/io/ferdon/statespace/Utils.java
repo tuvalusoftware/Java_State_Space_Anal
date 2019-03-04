@@ -189,13 +189,13 @@ final class Utils {
         return expression.replace("]", "").replace("[", "").split(",");
     }
 
-    static List<Map<String, String>> generateAllPossibleVarMapping(Map<String, List<String>> combinedMapping) {
+    static List<Map<String, String>> generateAllPossibleVarMapping(VarMapping combinedMapping) {
 
         List<String> varOrder = new ArrayList<>();
         List<List<String>> allVars = new ArrayList<>();
 
-        for (String var : combinedMapping.keySet()) {
-            allVars.add(combinedMapping.get(var));
+        for (String var : combinedMapping.getVarSet()) {
+            allVars.add(combinedMapping.getValueList(var));
             varOrder.add(var);
         }
         List<List<String>> possibleMapping = Lists.cartesianProduct(allVars);
@@ -258,8 +258,8 @@ final class Utils {
     static List<Path> generateAllPath(List<Place> inputPlaces,
                                       Map<Place, List<Path>> pathMap,
                                       Transition inTran,
-                                      Place fromPlace,
-                                      Place toPlace) {
+                                      Set<Place> dependentPlaces,
+                                      Place fromPlace, Place toPlace) {
 
         List<List<Path>> paths = new ArrayList<>();
         for(Place inputPlace: inputPlaces) {
@@ -271,22 +271,29 @@ final class Utils {
         List<Path> result = new ArrayList<>();
 
         for(List<Path> listPath: combinedPaths) {
-            for(Path mainPath: listPath) {
 
-//                if (mainPath.getStartPlace().getID() != fromPlace.getID()) continue;
-
-                Path path = new Path(mainPath);
-
-                if (path.getNodePath().size() < 2) {
-                    path.addPureCondition(inTran);
-                } else {
-                    path.addUpdatedCondition(path.getEndTransition(), path.getEndPlace(), inTran);
-                }
-                path.addPathNode(inTran);
-                path.addPathNode(toPlace);
-                path.combinePath(listPath);
-                result.add(path);
+            Path mainPath = null;
+            for(Path path: listPath) {
+                if (path.getStartPlace().getID() == fromPlace.getID()) mainPath = path;
             }
+            if (mainPath == null) {
+                for(Path path: listPath) {
+                    if (dependentPlaces.contains(path.getStartPlace())) mainPath = path;
+                }
+            }
+
+            VarMapping currVarMapping = new VarMapping();
+            for(Path path: listPath) {
+                VarMapping pathVarMapping = path.getVarMappingOnPath(inTran);
+                currVarMapping.addVarsMapping(pathVarMapping);
+            }
+
+            Path path = new Path(mainPath);
+            path.addUpdatedCondition(currVarMapping, inTran.getGuard());
+            path.addPathNode(inTran);
+            path.addPathNode(toPlace);
+            path.combinePath(listPath);
+            result.add(path);
         }
 
         return result;

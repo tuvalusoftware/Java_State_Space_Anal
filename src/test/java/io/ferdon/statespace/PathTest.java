@@ -15,6 +15,7 @@ public class PathTest {
     private Petrinet net;
     private Place place00, place01, place02, place03, place04, place05, place06, place07;
     private Transition transition00;
+    private Set<Place> startPlaces;
 
     @Before
     public void setUp() {
@@ -32,12 +33,15 @@ public class PathTest {
         place07 = net.getPlace(7);
 
         transition00 = net.getTransition(0);
+        startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00, place05);
     }
 
     @Test
     public void testGetCoeffcients() {
         Map<Place, List<Path>> pathMap = new HashMap<>();
-        net.findPathConditions(place00, place07, pathMap);
+        net.findPathConditions(startPlaces, place00, place07, pathMap);
+
         assertEquals(1, pathMap.get(place07).size());
 
         Interpreter interpreter = new Interpreter();
@@ -45,20 +49,7 @@ public class PathTest {
         double[][] coeffs = pathMap.get(place07).get(0).getCoefficients(interpreter, varOrders);
 
         assertEquals(Arrays.toString(new double[] {1, 1, 0, 0, 0}), Arrays.toString(coeffs[0]));
-        assertEquals(Arrays.toString(new double[] {2, 0, 1, 0, 0}), Arrays.toString(coeffs[1]));
-        assertEquals(Arrays.toString(new double[] {1, 1, 1, 1, 0}), Arrays.toString(coeffs[2]));
-        assertEquals(Arrays.toString(new double[] {1, 1, 0, 0, 0}), Arrays.toString(coeffs[3]));
-    }
-
-    @Test
-    public void testDependentPlaces() {
-        Map<Place, List<Path>> pathMap = new HashMap<>();
-        net.findPathConditions(place00, place07, pathMap);
-
-        Set<Place> places = pathMap.get(place07).get(0).getDependentPlaces();
-        assertEquals(3, places.size());
-        assertTrue(places.contains(place00));
-        assertTrue(places.contains(place01));
-        assertTrue(places.contains(place05));
+        assertEquals(Arrays.toString(new double[] {1, 1, 1, 1, 0}), Arrays.toString(coeffs[1]));
+        assertEquals(Arrays.toString(new double[] {2, 0, 0, 1, 0}), Arrays.toString(coeffs[2]));
     }
 }

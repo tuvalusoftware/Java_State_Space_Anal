@@ -207,7 +207,7 @@ public class Petrinet implements Serializable {
         if (currentPlace.isEmptyInput()) {
             Transition outTran = currentPlace.getOutTransition().get(0);
             String[] varList = outTran.getVars(currentPlace);
-            currentPlace.addSingleMapping(varList, varList);
+            currentPlace.getVarMapping().addSingleMapping(varList, varList);
             return;
         }
 
@@ -218,32 +218,24 @@ public class Petrinet implements Serializable {
                 if (previousPlace.getID() == currentPlace.getID()) { /* special case: loop */
                     String[] toVars = Utils.parseExpressionToStringArray(inTran.getExpression(previousPlace));
                     String[] fromVars = inTran.getVars(currentPlace);
-                    previousPlace.addSingleMapping(fromVars, toVars);
+                    previousPlace.getVarMapping().addSingleMapping(fromVars, toVars);
                 }
 
                 if (!previousPlace.isCreateVarMapping()) generateVarMapping(previousPlace);
             }
-
-            /* combine values of all variables in previous places */
-            Map<String, List<String>> combinedMapping = inTran.combineVars(null, null);
-
-            /* end place then var mapping equals to all combined in place's var mappings */
-            if (currentPlace.isEmptyOutput()) {
-                currentPlace.setVarMapping(combinedMapping);
-                continue;
-            }
-
-            List<Map<String, String>> possibleMappings = Utils.generateAllPossibleVarMapping(combinedMapping);
-            Transition outTran = currentPlace.getOutTransition().get(0);
-            String oldExp = inTran.getExpression(currentPlace);
-            String[] fromVars = outTran.getVars(currentPlace);
-
-            for (Map<String, String> currentMapping : possibleMappings) {
-                String replacedExp = Utils.replaceVar(currentMapping, oldExp);
-                String[] toVars = Utils.parseExpressionToStringArray(replacedExp);
-                currentPlace.addSingleMapping(fromVars, toVars);
-            }
         }
+
+        if (currentPlace.isEmptyOutput()) {
+            VarMapping varMapping = new VarMapping(currentPlace.getInTransition(), currentPlace, null);
+            currentPlace.getVarMapping().addVarsMapping(varMapping);
+            return;
+        }
+
+        for(Transition toTransition: currentPlace.getOutTransition()) {
+            VarMapping varMapping = new VarMapping(currentPlace.getInTransition(), currentPlace, toTransition);
+            currentPlace.getVarMapping().addVarsMapping(varMapping);
+        }
+
     }
 
     /**
@@ -251,18 +243,17 @@ public class Petrinet implements Serializable {
      * The path contains:
      *      1. List of Places and Transitions in order.
      *      2. List of Conditions from any place of startPlaces to current place
-     * @param fromPlace set of input Places
+     * @param dependentPlaces set of input Places
      * @param toPlace the end place
      * @param pathMap the map from place ~> list of path start from that place to the end place
      */
-     void findPathConditions(Place fromPlace, Place toPlace, Map<Place, List<Path>> pathMap) {
+     void findPathConditions(Set<Place> dependentPlaces, Place fromPlace, Place toPlace, Map<Place, List<Path>> pathMap) {
 
          pathMap.put(toPlace, new ArrayList<>());
 
         if (toPlace.isEmptyInput()) {
             Path path = new Path();
             path.addPathNode(toPlace);
-            path.addDependentPlace(toPlace);
             pathMap.get(toPlace).add(path);
             return;
         }
@@ -270,45 +261,41 @@ public class Petrinet implements Serializable {
         for (Transition inTran : toPlace.getInTransition()) {  /* each transition is a independent path */
 
             for (Place previousPlace : inTran.getInPlaces()) {  /* each place is a dependent path */
-                findPathConditions(fromPlace, previousPlace, pathMap);
+                findPathConditions(dependentPlaces, fromPlace, previousPlace, pathMap);
             }
 
-            /*  check if in those input places of [inTran], does any contain the [fromPlace]?
+            /*  check if in those input places of [inTran], does any contain the [dependentPlaces]?
                 If not, we can safely early return here.
-                There is not path lead to [fromPlace] from [inTran] */
+                There is not path lead to [dependentPlaces] from [inTran] */
 
-//            boolean isContainStartPlace = false;
-//            for(Place previousPlace: inTran.getInPlaces()) {
-//                for(Path previousPath: pathMap.get(previousPlace)) {
-//                    if (previousPath.getStartPlace() == fromPlace) {
-//                        isContainStartPlace = true;
-//                        break;
-//                    }
-//                }
-//                if (isContainStartPlace) break;
-//            }
-//
-//            if (!isContainStartPlace) continue; /* this transition doesn't lead to [fromPlace] */
+            boolean isContainStartPlace = false;
+            for(Place previousPlace: inTran.getInPlaces()) {
+                for(Path previousPath: pathMap.get(previousPlace)) {
+                    if (dependentPlaces.contains(previousPath.getStartPlace())) {
+                        isContainStartPlace = true;
+                        break;
+                    }
+                }
+                if (isContainStartPlace) break;
+            }
+
+            if (!isContainStartPlace) continue; /* this transition doesn't lead to [dependentPlaces] */
 
             List<Path> newPaths = Utils.generateAllPath(
                     inTran.getInPlaces(), pathMap,
-                    inTran, fromPlace, toPlace
+                    inTran, dependentPlaces, fromPlace, toPlace
             );
             pathMap.get(toPlace).addAll(newPaths);
         }
     }
 
-    List<Binding> getFireableToken(Place startPlace, Place endPlace) {
+    List<Binding> getFireableToken(Set<Place> dependentPlaces, Place fromPlace, Place endPlace) {
 
         Map<Place, List<Path>> pathMap = new HashMap<>();
-        findPathConditions(startPlace, endPlace, pathMap);
-
-        for(List<Path> paths: pathMap.values()) {   /* reverse the path for the right order */
-            for(Path path: paths) path.reversePath();
-        }
+        findPathConditions(dependentPlaces, fromPlace, endPlace, pathMap);
 
         List<Binding> result = new ArrayList<>();
-        for(Path path: pathMap.get(startPlace)) {
+        for(Path path: pathMap.get(endPlace)) {
 
             Map<String, Integer> varOrders = new HashMap<>();
             double[] point = Utils.solveLinearInequalities(
@@ -318,7 +305,7 @@ public class Petrinet implements Serializable {
 
             Map<String, String> varMappingResult = new HashMap<>();
             for(String var: varOrders.keySet()) {
-                varMappingResult.put(var, String.valueOf(point[varOrders.get(var)]));
+                varMappingResult.put(var, String.format("%.10f", point[varOrders.get(var)]));
             }
             result.add(new Binding(varMappingResult));
         }

@@ -4,8 +4,7 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
@@ -18,6 +17,7 @@ public class FindingFireableBinding04Test {
     private Place place00, place01, place02, place03, place04, place05, place06, place07;
     private Transition transition00;
     private Interpreter interpreter;
+    private Set<Place> startPlaces, startPlaces01;
 
     @Before
     public void setUp() {
@@ -36,15 +36,21 @@ public class FindingFireableBinding04Test {
 
         transition00 = net.getTransition(0);
         interpreter = new Interpreter();
+
+        startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00);
+
+        startPlaces01 = new HashSet<>();
+        Collections.addAll(startPlaces01, place01);
     }
 
     @Test
     public void FindingFireableToken01Test() {
 
-        List<Binding> bindings01 = net.getFireableToken(place00, place06);
+        List<Binding> bindings01 = net.getFireableToken(startPlaces, place00, place06);
         assertEquals(1, bindings01.size());
 
-        List<Binding> bindings02 = net.getFireableToken(place01, place06);
+        List<Binding> bindings02 = net.getFireableToken(startPlaces01, place01, place06);
         assertEquals(1, bindings02.size());
 
         Map<String, String> res;
@@ -61,19 +67,14 @@ public class FindingFireableBinding04Test {
     @Test
     public void FindingFireableToken02Test() {
 
-        List<Binding> bindings = net.getFireableToken(place00, place07);
+        List<Binding> bindings = net.getFireableToken(startPlaces, place00, place07);
         assertEquals(1, bindings.size());
 
         Map<String, String> res;
 
         res = bindings.get(0).assignValueToVariables();
         TestCase.assertTrue(interpreter.interpretFromString("a b + 0 >", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("c 3 + 0 >", res).getBoolean());
         TestCase.assertTrue(interpreter.interpretFromString("a b + a b - d + + 0 <", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("a b + c 1 + d + + 0 <", res).getBoolean());
         TestCase.assertTrue(interpreter.interpretFromString("a b + e d + + 0 <", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("c 1 - a b - d + + 0 <", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("c 1 - c 1 + d + + 0 <", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("c 1 - e d + 0 <", res).getBoolean());
     }
 }
