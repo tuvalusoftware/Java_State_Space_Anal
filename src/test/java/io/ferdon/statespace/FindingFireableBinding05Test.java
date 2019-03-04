@@ -20,7 +20,7 @@ public class FindingFireableBinding05Test {
 
     @Before
     public void setUp() {
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/multiplePath.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/multiplePath01.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
@@ -41,15 +41,15 @@ public class FindingFireableBinding05Test {
         Map<String, String> res;
 
         res = bindings.get(0).assignValueToVariables();
-//        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
-//        assertTrue(interpreter.interpretFromString("a 1 + 0 >", res).getBoolean());
-//
-//        res = bindings.get(1).assignValueToVariables();
-//        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
-//        assertTrue(interpreter.interpretFromString("a 1 + a 2 + + 0 >", res).getBoolean());
-//
-//        res = bindings.get(2).assignValueToVariables();
-//        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
-//        assertTrue(interpreter.interpretFromString("a 1 + a 2 + + 0 >", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a 1 + 0 >", res).getBoolean());
+
+        res = bindings.get(1).assignValueToVariables();
+        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a 1 + a 2 + + 0 >", res).getBoolean());
+
+        res = bindings.get(2).assignValueToVariables();
+        assertTrue(interpreter.interpretFromString("a 0 >", res).getBoolean());
+        assertTrue(interpreter.interpretFromString("a 1 + a 2 + + 0 >", res).getBoolean());
     }
 }

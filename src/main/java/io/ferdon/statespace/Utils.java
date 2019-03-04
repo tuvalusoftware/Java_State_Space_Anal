@@ -273,7 +273,7 @@ final class Utils {
         for(List<Path> listPath: combinedPaths) {
             for(Path mainPath: listPath) {
 
-                if (mainPath.getStartPlace().getID() != fromPlace.getID()) continue;
+//                if (mainPath.getStartPlace().getID() != fromPlace.getID()) continue;
 
                 Path path = new Path(mainPath);
 

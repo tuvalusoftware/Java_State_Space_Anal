@@ -277,18 +277,18 @@ public class Petrinet implements Serializable {
                 If not, we can safely early return here.
                 There is not path lead to [fromPlace] from [inTran] */
 
-            boolean isContainStartPlace = false;
-            for(Place previousPlace: inTran.getInPlaces()) {
-                for(Path previousPath: pathMap.get(previousPlace)) {
-                    if (previousPath.getStartPlace() == fromPlace) {
-                        isContainStartPlace = true;
-                        break;
-                    }
-                }
-                if (isContainStartPlace) break;
-            }
-
-            if (!isContainStartPlace) continue; /* this transition doesn't lead to [fromPlace] */
+//            boolean isContainStartPlace = false;
+//            for(Place previousPlace: inTran.getInPlaces()) {
+//                for(Path previousPath: pathMap.get(previousPlace)) {
+//                    if (previousPath.getStartPlace() == fromPlace) {
+//                        isContainStartPlace = true;
+//                        break;
+//                    }
+//                }
+//                if (isContainStartPlace) break;
+//            }
+//
+//            if (!isContainStartPlace) continue; /* this transition doesn't lead to [fromPlace] */
 
             List<Path> newPaths = Utils.generateAllPath(
                     inTran.getInPlaces(), pathMap,
