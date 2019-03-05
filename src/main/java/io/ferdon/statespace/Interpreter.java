@@ -476,75 +476,6 @@ class Interpreter implements Serializable {
         }
     }
 
-    class VariableExpression implements ArithmeticValue {
-
-        private RealExpression coefficient;
-        private String name;
-
-        VariableExpression(String name) {
-            this.name = name;
-            this.coefficient = new RealExpression(1.0);
-        }
-
-        VariableExpression(String name, double coefficient) {
-            this.name = name;
-            this.coefficient = new RealExpression(coefficient);
-        }
-
-        public int getInt() {
-            return coefficient.getInt();
-        }
-
-        public double getReal() {
-            return coefficient.getReal();
-        }
-
-        public boolean getBoolean() {
-            throw new UnsupportedOperationException("Method have not implemented yet");
-        }
-
-        public String getString() {
-            return name + " " + coefficient.getReal() + " *";
-        }
-
-        public String getVariableName() {
-            return name;
-        }
-
-        public RealExpression getCoefficient() {
-            return coefficient;
-        }
-
-        public List<Value> getList() {
-            throw new UnsupportedOperationException("Method have not implemented yet");
-        }
-
-        public ArithmeticValue add(ArithmeticValue x) {
-            throw new UnsupportedOperationException("Method have not implemented yet");
-        }
-
-        public ArithmeticValue sub(ArithmeticValue x) {
-            throw new UnsupportedOperationException("Method have not implemented yet");
-        }
-
-        public ArithmeticValue mul(ArithmeticValue x) {
-            return new VariableExpression(name, coefficient.getReal() * x.getReal());
-        }
-
-        public ArithmeticValue div(ArithmeticValue x) {
-            return new VariableExpression(name, coefficient.getReal() / x.getReal());
-        }
-
-        public ArithmeticValue mod(ArithmeticValue x) {
-            return new VariableExpression(name, coefficient.getReal() % x.getReal());
-        }
-
-        @Override
-        public String toString() {
-            return "VariableExpression: " + name + " = " + coefficient.getReal();
-        }
-    }
-
     /*
      * operator: operation name ~> operationType
      * variables: variable name ~> variable value
@@ -800,7 +731,7 @@ class Interpreter implements Serializable {
      * @param token String
      * @throws Exception token's grammar is wrong
      */
-    private void pushOperandToStack(String token, boolean requiredVarValue) throws IllegalArgumentException {
+    private void pushOperandToStack(String token) throws IllegalArgumentException {
 
         ValueType valueType = getValueType(token);
         if (valueType == null) throw new IllegalArgumentException("Syntax Error");
@@ -808,14 +739,8 @@ class Interpreter implements Serializable {
         switch (valueType) {
             case VARIABLE: {
                 String variableValue = variables.get(token);
-                if (!requiredVarValue) {
-                    VariableExpression arg = new VariableExpression(token);
-                    valueStack.push(arg);
-                    break;
-                }
-
                 if (variableValue == null) throw new IllegalArgumentException("Variable's values are not provided");
-                pushOperandToStack(variableValue, true);
+                pushOperandToStack(variableValue);
                 break;
             }
             case INTEGER: {
@@ -856,7 +781,7 @@ class Interpreter implements Serializable {
             if (isOperatorToken(token)) {
                 doOperation(token);
             } else {
-                pushOperandToStack(token, true);
+                pushOperandToStack(token);
             }
         }
 
