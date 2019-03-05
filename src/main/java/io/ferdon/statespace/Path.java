@@ -88,22 +88,30 @@ class Path {
         }
 
         int row = -1;
-        String CONSTANT_NAME = "@constant";
         double[][] result = new double[conditions.size()][];
 
         for (String condition : conditions) {
-            row += 1;
+
+            String oneSideCondition = condition.replaceAll("(<=|>=|<|>)", "-").trim();
+
+            Map<String, String> vars = new HashMap<>();
+            for(String var: varOrders.keySet()) vars.put(var, "0");
+
+            Double constant = interpreter.interpretFromString(oneSideCondition, vars).getReal();
             double[] coeff = new double[varOrders.size() + 1];
-            Map<String, Double> varCoeffs = interpreter.interpretCoefficient(condition, CONSTANT_NAME);
+            row += 1;
 
             for(String var: varOrders.keySet()) {
+                vars.put(var, "1");
+
                 int col = varOrders.get(var);
-                double coeff_item = varCoeffs.getOrDefault(var, 0.0);
-                coeff[col] = coeff_item;
+                Double coefficient = interpreter.interpretFromString(oneSideCondition, vars).getReal() - constant;
+                coeff[col] = coefficient;
+
+                vars.put(var, "0");
             }
 
-            coeff[varOrders.size()] = varCoeffs.get(CONSTANT_NAME);
-
+            coeff[varOrders.size()] = (constant == 0.0) ? 0.0 : -1 * constant;
             result[row] = coeff;
         }
 

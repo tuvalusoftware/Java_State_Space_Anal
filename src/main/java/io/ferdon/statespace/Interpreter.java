@@ -587,7 +587,7 @@ class Interpreter implements Serializable {
         operators.put("ifelse", OperationType.IFELSE);
     }
 
-    private boolean isOperatorToken(String token) {
+    public boolean isOperatorToken(String token) {
         return operators.containsKey(token);
     }
 
