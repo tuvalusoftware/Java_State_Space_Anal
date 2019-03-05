@@ -68,13 +68,6 @@ public class FindingFireableBinding04Test {
     public void FindingFireableToken02Test() {
 
         List<Binding> bindings = net.getFireableToken(startPlaces, place00, place07);
-        assertEquals(1, bindings.size());
-
-        Map<String, String> res;
-
-        res = bindings.get(0).assignValueToVariables();
-        TestCase.assertTrue(interpreter.interpretFromString("a b + 0 >", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("a b + a b - d + + 0 <", res).getBoolean());
-        TestCase.assertTrue(interpreter.interpretFromString("a b + e d + + 0 <", res).getBoolean());
+        assertEquals(0, bindings.size());
     }
 }

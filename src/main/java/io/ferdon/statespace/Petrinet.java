@@ -297,13 +297,15 @@ public class Petrinet implements Serializable {
         List<Binding> result = new ArrayList<>();
         for(Path path: pathMap.get(endPlace)) {
 
+            Map<String, String> varMappingResult = new HashMap<>();
             Map<String, Integer> varOrders = new HashMap<>();
+
             double[] point = Utils.solveLinearInequalities(
                     path.getCoefficients(interpreter, varOrders),
                     path.getConditions()
             );
 
-            Map<String, String> varMappingResult = new HashMap<>();
+            if (point == null) continue;
             for(String var: varOrders.keySet()) {
                 varMappingResult.put(var, String.format("%.10f", point[varOrders.get(var)]));
             }

@@ -37,7 +37,7 @@ public class FindingFireableBinding05Test {
     }
 
     @Test
-    public void testFindFireableToken() {
+    public void testFindFireableToken01() {
         List<Binding> bindings = net.getFireableToken(startPlaces, place00, place06);
         assertEquals(1, bindings.size());
 
@@ -46,7 +46,14 @@ public class FindingFireableBinding05Test {
         res = bindings.get(0).assignValueToVariables();
         assertTrue(interpreter.interpretFromString("a b + 0 >", res).getBoolean());
         assertTrue(interpreter.interpretFromString("d 1 + 0 >", res).getBoolean());
-        System.out.println(interpreter.interpretFromString("a b + d 1 + - 0 >", res).getReal());
         assertTrue(interpreter.interpretFromString("a b + d 1 + - 0 >", res).getBoolean());
+    }
+
+    @Test
+    public void testFindFireableToken02() {
+        startPlaces.clear();
+        Collections.addAll(startPlaces, place00, place03);
+        List<Binding> bindings = net.getFireableToken(startPlaces, place00, place06);
+        assertEquals(0, bindings.size());
     }
 }

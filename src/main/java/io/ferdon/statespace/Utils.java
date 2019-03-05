@@ -225,7 +225,7 @@ final class Utils {
         LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs],0);
 
         List<LinearConstraint> constraints = new ArrayList();
-        NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(false);
+        NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(true);
         Iterator it = conditions.iterator();
 
         for(double[] co: coeffs) {
@@ -250,9 +250,12 @@ final class Utils {
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
         SimplexSolver linearOptimizer = new SimplexSolver();
-        PointValuePair solution = linearOptimizer.optimize(new MaxIter(numCoeffs + 1), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
-
-        return solution.getPoint();
+        try {
+            PointValuePair solution = linearOptimizer.optimize(new MaxIter(numCoeffs + 1), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
+            return solution.getPoint();
+        } catch (NoFeasibleSolutionException e) {
+            return null;
+        }
     }
 
     static List<Path> generateAllPath(List<Place> inputPlaces,
