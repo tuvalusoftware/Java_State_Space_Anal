@@ -97,7 +97,7 @@ class Path {
             Map<String, String> vars = new HashMap<>();
             for(String var: varOrders.keySet()) vars.put(var, "0");
 
-            Double constant = interpreter.interpretFromString(oneSideCondition, vars).getReal();
+            double constant = interpreter.interpretFromString(oneSideCondition, vars).getReal();
             double[] coeff = new double[varOrders.size() + 1];
             row += 1;
 

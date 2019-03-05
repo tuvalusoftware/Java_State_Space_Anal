@@ -587,7 +587,7 @@ class Interpreter implements Serializable {
         operators.put("ifelse", OperationType.IFELSE);
     }
 
-    public boolean isOperatorToken(String token) {
+    private boolean isOperatorToken(String token) {
         return operators.containsKey(token);
     }
 
@@ -601,7 +601,7 @@ class Interpreter implements Serializable {
      * @param token String
      * @return ValueType (INTEGER, BOOLEAN, ...), null if wrong token grammar
      */
-    static public ValueType getValueType(String token) {
+    static ValueType getValueType(String token) {
 
         if (token.matches("^([+-]?[1-9]\\d*|0)$")) {
             return ValueType.INTEGER;
