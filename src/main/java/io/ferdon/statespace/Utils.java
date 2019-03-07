@@ -174,7 +174,7 @@ final class Utils {
         if (exp.isEmpty()) return exp;
 
         String[] tokens = exp.trim().split(" ");
-        for(int i = 0; i < tokens.length; i++) {
+        for (int i = 0; i < tokens.length; i++) {
 
             String token = tokens[i].trim();
             if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
@@ -201,10 +201,10 @@ final class Utils {
         List<List<String>> possibleMapping = Lists.cartesianProduct(allVars);
 
         List<Map<String, String>> result = new ArrayList<>();
-        for(List<String> mapping: possibleMapping) {
+        for (List<String> mapping : possibleMapping) {
 
             Map<String, String> varMap = new HashMap<>();
-            for(int index = 0; index < mapping.size(); index++) {
+            for (int index = 0; index < mapping.size(); index++) {
                 String varKey = varOrder.get(index);
                 String varValue = mapping.get(index);
                 varMap.put(varKey, varValue);
@@ -216,19 +216,21 @@ final class Utils {
         return result;
     }
 
-    static double[] solveLinearInequalities(double[][] coeffs, Set<String> conditions) {
+    static double[] solveLinearInequalities(double[][] coeffs, Set<String> conditions,
+                                            boolean getObjectiveValue, GoalType optimizedType,
+                                            double[] objectiveCoeffs) {
 
         if (coeffs.length == 0) return new double[1];
 
         int numCoeffs = coeffs[0].length - 1;
         double precision = 0.00001;
-        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs],0);
+        LinearObjectiveFunction f = new LinearObjectiveFunction(objectiveCoeffs, 0);
 
         List<LinearConstraint> constraints = new ArrayList();
         NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(true);
         Iterator it = conditions.iterator();
 
-        for(double[] co: coeffs) {
+        for (double[] co : coeffs) {
 
             double[] x = Arrays.copyOfRange(co, 0, co.length - 1);
             String c = (String) it.next();
@@ -251,8 +253,11 @@ final class Utils {
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
         SimplexSolver linearOptimizer = new SimplexSolver();
         try {
-            PointValuePair solution = linearOptimizer.optimize(new MaxIter(numCoeffs + 1), f, constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint);
-            return solution.getPoint();
+            PointValuePair solution = linearOptimizer.optimize(
+                    new MaxIter(numCoeffs + 1), f,
+                    constraintSet, optimizedType, nonNegativeConstraint
+            );
+            return (getObjectiveValue) ? new double[]{solution.getValue()} : solution.getPoint();
         } catch (NoFeasibleSolutionException e) {
             return null;
         }
@@ -265,7 +270,7 @@ final class Utils {
                                       Place fromPlace, Place toPlace) {
 
         List<List<Path>> paths = new ArrayList<>();
-        for(Place inputPlace: inputPlaces) {
+        for (Place inputPlace : inputPlaces) {
             paths.add(pathMap.get(inputPlace));
         }
 
@@ -273,20 +278,20 @@ final class Utils {
 
         List<Path> result = new ArrayList<>();
 
-        for(List<Path> listPath: combinedPaths) {
+        for (List<Path> listPath : combinedPaths) {
 
             Path mainPath = null;
-            for(Path path: listPath) {
+            for (Path path : listPath) {
                 if (path.getStartPlace().getID() == fromPlace.getID()) mainPath = path;
             }
             if (mainPath == null) {
-                for(Path path: listPath) {
+                for (Path path : listPath) {
                     if (dependentPlaces.contains(path.getStartPlace())) mainPath = path;
                 }
             }
 
             VarMapping currVarMapping = new VarMapping();
-            for(Path path: listPath) {
+            for (Path path : listPath) {
                 VarMapping pathVarMapping = path.getVarMappingOnPath(inTran);
                 currVarMapping.addVarsMapping(pathVarMapping);
             }
@@ -300,6 +305,26 @@ final class Utils {
         }
 
         return result;
+    }
+
+        static VarDomain getVarDomainFromConditions(double[][] coeffs, Set<String> conditions, int varOrder) {
+
+            double[] objectiveCoeffs = new double[coeffs[0].length - 1];
+            objectiveCoeffs[varOrder] = 1;
+
+            double[] maxima = Utils.solveLinearInequalities(
+                    coeffs, conditions, true, GoalType.MAXIMIZE,
+                    objectiveCoeffs
+            );
+
+            double[] minima = Utils.solveLinearInequalities(
+                    coeffs, conditions, true, GoalType.MINIMIZE,
+                    objectiveCoeffs
+            );
+
+            if (maxima == null || minima == null) return null;
+
+        return new VarDomain(new Pair<>(minima[0], maxima[0]));
     }
 
     public static void main(String[] args) {
