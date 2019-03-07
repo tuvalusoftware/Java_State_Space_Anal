@@ -1,3 +1,12 @@
+/*
+ * File name: VarMapping.java
+ * File Description:
+ *      Class VarMapping represent for the mapping from new variables to previous expression (old variables)
+ *
+ * Copyright (c) 2019 - Ferdon Vietnam Limited
+ * Author: Nguyen The Thong
+ */
+
 package io.ferdon.statespace;
 
 import com.google.common.collect.Lists;
