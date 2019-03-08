@@ -31,7 +31,7 @@ public class FindingPath02Test {
         pathMap = new HashMap<>();
         Set<Place> startPlaces = new HashSet<>();
         Collections.addAll(startPlaces, place00);
-        net.findPathConditions(startPlaces, place00, place04, pathMap);
+        net.findPathConditions(startPlaces, place00, place04, pathMap, new HashSet<>());
     }
 
     @Test

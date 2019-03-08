@@ -69,7 +69,7 @@ public class FindingPath04Test {
     @Test
     public void testFindPath() {
 
-        net.findPathConditions(startPlaces, place00, place03, pathMap);
+        net.findPathConditions(startPlaces, place00, place03, pathMap, new HashSet<>());
         assertEquals(2, pathMap.get(place03).size());
 
         List<Node> path01 = pathMap.get(place03).get(0).getNodePath();
@@ -92,7 +92,7 @@ public class FindingPath04Test {
     @Test
     public void testCondition() {
 
-        net.findPathConditions(startPlaces, place00, place03, pathMap);
+        net.findPathConditions(startPlaces, place00, place03, pathMap, new HashSet<>());
         assertEquals(2, pathMap.get(place03).size());
 
         Set<String> condition01 = pathMap.get(place03).get(0).getConditions();

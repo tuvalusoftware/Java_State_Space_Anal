@@ -39,7 +39,8 @@ public class Petrinet implements Serializable {
                     String[] markings,
                     String[] guards,
                     Object[][][] expressions,
-                    Object[][][] variables) {
+                    Object[][][] variables,
+                    Object[] ports) {
 
         this.numStates = 0;
         this.numTransitions = T;
@@ -248,7 +249,9 @@ public class Petrinet implements Serializable {
      * @param toPlace the end place
      * @param pathMap the map from place ~> list of path start from that place to the end place
      */
-     void findPathConditions(Set<Place> dependentPlaces, Place fromPlace, Place toPlace, Map<Place, List<Path>> pathMap) {
+     void findPathConditions(Set<Place> dependentPlaces,
+                             Place fromPlace, Place toPlace,
+                             Map<Place, List<Path>> pathMap, Set<Place> visited) {
 
          pathMap.put(toPlace, new ArrayList<>());
 
@@ -256,13 +259,16 @@ public class Petrinet implements Serializable {
             Path path = new Path();
             path.addPathNode(toPlace);
             pathMap.get(toPlace).add(path);
+            visited.add(toPlace);
             return;
         }
 
         for (Transition inTran : toPlace.getInTransition()) {  /* each transition is a independent path */
 
             for (Place previousPlace : inTran.getInPlaces()) {  /* each place is a dependent path */
-                findPathConditions(dependentPlaces, fromPlace, previousPlace, pathMap);
+                if (!visited.contains(previousPlace)) {
+                    findPathConditions(dependentPlaces, fromPlace, previousPlace, pathMap, visited);
+                }
             }
 
             /*  check if in those input places of [inTran], does any contain the [dependentPlaces]?
@@ -293,7 +299,7 @@ public class Petrinet implements Serializable {
     List<Binding> getFireableToken(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
 
         Map<Place, List<Path>> pathMap = new HashMap<>();
-        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap);
+        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
 
         List<Binding> result = new ArrayList<>();
         for(Path path: pathMap.get(toPlace)) {
@@ -302,7 +308,7 @@ public class Petrinet implements Serializable {
             Map<String, Integer> varOrders = new HashMap<>();
 
             double[][] coeffs = path.getCoefficients(interpreter, varOrders);
-            int numCoeffs = coeffs.length - 1;
+            int numCoeffs = coeffs[0].length - 1;
 
             double[] point = Utils.solveLinearInequalities(
                 coeffs, path.getConditions(), false, GoalType.MAXIMIZE,
@@ -322,7 +328,7 @@ public class Petrinet implements Serializable {
     Map<String, VarDomain> getVarsDomain(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
 
         Map<Place, List<Path>> pathMap = new HashMap<>();
-        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap);
+        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
 
         Map<String, VarDomain> result = new HashMap<>();
         for(Path path: pathMap.get(toPlace)) {

@@ -307,22 +307,22 @@ final class Utils {
         return result;
     }
 
-        static VarDomain getVarDomainFromConditions(double[][] coeffs, Set<String> conditions, int varOrder) {
+    static VarDomain getVarDomainFromConditions(double[][] coeffs, Set<String> conditions, int varOrder) {
 
-            double[] objectiveCoeffs = new double[coeffs[0].length - 1];
-            objectiveCoeffs[varOrder] = 1;
+        double[] objectiveCoeffs = new double[coeffs[0].length - 1];
+        objectiveCoeffs[varOrder] = 1;
 
-            double[] maxima = Utils.solveLinearInequalities(
-                    coeffs, conditions, true, GoalType.MAXIMIZE,
-                    objectiveCoeffs
-            );
+        double[] maxima = Utils.solveLinearInequalities(
+                coeffs, conditions, true, GoalType.MAXIMIZE,
+                objectiveCoeffs
+        );
 
-            double[] minima = Utils.solveLinearInequalities(
-                    coeffs, conditions, true, GoalType.MINIMIZE,
-                    objectiveCoeffs
-            );
+        double[] minima = Utils.solveLinearInequalities(
+                coeffs, conditions, true, GoalType.MINIMIZE,
+                objectiveCoeffs
+        );
 
-            if (maxima == null || minima == null) return null;
+        if (maxima == null || minima == null) return null;
 
         return new VarDomain(new Pair<>(minima[0], maxima[0]));
     }

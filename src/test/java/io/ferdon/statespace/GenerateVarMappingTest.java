@@ -125,7 +125,7 @@ public class GenerateVarMappingTest {
     @Test
     public void testFindingPath01() {
         Map<Place, List<Path>> pathMap = new HashMap<>();
-        net.findPathConditions(startPlaces, place00, place07, pathMap);
+        net.findPathConditions(startPlaces, place00, place07, pathMap, new HashSet<>());
         assertEquals(1, pathMap.get(place07).size());
 
         Set<String> condition01 = pathMap.get(place07).get(0).getConditions();

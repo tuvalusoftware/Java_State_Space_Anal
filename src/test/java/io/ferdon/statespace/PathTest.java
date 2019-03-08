@@ -40,7 +40,7 @@ public class PathTest {
     @Test
     public void testGetCoeffcients() {
         Map<Place, List<Path>> pathMap = new HashMap<>();
-        net.findPathConditions(startPlaces, place00, place07, pathMap);
+        net.findPathConditions(startPlaces, place00, place07, pathMap, new HashSet<>());
 
         assertEquals(1, pathMap.get(place07).size());
 
