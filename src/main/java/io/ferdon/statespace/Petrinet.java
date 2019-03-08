@@ -325,12 +325,12 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    Map<String, VarDomain> getVarsDomain(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
+    Map<Path, List<VarDomain>> getVarsDomain(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
 
         Map<Place, List<Path>> pathMap = new HashMap<>();
         findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
 
-        Map<String, VarDomain> result = new HashMap<>();
+        Map<Path, List<VarDomain>> result = new HashMap<>();
         for(Path path: pathMap.get(toPlace)) {
 
             Map<String, Integer> varOrders = new HashMap<>();
@@ -338,7 +338,9 @@ public class Petrinet implements Serializable {
 
             for (String var : varOrders.keySet()) {
 
-                VarDomain domain = Utils.getVarDomainFromConditions(coeffs, path.getConditions(), varOrders.get(var));
+                VarDomain domain = Utils.getVarDomainFromConditions(
+                        coeffs, path.getConditions(),
+                        varOrders.get(var), var);
                 if (domain == null) continue;
 
                 if (!result.containsKey(var)) result.put(var, new VarDomain());

@@ -307,7 +307,8 @@ final class Utils {
         return result;
     }
 
-    static VarDomain getVarDomainFromConditions(double[][] coeffs, Set<String> conditions, int varOrder) {
+    static VarDomain getVarDomainFromConditions(double[][] coeffs, Set<String> conditions,
+                                                int varOrder, String varName) {
 
         double[] objectiveCoeffs = new double[coeffs[0].length - 1];
         objectiveCoeffs[varOrder] = 1;
@@ -328,7 +329,7 @@ final class Utils {
                 (minima == null) ? VarDomain.NEGINF : minima[0],
                 (maxima == null) ? VarDomain.POSINF : maxima[0]
         );
-        return new VarDomain(data);
+        return new VarDomain(data, varName);
     }
 
     public static void main(String[] args) {
