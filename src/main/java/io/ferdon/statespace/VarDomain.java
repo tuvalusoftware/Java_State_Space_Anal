@@ -7,6 +7,8 @@ import java.util.List;
 
 public class VarDomain {
     private List<Pair<Double, Double>> ranges;
+    static Integer POSINF = 1000000000;
+    static Integer NEGINF = -1000000000;
 
     VarDomain() {
          ranges = new ArrayList<>();

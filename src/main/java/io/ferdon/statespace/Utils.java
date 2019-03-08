@@ -322,9 +322,13 @@ final class Utils {
                 objectiveCoeffs
         );
 
-        if (maxima == null || minima == null) return null;
+        if (maxima == null && minima == null) return null;
 
-        return new VarDomain(new Pair<>(minima[0], maxima[0]));
+        Pair<Double, Double> data = new Pair<>(
+                (minima == null) ? VarDomain.NEGINF : minima[0],
+                (maxima == null) ? VarDomain.POSINF : maxima[0]
+        );
+        return new VarDomain(data);
     }
 
     public static void main(String[] args) {
