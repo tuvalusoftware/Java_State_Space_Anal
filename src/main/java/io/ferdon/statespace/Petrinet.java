@@ -325,32 +325,6 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    Map<Path, List<VarDomain>> getVarsDomain(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
-
-        Map<Place, List<Path>> pathMap = new HashMap<>();
-        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
-
-        Map<Path, List<VarDomain>> result = new HashMap<>();
-        for(Path path: pathMap.get(toPlace)) {
-
-            Map<String, Integer> varOrders = new HashMap<>();
-            double[][] coeffs = path.getCoefficients(interpreter, varOrders);
-
-            for (String var : varOrders.keySet()) {
-
-                VarDomain domain = Utils.getVarDomainFromConditions(
-                        coeffs, path.getConditions(),
-                        varOrders.get(var), var);
-                if (domain == null) continue;
-
-                if (!result.containsKey(var)) result.put(var, new VarDomain());
-                result.get(var).addDomain(domain);
-            }
-        }
-
-        return result;
-    }
-
     State generateCurrentState() throws IOException, ClassNotFoundException {
         Map<Place, Marking> data = new HashMap<>();
 
