@@ -87,5 +87,6 @@
     "2": "STRING",
     "3": "STRING",
     "4": "UNIT"
-  }
+  },
+  "Ports" : []
 }

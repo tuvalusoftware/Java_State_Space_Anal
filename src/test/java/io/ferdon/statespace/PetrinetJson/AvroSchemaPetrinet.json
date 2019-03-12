@@ -3,5 +3,8 @@
   "placeToColor": {
     "0": "INT*STRING*DOUBLE*BOOL",
     "1": "UNIT"
-  }
+  },
+  "Ports" : [
+    {}
+  ]
 }

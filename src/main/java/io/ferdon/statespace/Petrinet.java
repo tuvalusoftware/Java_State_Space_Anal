@@ -14,7 +14,6 @@ import java.io.*;
 import java.util.*;
 
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
-import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
@@ -40,7 +39,7 @@ public class Petrinet implements Serializable {
                     String[] guards,
                     Object[][][] expressions,
                     Object[][][] variables,
-                    Object[] ports) {
+                    Map<String, Object>[] portData) {
 
         this.numStates = 0;
         this.numTransitions = T;
@@ -72,6 +71,12 @@ public class Petrinet implements Serializable {
 
                 addVars(inPlaceID, tranID, vars);
             }
+        }
+
+        for(int i = 0; i < portData.length; i++) {
+            Port port = new Port(portData[i]);
+            Node node = port.getElementID(places, transitions);
+            node.setPort(port);
         }
 
         for (Place place : places.values()) {
@@ -126,6 +131,12 @@ public class Petrinet implements Serializable {
 
                 addVars(inPlaceID, tranID, vars);
             }
+        }
+
+        for(int i = 0; i < model.Ports.length; i++) {
+            Port port = new Port(model.Ports[i]);
+            Node node = port.getElementID(places, transitions);
+            node.setPort(port);
         }
 
         for (Place place : places.values()) {

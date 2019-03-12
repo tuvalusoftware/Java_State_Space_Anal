@@ -19,10 +19,11 @@ public class PetrinetModel {
     int[][] outPlace;
     int[][] inPlace;
     String[] Markings;
+
     String[] Guards;
     Object[][][] Expressions;
     Object[][][] Variables;
-    Object[] ports;
+    Map<String, Object>[] Ports;
 
     public Map<String, String> getTypeToColor() {
         return typeToColor;
@@ -62,7 +63,7 @@ public class PetrinetModel {
 
     public PetrinetModel(int t, Map<String, String> placeToColor, Map<String, String> typeToColor,
                          Map<String, String> placeToType, int[][] outPlace, int[][] inPlace, String[] markings,
-                         String[] guards, Object[][][] expressions, Object[][][] variables, Object[] ports) {
+                         String[] guards, Object[][][] expressions, Object[][][] variables, Map<String, Object>[] ports) {
         T = t;
         this.placeToColor = placeToColor;
         this.typeToColor = typeToColor;
@@ -73,7 +74,7 @@ public class PetrinetModel {
         this.Guards = guards;
         this.Expressions = expressions;
         this.Variables = variables;
-        this.ports = ports;
+        this.Ports = ports;
     }
 
     public PetrinetModel() {
@@ -120,12 +121,12 @@ public class PetrinetModel {
         return placeToColor;
     }
 
-    public Object[] getPorts() {
-        return ports;
+    public Map<String, Object>[] getPorts() {
+        return Ports;
     }
 
-    public void setPorts(Object[] ports) {
-        this.ports = ports;
+    public void setPorts(Map<String, Object>[] ports) {
+        this.Ports = ports;
     }
 
     public void setT(int t) {

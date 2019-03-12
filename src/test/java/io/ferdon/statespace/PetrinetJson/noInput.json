@@ -34,6 +34,7 @@
   "placeToColor": {
     "0": "UNIT",
     "1": "INT"
-  }
+  },
+  "Ports" : []
 }
 
