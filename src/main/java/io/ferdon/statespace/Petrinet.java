@@ -315,26 +315,16 @@ public class Petrinet implements Serializable {
         List<Binding> result = new ArrayList<>();
         for(Path path: pathMap.get(toPlace)) {
 
-            Map<String, String> varMappingResult = new HashMap<>();
-            Map<String, Integer> varOrders = new HashMap<>();
+            Map<String, String>  varMappingResult = Utils.solveLinearInequalities(path, interpreter);
 
-            double[][] coeffs = path.getCoefficients(interpreter, varOrders);
-            int numCoeffs = coeffs[0].length - 1;
-
-            double[] point = Utils.solveLinearInequalities(
-                coeffs, path.getConditions(), false, GoalType.MAXIMIZE,
-                new double[numCoeffs]
-            );
-
-            if (point == null) continue;
-            for(String var: varOrders.keySet()) {
-                varMappingResult.put(var, String.format("%.10f", point[varOrders.get(var)]));
-            }
+            if (varMappingResult.isEmpty()) continue;
             result.add(new Binding(varMappingResult));
         }
 
         return result;
     }
+
+
 
     State generateCurrentState() throws IOException, ClassNotFoundException {
         Map<Place, Marking> data = new HashMap<>();

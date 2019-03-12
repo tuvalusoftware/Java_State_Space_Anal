@@ -216,15 +216,18 @@ final class Utils {
         return result;
     }
 
-    static double[] solveLinearInequalities(double[][] coeffs, Set<String> conditions,
-                                            boolean getObjectiveValue, GoalType optimizedType,
-                                            double[] objectiveCoeffs) {
+    static Map<String, String> solveLinearInequalities(Path path, Interpreter interpreter) {
 
-        if (coeffs.length == 0) return new double[1];
+        Map<String, Integer> varOrders = new HashMap<>();
 
+        Set<String> conditions = path.getConditions();
+        double[][] coeffs = path.getCoefficients(interpreter, varOrders);
+
+        if (coeffs.length == 0) return new HashMap<>();
         int numCoeffs = coeffs[0].length - 1;
         double precision = 0.00001;
-        LinearObjectiveFunction f = new LinearObjectiveFunction(objectiveCoeffs, 0);
+
+        LinearObjectiveFunction f = new LinearObjectiveFunction(new double[numCoeffs], 0);
 
         List<LinearConstraint> constraints = new ArrayList();
         NonNegativeConstraint nonNegativeConstraint = new NonNegativeConstraint(true);
@@ -234,7 +237,7 @@ final class Utils {
 
             double[] x = Arrays.copyOfRange(co, 0, co.length - 1);
             String c = (String) it.next();
-            Relationship op = Relationship.GEQ;
+            Relationship op;
 
             /* linear programming not allow > and < operators */
             if (c.contains("<=")) op = Relationship.LEQ;
@@ -245,6 +248,8 @@ final class Utils {
             } else if (c.contains(">")) {
                 op = Relationship.GEQ;
                 co[co.length - 1] += precision;
+            } else {
+                 op = Relationship.GEQ;
             }
 
             constraints.add(new LinearConstraint(x, op, co[co.length - 1]));  /* x1 * a + x2 * b + ... >= co[co.length - 1] */
@@ -252,14 +257,22 @@ final class Utils {
 
         LinearConstraintSet constraintSet = new LinearConstraintSet(constraints);
         SimplexSolver linearOptimizer = new SimplexSolver();
+        Map<String, String> result = new HashMap<>();
+
         try {
             PointValuePair solution = linearOptimizer.optimize(
                     new MaxIter(numCoeffs + 1), f,
-                    constraintSet, optimizedType, nonNegativeConstraint
+                    constraintSet, GoalType.MAXIMIZE, nonNegativeConstraint
             );
-            return (getObjectiveValue) ? new double[]{solution.getValue()} : solution.getPoint();
+
+            double[] point = solution.getPoint();
+            for(String var: varOrders.keySet()) {
+                result.put(var, String.format("%.10f", point[varOrders.get(var)]));
+            }
+            return result;
+
         } catch (NoFeasibleSolutionException e) {
-            return null;
+            return result;
         }
     }
 
