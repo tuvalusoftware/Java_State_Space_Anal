@@ -307,6 +307,13 @@ public class Petrinet implements Serializable {
         }
     }
 
+    boolean isReachable(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
+         Map<Place, List<Path>> pathMap = new HashMap<>();
+         findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
+
+         return !pathMap.get(toPlace).isEmpty();
+    }
+
     List<Binding> getFireableToken(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
 
         Map<Place, List<Path>> pathMap = new HashMap<>();
@@ -323,8 +330,6 @@ public class Petrinet implements Serializable {
 
         return result;
     }
-
-
 
     State generateCurrentState() throws IOException, ClassNotFoundException {
         Map<Place, Marking> data = new HashMap<>();
