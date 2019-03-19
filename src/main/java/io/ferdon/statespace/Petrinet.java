@@ -18,7 +18,6 @@ import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
-import static io.ferdon.statespace.main.exportGraphXParquet;
 import static io.ferdon.statespace.main.parseJson;
 
 public class Petrinet implements Serializable {
