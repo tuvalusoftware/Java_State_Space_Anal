@@ -307,6 +307,7 @@ final class Utils {
         return result;
     }
 
+
     static VarDomain getVarDomainFromConditions(double[][] coeffs, Set<String> conditions, int varOrder) {
 
         double[] objectiveCoeffs = new double[coeffs[0].length - 1];
