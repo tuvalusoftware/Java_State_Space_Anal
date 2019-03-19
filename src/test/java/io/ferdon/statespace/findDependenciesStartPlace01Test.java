@@ -14,7 +14,7 @@ import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertSame;
 
 
-public class findDependenciesStartPlaceTest {
+public class findDependenciesStartPlace01Test {
     private Petrinet net;
     @Before
     public void SetUp() {
@@ -48,7 +48,8 @@ public class findDependenciesStartPlaceTest {
     @Test
     public void findDependenciesStartPlaceTest04() {
         HashSet<Place> actual = net.findDependenciesStartPlace(net.getPlace(5));
-        HashSet<Place> expected = new HashSet<>();
+        List<Place> list = Arrays.asList(net.getPlace(5));
+        HashSet<Place> expected = new HashSet<>(list);
         assertEquals(expected, actual);
     }
 }
