@@ -467,14 +467,15 @@ public class Petrinet implements Serializable {
         Q.add(end.getID());
         while(!Q.isEmpty()) {
             int currentPlaceID = Q.poll();
+            if (getPlace(currentPlaceID).getInTransition().isEmpty())
+                startPlace.add(getPlace(currentPlaceID));
             for (Transition transition : places.get(currentPlaceID).getInTransition()) {
                 for (Place place : transition.getInPlaces()) {
                     if (Mark.contains(place.getID()))
                         continue;
                     Mark.add(place.getID());
                     Q.add(place.getID());
-                    if (place.getInTransition().isEmpty())
-                        startPlace.add(place);
+
                 }
             }
         }
