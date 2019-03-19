@@ -18,6 +18,7 @@ import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
+import static io.ferdon.statespace.main.exportGraphXParquet;
 import static io.ferdon.statespace.main.parseJson;
 
 public class Petrinet implements Serializable {
@@ -458,6 +459,28 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
+    public HashSet<Place> findDependenciesStartPlace(Place end) {
+        HashSet<Integer> Mark = new HashSet<>();
+        HashSet<Place> startPlace = new HashSet<>();
+        Queue<Integer> Q = new LinkedList<>();
+        Mark.add(end.getID());
+        Q.add(end.getID());
+        while(!Q.isEmpty()) {
+            int currentPlaceID = Q.poll();
+            for (Transition transition : places.get(currentPlaceID).getInTransition()) {
+                for (Place place : transition.getInPlaces()) {
+                    if (Mark.contains(place.getID()))
+                        continue;
+                    Mark.add(place.getID());
+                    Q.add(place.getID());
+                    if (place.getInTransition().isEmpty())
+                        startPlace.add(place);
+                }
+            }
+        }
+        return startPlace;
+    }
+
     public static void main(String[] args) throws Exception {
         String option = "analysis";
         String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/petrinet02.json";
@@ -466,9 +489,8 @@ public class Petrinet implements Serializable {
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
-        net.generateStateSpace(net.generateCurrentState());
-
-        System.out.println(net.getGraphVizJson().toString());
-        System.out.println("Num state: " + net.stateSpace.getNodes().size());
+        //net.generateStateSpace(net.generateCurrentState());
+        HashSet<Place> tmp = net.findDependenciesStartPlace(net.getPlace(6));
+        System.out.println(tmp.toString());
     }
 }
