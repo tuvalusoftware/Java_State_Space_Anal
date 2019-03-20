@@ -1,15 +1,25 @@
-plugins {
-    id 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.5.RELEASE")
+    }
 }
 
-group 'nam'
-version '1.0-SNAPSHOT'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 
-sourceCompatibility = 1.8
+bootJar {
+    baseName = 'gs-rest-service'
+    version =  '0.1.0'
+}
 
 repositories {
     mavenCentral()
-    mavenLocal()
 }
 
 dependencies {
@@ -18,8 +28,11 @@ dependencies {
     implementation 'com.google.guava:guava:26.0-jre'
     implementation 'org.json:json:20180130'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.3'
-
     implementation 'org.javatuples:javatuples:1.2'
     implementation 'org.apache.parquet:parquet-avro:1.10.0'
     implementation 'org.apache.avro:avro-tools:1.8.2'
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('com.jayway.jsonpath:json-path')
 }
