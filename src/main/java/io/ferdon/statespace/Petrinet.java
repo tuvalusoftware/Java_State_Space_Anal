@@ -10,12 +10,12 @@
 package io.ferdon.statespace;
 
 
-import java.io.*;
-import java.util.*;
-
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
-import org.javatuples.Pair;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
 import static io.ferdon.statespace.main.parseJson;
@@ -233,7 +233,7 @@ public class Petrinet implements Serializable {
             return;
         }
 
-        for(Transition toTransition: currentPlace.getOutTransition()) {
+        for (Transition toTransition : currentPlace.getOutTransition()) {
             VarMapping varMapping = new VarMapping(currentPlace.getInTransition(), currentPlace, toTransition);
             currentPlace.getVarMapping().addVarsMapping(varMapping);
         }
@@ -243,17 +243,18 @@ public class Petrinet implements Serializable {
     /**
      * Finding paths from the startPlaces (set of place) to the endPlace.
      * The path contains:
-     *      1. List of Places and Transitions in order.
-     *      2. List of Conditions from any place of startPlaces to current place
+     * 1. List of Places and Transitions in order.
+     * 2. List of Conditions from any place of startPlaces to current place
+     *
      * @param dependentPlaces set of input Places
-     * @param toPlace the end place
-     * @param pathMap the map from place ~> list of path start from that place to the end place
+     * @param toPlace         the end place
+     * @param pathMap         the map from place ~> list of path start from that place to the end place
      */
-     void findPathConditions(Set<Place> dependentPlaces,
-                             Place fromPlace, Place toPlace,
-                             Map<Place, List<Path>> pathMap, Set<Place> visited) {
+    void findPathConditions(Set<Place> dependentPlaces,
+                            Place fromPlace, Place toPlace,
+                            Map<Place, List<Path>> pathMap, Set<Place> visited) {
 
-         pathMap.put(toPlace, new ArrayList<>());
+        pathMap.put(toPlace, new ArrayList<>());
 
         if (toPlace.isEmptyInput()) {
             Path path = new Path();
@@ -276,8 +277,8 @@ public class Petrinet implements Serializable {
                 There is not path lead to [dependentPlaces] from [inTran] */
 
             boolean isContainStartPlace = false;
-            for(Place previousPlace: inTran.getInPlaces()) {
-                for(Path previousPath: pathMap.get(previousPlace)) {
+            for (Place previousPlace : inTran.getInPlaces()) {
+                for (Path previousPath : pathMap.get(previousPlace)) {
                     if (dependentPlaces.contains(previousPath.getStartPlace())) {
                         isContainStartPlace = true;
                         break;
@@ -302,7 +303,7 @@ public class Petrinet implements Serializable {
         findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
 
         List<Binding> result = new ArrayList<>();
-        for(Path path: pathMap.get(toPlace)) {
+        for (Path path : pathMap.get(toPlace)) {
 
             Map<String, String> varMappingResult = new HashMap<>();
             Map<String, Integer> varOrders = new HashMap<>();
@@ -311,12 +312,12 @@ public class Petrinet implements Serializable {
             int numCoeffs = coeffs[0].length - 1;
 
             double[] point = Utils.solveLinearInequalities(
-                coeffs, path.getConditions(), false, GoalType.MAXIMIZE,
-                new double[numCoeffs]
+                    coeffs, path.getConditions(), false, GoalType.MAXIMIZE,
+                    new double[numCoeffs]
             );
 
             if (point == null) continue;
-            for(String var: varOrders.keySet()) {
+            for (String var : varOrders.keySet()) {
                 varMappingResult.put(var, String.format("%.10f", point[varOrders.get(var)]));
             }
             result.add(new Binding(varMappingResult));
@@ -331,7 +332,7 @@ public class Petrinet implements Serializable {
         findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
 
         Map<String, VarDomain> result = new HashMap<>();
-        for(Path path: pathMap.get(toPlace)) {
+        for (Path path : pathMap.get(toPlace)) {
 
             Map<String, Integer> varOrders = new HashMap<>();
             double[][] coeffs = path.getCoefficients(interpreter, varOrders);
@@ -458,6 +459,33 @@ public class Petrinet implements Serializable {
         return obj;
     }
 
+    public HashSet<Place> findDependenciesStartPlace(Place end) {
+
+        HashSet<Integer> marked = new HashSet<>();
+        HashSet<Place> startPlaces = new HashSet<>();
+        Queue<Integer> bfsQueue = new LinkedList<>();
+
+        marked.add(end.getID());
+        bfsQueue.add(end.getID());
+
+        while (!bfsQueue.isEmpty()) {
+            Place currPlace = getPlace(bfsQueue.poll());
+
+            if (currPlace.isEmptyInput()) startPlaces.add(currPlace);
+
+            for (Transition transition : currPlace.getInTransition()) {
+                for (Place place : transition.getInPlaces()) {
+                    if (marked.contains(place.getID()))
+                        continue;
+                    marked.add(place.getID());
+                    bfsQueue.add(place.getID());
+                }
+            }
+        }
+
+        return startPlaces;
+    }
+
     public static void main(String[] args) throws Exception {
         String option = "analysis";
         String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/petrinet02.json";
@@ -466,9 +494,8 @@ public class Petrinet implements Serializable {
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
-        net.generateStateSpace(net.generateCurrentState());
-
-        System.out.println(net.getGraphVizJson().toString());
-        System.out.println("Num state: " + net.stateSpace.getNodes().size());
+        //net.generateStateSpace(net.generateCurrentState());
+        HashSet<Place> tmp = net.findDependenciesStartPlace(net.getPlace(6));
+        System.out.println(tmp.toString());
     }
 }
