@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group 'nam'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    implementation 'com.google.guava:guava:26.0-jre'
+    implementation 'org.json:json:20180130'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.3'
+
+    implementation 'org.javatuples:javatuples:1.2'
+    implementation 'org.apache.parquet:parquet-avro:1.10.0'
+    implementation 'org.apache.avro:avro-tools:1.8.2'
+}

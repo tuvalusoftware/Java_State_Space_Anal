@@ -1,5 +1,11 @@
-.idea
-.DS_Store
-out
-.gradle
-build
+Solver/.idea
+Solver/.DS_Store
+Solver/out
+Solver/.gradle
+Solver/build
+
+StateSpace/.idea
+StateSpace/.DS_Store
+StateSpace/out
+StateSpace/.gradle
+StateSpace/build
