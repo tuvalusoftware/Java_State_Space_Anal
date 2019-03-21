@@ -1,4 +1,13 @@
-.idea
+Solver/.idea
+Solver/.DS_Store
+Solver/out
+Solver/.gradle
+Solver/build
+
+StateSpace/.idea
+StateSpace/.DS_Store
+StateSpace/out
+StateSpace/.gradle
+StateSpace/build
+
 .DS_Store
-out/artifacts
-out/test
