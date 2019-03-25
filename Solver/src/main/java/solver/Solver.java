@@ -32,7 +32,7 @@ public class Solver {
 
              //parse variables
              for (String var : vars) {
-                 dict.put(var, model.addVar(-GRB.INFINITY, GRB.INFINITY, 0.0, GRB.CONTINUOUS, var));
+                 dict.put(var, model.addVar(-GRB.INFINITY, GRB.INFINITY, 1, GRB.CONTINUOUS, var));
              }
 
              //parse constraints
@@ -51,8 +51,8 @@ public class Solver {
 
              //return code
              //2: Solvable
-             //3: Unbounded
-             //4: Infeasible
+             //3: Infeasible
+             //5: Unbounded
              //more indexes at http://www.gurobi.com/documentation/8.1/refman/optimization_status_codes.html
              this.status = model.get(GRB.IntAttr.Status);
          }
