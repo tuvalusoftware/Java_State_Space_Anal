@@ -38,48 +38,31 @@ module.exports = {
   			s1.vars[key] = s2.vars[key]
   		}
   	}
-  	for (i in s2.constraints){
-  		s1.constraints.push(s2.constraints[i])
-  	}
+  	for (key in s2.constraints){
+			if (!(key in s1.constraints)){
+  			s1.constraints[key] = ""
+  		}
+		}
   	return s1
-  },
-
-  mergeMultiple: function(s){
-  	//1 system then return
-  	if (s.length == 1){
-  		return s[0]
-  	}
-  	//concat systems into 1st system
-  	for (i in s){
-  		for (key in s[i].vars){
-  			if (!(key in s1.vars)){
-  				s[0].vars[key] = s[i].vars[key]
-  			}
-  		}
-  		for (i in s[i].constraints){
-  			s[0].constraints.push(s[i].constraints[i])
-  		}
-  	}
-  	return s[0]
   },
 
   negate: function(s){
     result = {
       vars:{},
-      constraints:[]
+      constraints:{}
     }
     result.vars = s.vars
-    let index = 0
+
     for (i in s.constraints){
-      if (s.constraints[i].includes("<=")){
-    		result.constraints.push(s.constraints[i].replace("<=",">=") + "+{0}".format(decimalOffset))
+      if (i.includes("<=")){
+    		result.constraints[i.replace("<=",">=") + "+{0}".format(decimalOffset)] = ""
       }
-    	else if (s.constraints[i].includes(">=")){
-    		result.constraints.push(s.constraints[i].replace(">=","<=") + "-{0}".format(decimalOffset))
+    	else if (i.includes(">=")){
+    		result.constraints[i.replace(">=","<=") + "-{0}".format(decimalOffset)] = ""
       }
-    	else if (s.constraints[i].includes("=")){
-        result.constraints.push(s.constraints[i].replace("=",">=") + "+{0}".format(decimalOffset))
-        result.constraints.push(s.constraints[i].replace("=","<=") + "-{0}".format(decimalOffset))
+    	else if (i.includes("=")){
+        result.constraints[i.replace("=",">=") + "+{0}".format(decimalOffset)] = ""
+        result.constraints[i.replace("=","<=") + "-{0}".format(decimalOffset)] = ""
       }
     }
     return result
@@ -91,20 +74,44 @@ module.exports = {
 		if (!(await this.solve(s1) && (await this.solve(s2)))){
 			return false
 		}
-
 		//if !A AND B == empty then B is subset
     s1 = this.negate(s1)
-    for (i in s1.constraints){
-      let system = this.merge({vars:s1.vars, constraints:[s1.constraints[i]]}, s2)
-			let temp = await this.solve(system)
+
+    for (key in s1.constraints){
+			//build system
+			let temp = {vars:s1.vars, constraints:{}}
+			temp.constraints[key] = ""
+      let system = this.merge(temp, s2)
+			let flag = await this.solve(system)
       //if 1 case is possible then s2 is not subset of s1
-      if (temp == true){
+      if (flag == true){
         return false
       }
     }
     //if none of them is true then it is subset
     return true
-  }
+  },
+
+	trimRedundant: async function(s){
+		for (key in s.constraints){
+			//father inequality to check
+			let s1 = {vars: s.vars, constraints: {}}
+			s1.constraints[key] = ""
+
+			//children set to check
+			let s2 = JSON.parse(JSON.stringify(s))
+			delete s2.constraints[key]
+
+			//true means s1 is father, bigger set
+			//now we can remove father from s
+			if (await this.isSubset(s1,s2)){
+				for (key in s1.constraints){
+					delete s.constraints[key]
+				}
+			}
+		}
+		return s
+	}
 
 
 

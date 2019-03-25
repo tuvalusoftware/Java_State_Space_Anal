@@ -112,7 +112,6 @@ public class Solver {
                 }
             }
         }
-
         return expression;
     }
 
