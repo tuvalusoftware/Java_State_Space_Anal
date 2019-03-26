@@ -22,6 +22,9 @@ let decimalOffset = 0.00001
 let url = 'http://localhost:5000/solver'
 
 module.exports = {
+	//2: optimized
+	//5: unbounded
+	//3: infeasible
   solve: function(system){
   	return new Promise(function(resolve, reject) {
   		request.post(url, {json: system}, (err, res, body) => {

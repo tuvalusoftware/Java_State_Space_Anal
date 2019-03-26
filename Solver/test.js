@@ -82,29 +82,29 @@ s = [
 	}
 ]
 
-
-//merge s[3],s[4]
-
 async function main(){
 	// let s =  Solver.generateSystemLinear(["x","y","z"],6)
 	// Solver.printSystem(s)
 	// s = await Solver.trimRedundancy(s)
 	// print(await Solver.solve(system))
 
-	let system = s[0]
-	Solver.printSystem(system)
-
-	let reduced = await Solver.trimRedundancy(system)
-	Solver.printSystem(reduced)
-
-	print(await Solver.solve(reduced))
-
-
-	// let system = Solver.merge(s[3],s[4])
+	// let system = s[0]
 	// Solver.printSystem(system)
+	// print("----------------------------------")
 	//
 	// let reduced = await Solver.trimRedundancy(system)
 	// Solver.printSystem(reduced)
+	// print("----------------------------------")
+
+	print(await Solver.solve(s[0]))
+
+	// let system = Solver.merge(s[3],s[4])
+	// Solver.printSystem(system)
+	// print("----------------------------------")
+	//
+	// let reduced = await Solver.trimRedundancy(system)
+	// Solver.printSystem(reduced)
+	// print("----------------------------------")
 	//
 	// print(await Solver.solve(reduced))
 }

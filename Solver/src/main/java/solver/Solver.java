@@ -37,6 +37,9 @@ public class Solver {
                  dict.put(var, model.addVar(-GRB.INFINITY, GRB.INFINITY, 1, GRB.CONTINUOUS, var));
              }
 
+//             null objective
+             model.setObjective(new GRBLinExpr());
+
              //parse constraints
              for (String equation : constraint) {
                  char comp = getComparator(equation);
@@ -53,6 +56,10 @@ public class Solver {
 //             model.write("debug.lp");
 
              model.optimize();
+
+//             for(GRBVar v: model.getVars()){
+//                 print(v.get(GRB.StringAttr.VarName)+": "+v.get(GRB.DoubleAttr.X));
+//             }
 
              //return code
              //2: Solvable
