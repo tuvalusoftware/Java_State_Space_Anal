@@ -13,7 +13,6 @@ public class main {
 
             GRBEnv env = new GRBEnv();
             GRBModel model = new GRBModel(env);
-            model.write("debug.lp");
 
             model.set(GRB.IntParam.DualReductions, 0);
 

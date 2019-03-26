@@ -4,6 +4,12 @@ function print(s){
 	console.log(s)
 }
 
+function random(low,high,interval){
+	let range = (high-low)/interval+1
+	let result = Math.floor(Math.random()*range)*interval+low
+	return result.toFixed(1)
+}
+
 String.prototype.format = function() {
   a = this;
   for (k in arguments) {
@@ -33,17 +39,23 @@ module.exports = {
   },
 
   merge: function(s1,s2){
-  	for (key in s2.vars){
-  		if (!(key in s1.vars)){
-  			s1.vars[key] = s2.vars[key]
-  		}
-  	}
-  	for (key in s2.constraints){
-			if (!(key in s1.constraints)){
-  			s1.constraints[key] = ""
-  		}
+		let result = {
+			vars:{},
+			constraints:{}
 		}
-  	return s1
+  	for (key in s1.vars){
+			result.vars[key] = s1.vars[key]
+  	}
+		for (key in s2.vars){
+			result.vars[key] = s2.vars[key]
+		}
+  	for (key in s1.constraints){
+			result.constraints[key] = s1.constraints[key]
+		}
+		for (key in s2.constraints){
+			result.constraints[key] = s2.constraints[key]
+		}
+		return result
   },
 
   negate: function(s){
@@ -92,7 +104,7 @@ module.exports = {
     return true
   },
 
-	trimRedundant: async function(s){
+	trimRedundancy: async function(s){
 		for (key in s.constraints){
 			//father inequality to check
 			let s1 = {vars: s.vars, constraints: {}}
@@ -106,14 +118,100 @@ module.exports = {
 			//now we can remove father from s
 			if (await this.isSubset(s1,s2)){
 				for (key in s1.constraints){
+					print("remove: " + key)
 					delete s.constraints[key]
 				}
 			}
 		}
 		return s
+	},
+
+	printSystem: function(system){
+		for (key in system.constraints){
+			print(key+",")
+		}
+	},
+
+	generateSystemLinear: function(vars, len){
+		system = {
+			vars:{},
+			constraints:{}
+		}
+		//parse var
+		for (i in vars){
+			system.vars[vars[i]] = ""
+		}
+
+		//randomly generate inequalities for system
+		let inequality = ""
+		for (let i=0; i<len; i++){
+			inequality = ""
+			for (let j in vars){
+				//lhs
+				let coeff = random(-10,10,0.1)
+				if (j == 0 || coeff<0){
+					inequality += ("{0}*{1}".format(coeff,vars[j]))
+				} else {
+					inequality += ("+{0}*{1}".format(coeff,vars[j]))
+				}
+			}
+			//sense
+			let sense = random(0,1,1)
+			if (sense == 0){
+				inequality += "<="
+			}
+			else if (sense == 1){
+				inequality += ">="
+			}
+			let constant = random(-10,10,0.1)
+			inequality += constant
+			system.constraints[inequality] = ""
+		}
+		return system
+	},
+
+	generateSystemFormal: function(vars,len){
+		system = {
+			vars:{},
+			constraints:{}
+		}
+		//parse var
+		for (i in vars){
+			system.vars[vars[i]] = ""
+		}
+
+		//randomly generate inequalities for system
+		let inequality = ""
+		for (let i=0; i<len; i++){
+			//lhs
+			inequality = vars[vars.length-1]
+			//sense
+			let sense = random(0,1,1)
+			if (sense == 0){
+				inequality += "<="
+			}
+			else if (sense == 1){
+				inequality += ">="
+			}
+			//rhs
+			for (let j=0; j<vars.length-1; j++){
+				let coeff = random(-10,10,0.1)
+				if (j == 0 || coeff<0){
+					inequality += ("{0}*{1}".format(coeff,vars[j]))
+				} else {
+					inequality += ("+{0}*{1}".format(coeff,vars[j]))
+				}
+			}
+			//constant
+			let constant = random(-10,10,0.1)
+			if (constant>=0){
+				inequality += "+"+constant
+			}
+			else{
+				inequality += constant
+			}
+			system.constraints[inequality] = ""
+		}
+		return system
 	}
-
-
-
-
 }

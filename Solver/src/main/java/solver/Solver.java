@@ -2,6 +2,8 @@ package solver;
 
 
 import gurobi.*;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,11 +43,14 @@ public class Solver {
                  String[] temp = equation.split("\\>=|\\<=|\\=");
                  String leftSide = temp[0];
                  String rightSide = temp[1];
-                 model.addConstr(parseOneSide(leftSide, dict), comp, parseOneSide(rightSide, dict),"");
+                 model.addConstr(parseOneSide(leftSide, dict), comp, parseOneSide(rightSide, dict),"c");
              }
              //param flags
              model.set(GRB.IntParam.OutputFlag, 0);
              model.set(GRB.IntParam.DualReductions, 0);
+
+//             model.update();
+//             model.write("debug.lp");
 
              model.optimize();
 
@@ -102,7 +107,7 @@ public class Solver {
                     //variable with -1 as coeff
                     if (pair[0].contains("-")){
                         GRBVar var = dict.get(pair[0].substring(1));
-                        expression.addTerm(1,var);
+                        expression.addTerm(-1,var);
                     }
                     //variable with 1 as coeff
                     else{
