@@ -12,7 +12,7 @@ String.prototype.format = function() {
   return a
 }
 
-s = [
+let s = [
 	{
 			vars: {
 					x:"",
@@ -79,6 +79,17 @@ s = [
 			"7.3*x-7.9*y-0.3*z>=4.1":"",
 			"-7.0*x+0.6*y-9.3*z<=-3.8":""
 		}
+	},
+	{
+		vars:{
+			x:"",
+			y:""
+		},
+		constraints:{
+			"x+y<=4":"",
+			"x=2":"",
+			"y=2":""
+		}
 	}
 ]
 
@@ -96,17 +107,17 @@ async function main(){
 	// Solver.printSystem(reduced)
 	// print("----------------------------------")
 
-	print(await Solver.solve(s[0]))
 
-	// let system = Solver.merge(s[3],s[4])
-	// Solver.printSystem(system)
-	// print("----------------------------------")
-	//
-	// let reduced = await Solver.trimRedundancy(system)
-	// Solver.printSystem(reduced)
-	// print("----------------------------------")
-	//
-	// print(await Solver.solve(reduced))
+
+	let system = Solver.merge(s[3],s[4])
+	Solver.printSystem(system)
+	print("----------------------------------")
+
+	let reduced = await Solver.trimRedundancy(system)
+	Solver.printSystem(reduced)
+	print("----------------------------------")
+
+	print(await Solver.solve(reduced))
 }
 
 main()

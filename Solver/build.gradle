@@ -28,4 +28,12 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('com.jayway.jsonpath:json-path')
+
+    implementation 'org.apache.commons:commons-lang3:3.1'
+    compile group: 'commons-io', name: 'commons-io', version: '2.0.1'
+    implementation 'com.google.guava:guava:26.0-jre'
+    implementation 'org.json:json:20180130'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.9.3'
+    implementation 'org.javatuples:javatuples:1.2'
+    implementation 'org.antlr:antlr4:4.7.2'
 }
