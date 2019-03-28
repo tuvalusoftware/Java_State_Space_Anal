@@ -331,7 +331,8 @@ final class Utils {
         List<LinearSystem> result = new ArrayList<>();
 
         for(List<LinearSystem> listSystem: combinedList) {
-            result.add(new LinearSystem(listSystem));
+            LinearSystem newSystem = new LinearSystem(listSystem);
+            result.add(newSystem);
         }
 
         return result;

@@ -172,6 +172,13 @@ public class Transition extends Node {
         return new Token(tokenData);
     }
 
+    void combineSystem(List<LinearSystem> listSystem) {
+
+        for(LinearSystem linearSystem: listSystem) {
+            
+        }
+    }
+
     List<Binding> getFireableBinding(Interpreter interpreter) {
 
         List<Binding> fireableBindings = new ArrayList<>();

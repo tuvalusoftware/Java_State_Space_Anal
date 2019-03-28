@@ -13,8 +13,6 @@ package io.ferdon.statespace;
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
-import org.javatuples.Pair;
 import org.json.JSONObject;
 
 import static io.ferdon.statespace.Utils.generateAllBinding;
@@ -244,18 +242,22 @@ public class Petrinet implements Serializable {
 
         if (currNode instanceof Place) {
 
-
-
             Place currPlace = (Place) currNode;
             for(Transition transition: currPlace.getInTransition()) {
-                currPlace.addListSystem(transition.getListSystem());
+                currPlace.addListSystem(transition.getListSystem(), currPlace.getVarMapping());
+            }
+
+            if (currPlace.isEmptyInput()) {
+                Set<Place> inputPlaces = new HashSet<>();
+                inputPlaces.add(currPlace);
+                currPlace.addSystem(new LinearSystem(inputPlaces));
             }
         }
 
         if (currNode instanceof Transition) {
             Transition currTran = (Transition) currNode;
             List<LinearSystem> linearSystems = Utils.generateAllSystems(currTran);
-            currTran.addListSystem(linearSystems);
+            currTran.addListSystem(linearSystems, null);
         }
 
         return currNode.getListSystem();
