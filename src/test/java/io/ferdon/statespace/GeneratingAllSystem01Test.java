@@ -3,12 +3,10 @@ package io.ferdon.statespace;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static io.ferdon.statespace.main.parseJson;
+import static org.junit.Assert.assertEquals;
 
 public class GeneratingAllSystem01Test {
 
@@ -35,7 +33,38 @@ public class GeneratingAllSystem01Test {
     }
 
     @Test
-    public void addGenerateAllSystem() {
+    public void addGenerateAllSystem01() {
         List<LinearSystem> listSystem = net.generateAllCompleteSystems(place07);
+        assertEquals(2, listSystem.size());
+
+        Iterator it = listSystem.get(0).getInequalities().iterator();
+        assertEquals("a b + 0 >", it.next());
+        assertEquals("a b + a b - d + + 0 <", it.next());
+
+        it = listSystem.get(1).getInequalities().iterator();
+        assertEquals("c 1 - c 1 + d + + 0 <", it.next());
+        assertEquals("c 3 + 0 >", it.next());
+
+        Set<Place> inputPlaces = new HashSet<>();
+        Collections.addAll(inputPlaces, place00, place01, place05);
+        assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
+
+        inputPlaces = new HashSet<>();
+        Collections.addAll(inputPlaces, place03, place05);
+        assertEquals(inputPlaces, listSystem.get(1).getInputPlaces());
+    }
+
+    @Test
+    public void addGenerateAllSystem02() {
+        List<LinearSystem> listSystem = net.generateAllCompleteSystems(place06);
+        assertEquals(1, listSystem.size());
+
+        Iterator it = listSystem.get(0).getInequalities().iterator();
+        assertEquals("a b + 0 >", it.next());
+        assertEquals("a b + 1 >=", it.next());
+
+        Set<Place> inputPlaces = new HashSet<>();
+        Collections.addAll(inputPlaces, place00, place01);
+        assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
     }
 }
