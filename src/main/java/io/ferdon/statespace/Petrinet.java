@@ -240,6 +240,27 @@ public class Petrinet implements Serializable {
 
     }
 
+    List<LinearSystem> generateAllSystemFromInput(Node currNode) {
+
+        if (currNode instanceof Place) {
+
+
+
+            Place currPlace = (Place) currNode;
+            for(Transition transition: currPlace.getInTransition()) {
+                currPlace.addListSystem(transition.getListSystem());
+            }
+        }
+
+        if (currNode instanceof Transition) {
+            Transition currTran = (Transition) currNode;
+            List<LinearSystem> linearSystems = Utils.generateAllSystems(currTran);
+            currTran.addListSystem(linearSystems);
+        }
+
+        return currNode.getListSystem();
+    }
+
     /**
      * Finding paths from the startPlaces (set of place) to the endPlace.
      * The path contains:
@@ -304,46 +325,10 @@ public class Petrinet implements Serializable {
         List<Binding> result = new ArrayList<>();
         for(Path path: pathMap.get(toPlace)) {
 
-            Map<String, String> varMappingResult = new HashMap<>();
-            Map<String, Integer> varOrders = new HashMap<>();
+            Map<String, String> varMappingResult = Utils.solveLinearInequalities(path, interpreter);
 
-            double[][] coeffs = path.getCoefficients(interpreter, varOrders);
-            int numCoeffs = coeffs[0].length - 1;
-
-            double[] point = Utils.solveLinearInequalities(
-                coeffs, path.getConditions(), false, GoalType.MAXIMIZE,
-                new double[numCoeffs]
-            );
-
-            if (point == null) continue;
-            for(String var: varOrders.keySet()) {
-                varMappingResult.put(var, String.format("%.10f", point[varOrders.get(var)]));
-            }
+            if (varMappingResult.isEmpty()) continue;
             result.add(new Binding(varMappingResult));
-        }
-
-        return result;
-    }
-
-    Map<String, VarDomain> getVarsDomain(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
-
-        Map<Place, List<Path>> pathMap = new HashMap<>();
-        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
-
-        Map<String, VarDomain> result = new HashMap<>();
-        for(Path path: pathMap.get(toPlace)) {
-
-            Map<String, Integer> varOrders = new HashMap<>();
-            double[][] coeffs = path.getCoefficients(interpreter, varOrders);
-
-            for (String var : varOrders.keySet()) {
-
-                VarDomain domain = Utils.getVarDomainFromConditions(coeffs, path.getConditions(), varOrders.get(var));
-                if (domain == null) continue;
-
-                if (!result.containsKey(var)) result.put(var, new VarDomain());
-                result.get(var).addDomain(domain);
-            }
         }
 
         return result;
