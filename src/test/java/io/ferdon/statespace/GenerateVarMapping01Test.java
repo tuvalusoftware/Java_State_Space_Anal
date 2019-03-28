@@ -9,7 +9,7 @@ import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
-public class GenerateVarMappingTest {
+public class GenerateVarMapping01Test {
     private PetrinetModel model;
     private Petrinet net;
     private Place place00, place01, place02, place03, place04, place05, place06, place07;
@@ -120,21 +120,6 @@ public class GenerateVarMappingTest {
         assertEquals("c 1 -", vars07.getValueList("f").get(0));
         assertEquals("a b +", vars07.getValueList("f").get(1));
 
-    }
-
-    @Test
-    public void testFindingPath01() {
-        Map<Place, List<Path>> pathMap = new HashMap<>();
-        net.findPathConditions(startPlaces, place00, place07, pathMap, new HashSet<>());
-        assertEquals(1, pathMap.get(place07).size());
-
-        Set<String> condition01 = pathMap.get(place07).get(0).getConditions();
-        assertEquals(3, condition01.size());
-
-        Iterator it = condition01.iterator();
-        assertEquals("a b + 0 >", it.next());
-        assertEquals("a b + e d + + 0 <", it.next());
-        assertEquals("a b + a b - d + + 0 <", it.next());
     }
 }
 

@@ -122,25 +122,6 @@ public class Transition extends Node {
         return result;
     }
 
-//    void addVarsMapping(Map<String, List<String>> vars, Map<String, List<String>> result) {
-//        for(String varName: vars.keySet()) {
-//            if (!result.containsKey(varName)) result.put(varName, new ArrayList<>());
-//            result.get(varName).addAll(vars.get(varName));
-//        }
-//    }
-//
-//    Map<String, List<String>> combineVarsMapping(List<Place> fromPlace) {
-//
-//        Set<Place> inPlaceSet = new HashSet<>(getInPlaces());
-//        Map<String, List<String>> result = new HashMap<>();
-//
-//        for(Place place: fromPlace) {
-//            if (!inPlaceSet.contains(place)) continue;
-//            Map<String, List<String>> currMapping = place.getVarMapping();
-//            addVarsMapping(currMapping, result);
-//        }
-//    }
-
     void addVarMappingToAllSystems(Place nextPlace) {
 
         List<Transition> inTrans = new ArrayList<>();

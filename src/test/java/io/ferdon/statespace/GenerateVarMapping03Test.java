@@ -8,7 +8,7 @@ import java.util.*;
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class FindingPath04Test {
+public class GenerateVarMapping03Test {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -64,48 +64,5 @@ public class FindingPath04Test {
         assertEquals(2, vars03.size());
         assertEquals("a 1 +", vars03.getValueList("b").get(0));
         assertEquals("a 2 +", vars03.getValueList("c").get(0));
-    }
-
-    @Test
-    public void testFindPath() {
-
-        net.findPathConditions(startPlaces, place00, place03, pathMap, new HashSet<>());
-        assertEquals(2, pathMap.get(place03).size());
-
-        List<Node> path01 = pathMap.get(place03).get(0).getNodePath();
-        assertEquals(5, path01.size());
-        assertEquals(0, path01.get(0).getID());
-        assertEquals(0, path01.get(1).getID());
-        assertEquals(1, path01.get(2).getID());
-        assertEquals(1, path01.get(3).getID());
-        assertEquals(3, path01.get(4).getID());
-
-        List<Node> path02 = pathMap.get(place03).get(1).getNodePath();
-        assertEquals(5, path02.size());
-        assertEquals(0, path02.get(0).getID());
-        assertEquals(0, path02.get(1).getID());
-        assertEquals(2, path02.get(2).getID());
-        assertEquals(2, path02.get(3).getID());
-        assertEquals(3, path02.get(4).getID());
-    }
-
-    @Test
-    public void testCondition() {
-
-        net.findPathConditions(startPlaces, place00, place03, pathMap, new HashSet<>());
-        assertEquals(2, pathMap.get(place03).size());
-
-        Set<String> condition01 = pathMap.get(place03).get(0).getConditions();
-        Iterator it = condition01.iterator();
-        assertEquals(2, condition01.size());
-        assertEquals("a 1 + 0 >", it.next());
-        assertEquals("a 2 >", it.next());
-
-        Set<String> condition02 = pathMap.get(place03).get(1).getConditions();
-        it = condition02.iterator();
-        assertEquals(2, condition02.size());
-        assertEquals("a 2 + a 1 + + 10 <", it.next());
-        assertEquals("a 2 >", it.next());
-
     }
 }

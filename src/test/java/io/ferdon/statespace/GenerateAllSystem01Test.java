@@ -8,7 +8,7 @@ import java.util.*;
 import static io.ferdon.statespace.main.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class GeneratingAllSystem01Test {
+public class GenerateAllSystem01Test {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -33,7 +33,7 @@ public class GeneratingAllSystem01Test {
     }
 
     @Test
-    public void addGenerateAllSystem01() {
+    public void testGenerateAllSystem01() {
         List<LinearSystem> listSystem = net.generateAllCompleteSystems(place07);
         assertEquals(2, listSystem.size());
 
@@ -55,7 +55,7 @@ public class GeneratingAllSystem01Test {
     }
 
     @Test
-    public void addGenerateAllSystem02() {
+    public void testGenerateAllSystem02() {
         List<LinearSystem> listSystem = net.generateAllCompleteSystems(place06);
         assertEquals(1, listSystem.size());
 

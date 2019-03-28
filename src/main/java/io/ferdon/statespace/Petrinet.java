@@ -238,7 +238,7 @@ public class Petrinet implements Serializable {
 
     }
 
-    List<LinearSystem> generateAllSystemFromInput(Node currNode) {
+    private List<LinearSystem> generateAllSystemFromInput(Node currNode) {
 
         if (!currNode.getListSystem().isEmpty()) return currNode.getListSystem();
 
@@ -276,79 +276,6 @@ public class Petrinet implements Serializable {
         List<LinearSystem> result = generateAllSystemFromInput(endPlace);
         for(LinearSystem linearSystem: result) {
             linearSystem.applyCurrentVarMapping();
-        }
-
-        return result;
-    }
-
-    /**
-     * Finding paths from the startPlaces (set of place) to the endPlace.
-     * The path contains:
-     *      1. List of Places and Transitions in order.
-     *      2. List of Conditions from any place of startPlaces to current place
-     * @param dependentPlaces set of input Places
-     * @param toPlace the end place
-     * @param pathMap the map from place ~> list of path start from that place to the end place
-     */
-     void findPathConditions(Set<Place> dependentPlaces,
-                             Place fromPlace, Place toPlace,
-                             Map<Place, List<Path>> pathMap, Set<Place> visited) {
-
-         pathMap.put(toPlace, new ArrayList<>());
-
-        if (toPlace.isEmptyInput()) {
-            Path path = new Path();
-            path.addPathNode(toPlace);
-            pathMap.get(toPlace).add(path);
-            visited.add(toPlace);
-            return;
-        }
-
-        for (Transition inTran : toPlace.getInTransition()) {  /* each transition is a independent path */
-
-            for (Place previousPlace : inTran.getInPlaces()) {  /* each place is a dependent path */
-                if (!visited.contains(previousPlace)) {
-                    findPathConditions(dependentPlaces, fromPlace, previousPlace, pathMap, visited);
-                }
-            }
-
-            /*  check if in those input places of [inTran], does any contain the [dependentPlaces]?
-                If not, we can safely early return here.
-                There is not path lead to [dependentPlaces] from [inTran] */
-
-            boolean isContainStartPlace = false;
-            for(Place previousPlace: inTran.getInPlaces()) {
-                for(Path previousPath: pathMap.get(previousPlace)) {
-                    if (dependentPlaces.contains(previousPath.getStartPlace())) {
-                        isContainStartPlace = true;
-                        break;
-                    }
-                }
-                if (isContainStartPlace) break;
-            }
-
-            if (!isContainStartPlace) continue; /* this transition doesn't lead to [dependentPlaces] */
-
-            List<Path> newPaths = Utils.generateAllPath(
-                    inTran.getInPlaces(), pathMap,
-                    inTran, dependentPlaces, fromPlace, toPlace
-            );
-            pathMap.get(toPlace).addAll(newPaths);
-        }
-    }
-
-    List<Binding> getFireableToken(Set<Place> dependentPlaces, Place fromPlace, Place toPlace) {
-
-        Map<Place, List<Path>> pathMap = new HashMap<>();
-        findPathConditions(dependentPlaces, fromPlace, toPlace, pathMap, new HashSet<>());
-
-        List<Binding> result = new ArrayList<>();
-        for(Path path: pathMap.get(toPlace)) {
-
-            Map<String, String> varMappingResult = Utils.solveLinearInequalities(path, interpreter);
-
-            if (varMappingResult.isEmpty()) continue;
-            result.add(new Binding(varMappingResult));
         }
 
         return result;

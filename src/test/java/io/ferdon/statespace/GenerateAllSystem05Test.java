@@ -9,17 +9,18 @@ import static io.ferdon.statespace.main.parseJson;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class FindingFireableBinding01Test {
+public class GenerateAllSystem05Test {
 
     private PetrinetModel model;
     private Petrinet net;
     private Place place00, place01, place02;
     private Transition transition00;
     private Interpreter interpreter;
+    private Set<Place> startPlaces;
 
     @Before
     public void setUp() {
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/simple.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/onePath02.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
@@ -28,18 +29,23 @@ public class FindingFireableBinding01Test {
         place02 = net.getPlace(2);
         transition00 = net.getTransition(0);
         interpreter = new Interpreter();
+
+        startPlaces = new HashSet<>();
+        Collections.addAll(startPlaces, place00);
     }
 
     @Test
-    public void testFindFireableToken() {
-        Set<Place> startPlaces = new HashSet<>();
-        Collections.addAll(startPlaces, place00);
-        List<Binding> bindings = net.getFireableToken(startPlaces, place00, place02);
+    public void testGenerateAllSystem() {
 
-        assertEquals(1, bindings.size());
+        List<LinearSystem> listSystem = net.generateAllCompleteSystems(place02);
+        assertEquals(1, listSystem.size());
 
-        Map<String, String> res = bindings.get(0).assignValueToVariables();
-        String guard = place00.getOutTransition().get(0).getGuard();
-        assertTrue(interpreter.interpretFromString(guard, res).getBoolean());
+        Iterator it = listSystem.get(0).getInequalities().iterator();
+        assertEquals("a 10 <=", it.next());
+        assertEquals("a 1 + 5 >=", it.next());
+
+        Set<Place> inputPlaces = new HashSet<>();
+        Collections.addAll(inputPlaces, place00);
+        assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
     }
 }
