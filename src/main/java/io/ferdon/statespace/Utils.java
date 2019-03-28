@@ -178,7 +178,7 @@ final class Utils {
 
             String token = tokens[i].trim();
             if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
-                tokens[i] = currentMapping.get(token).trim();
+                tokens[i] = currentMapping.getOrDefault(token, tokens[i]).trim();
             }
         }
 
@@ -332,6 +332,7 @@ final class Utils {
 
         for(List<LinearSystem> listSystem: combinedList) {
             LinearSystem newSystem = new LinearSystem(listSystem);
+            newSystem.addInequality(currTran.getGuard());
             result.add(newSystem);
         }
 

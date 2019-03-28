@@ -240,11 +240,15 @@ public class Petrinet implements Serializable {
 
     List<LinearSystem> generateAllSystemFromInput(Node currNode) {
 
-        if (currNode instanceof Place) {
+        if (!currNode.getListSystem().isEmpty()) return currNode.getListSystem();
+
+        if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
             for(Transition transition: currPlace.getInTransition()) {
-                currPlace.addListSystem(transition.getListSystem(), currPlace.getVarMapping());
+                generateAllSystemFromInput(transition);
+                transition.addVarMappingToAllSystems(currPlace);
+                currPlace.addListSystem(transition.getListSystem());
             }
 
             if (currPlace.isEmptyInput()) {
@@ -254,13 +258,27 @@ public class Petrinet implements Serializable {
             }
         }
 
-        if (currNode instanceof Transition) {
+        if (currNode instanceof Transition) {   /* Transition */
+
             Transition currTran = (Transition) currNode;
+            for(Place place: currTran.getInPlaces()) {
+                generateAllSystemFromInput(place);
+            }
+
             List<LinearSystem> linearSystems = Utils.generateAllSystems(currTran);
-            currTran.addListSystem(linearSystems, null);
+            currTran.addListSystem(linearSystems);
         }
 
         return currNode.getListSystem();
+    }
+
+    List<LinearSystem> generateAllCompleteSystems(Place endPlace) {
+        List<LinearSystem> result = generateAllSystemFromInput(endPlace);
+        for(LinearSystem linearSystem: result) {
+            linearSystem.applyCurrentVarMapping();
+        }
+
+        return result;
     }
 
     /**

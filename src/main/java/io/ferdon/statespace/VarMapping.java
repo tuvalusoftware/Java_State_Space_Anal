@@ -25,7 +25,7 @@ public class VarMapping {
     }
 
     /**
-     * Create a var mapping with the union places in [fromTransitions] && place.getInPlaces()
+     * Create a var mapping with the intersect places in [fromTransitions] && place.getInTransition()
      * @param fromTransitions list of input transitions
      * @param place current place
      */

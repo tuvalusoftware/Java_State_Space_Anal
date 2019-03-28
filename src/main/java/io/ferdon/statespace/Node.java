@@ -11,6 +11,8 @@
 
 package io.ferdon.statespace;
 
+import com.google.errorprone.annotations.Var;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,13 +46,8 @@ public class Node implements Serializable {
     /**
      * Add list of Linear System object into current Node, also replace variables (if possible).
      * @param listSystem List of Linear System object.
-     * @param varMapping a VarMapping for replacing old variable. (do not replace if varMapping == null).
      */
-    void addListSystem(List<LinearSystem> listSystem, VarMapping varMapping) {
-
-        for(LinearSystem linearSystem: listSystem) {
-            if (varMapping != null) linearSystem.changeVariable(varMapping);
-            linearSystems.add(linearSystem);
-        }
+    void addListSystem(List<LinearSystem> listSystem) {
+        linearSystems.addAll(listSystem);
     }
 }

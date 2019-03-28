@@ -9,6 +9,7 @@ public class LinearSystem {
 
     private Set<String> inequalities;
     private Set<Place> inputPlaces;
+    private VarMapping varMapping;
 
     public Set<String> getInequalities() {
         return inequalities;
@@ -21,6 +22,7 @@ public class LinearSystem {
     LinearSystem(Set<Place> inputPlaces) {
         this.inequalities = new HashSet<>();
         this.inputPlaces = inputPlaces;
+        this.varMapping = new VarMapping();
     }
 
     /**
@@ -31,18 +33,19 @@ public class LinearSystem {
 
         inequalities = new HashSet<>();
         inputPlaces = new HashSet<>();
+        varMapping = new VarMapping();
 
         for(LinearSystem linearSystem: listSystems) {
             inequalities.addAll(linearSystem.getInequalities());
             inputPlaces.addAll(linearSystem.getInputPlaces());
+            varMapping.addVarsMapping(linearSystem.getVarMapping());
         }
     }
 
     /**
      * Replace variable in inequalities by a new VarMapping.
-     * @param varMapping a VarMapping object that replace old variables
      */
-    void changeVariable(VarMapping varMapping) {
+    void applyCurrentVarMapping() {
 
         List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(varMapping);
 
@@ -55,5 +58,13 @@ public class LinearSystem {
         }
 
         inequalities = newEqualities;
+    }
+
+    public VarMapping getVarMapping() {
+        return varMapping;
+    }
+
+    void addInequality(String inequality) {
+        inequalities.add(inequality);
     }
 }
