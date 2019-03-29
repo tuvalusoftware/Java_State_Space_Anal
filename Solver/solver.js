@@ -19,7 +19,7 @@ String.prototype.format = function() {
 }
 
 let decimalOffset = 0.00001
-let url = 'http://localhost:5000/solver'
+let url = 'http://localhost:6000/solver'
 
 module.exports = {
 	//2: optimized

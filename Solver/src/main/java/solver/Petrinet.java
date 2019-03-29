@@ -315,14 +315,23 @@ public class Petrinet implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/multiplePath01.json";
+        String relativePath = "/src/main/java/PetrinetJson/combine.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
+        Converter.init();
 
-        Map<Set<Place>, List<LinearSystem>> allPaths = net.generateMapCompleteSystems(net.getPlace(6));
+
+        Map<Set<Place>, List<LinearSystem>> allPaths = net.generateMapCompleteSystems(net.getPlace(7));
+        for(Set<Place> p: allPaths.keySet()){
+            for(LinearSystem s: allPaths.get(p)){
+                for (String inequality: s.getInequalities()){
+                    print(Converter.toInfix(inequality));
+                }
+            }
+        }
 
     }
 

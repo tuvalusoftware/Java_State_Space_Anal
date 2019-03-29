@@ -8,12 +8,16 @@ public class Inequalities {
     private Set<String> vars;
     private Set<String> constraints;
 
-    public String[] getVars() {
-        return vars.toArray(new String[vars.size()]);
+    public Inequalities(String[] vars, String[] constraint){
+        
     }
 
-    public String[] getConstraints() {
-        return constraints.toArray(new String[constraints.size()]);
+    public Set<String> getVars() {
+        return vars;
+    }
+
+    public Set<String>  getConstraints() {
+        return constraints;
     }
 
 }
