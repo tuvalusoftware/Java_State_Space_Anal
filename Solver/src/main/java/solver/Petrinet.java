@@ -232,64 +232,48 @@ public class Petrinet implements Serializable {
 
     }
 
-    /**
-     * Finding paths from the startPlaces (set of place) to the endPlace.
-     * The path contains:
-     * 1. List of Places and Transitions in order.
-     * 2. List of Conditions from any place of startPlaces to current place
-     *
-     * @param dependentPlaces set of input Places
-     * @param toPlace         the end place
-     * @param pathMap         the map from place ~> list of path start from that place to the end place
-     */
-    static void findPathConditions(Set<Place> dependentPlaces,
-                            Place fromPlace, Place toPlace,
-                            Map<Place, List<Path>> pathMap, Set<Place> visited) {
+    private List<LinearSystem> generateAllSystemFromInput(Node currNode) {
 
-        pathMap.put(toPlace, new ArrayList<>());
+        if (!currNode.getListSystem().isEmpty()) return currNode.getListSystem();
 
-        if (toPlace.isEmptyInput()) {
-            Path path = new Path();
-            path.addPathNode(toPlace);
-            pathMap.get(toPlace).add(path);
-            visited.add(toPlace);
-            return;
-        }
+        if (currNode instanceof Place) {   /* Place */
 
-        for (Transition inTran : toPlace.getInTransition()) {  /* each transition is a independent path */
-
-            for (Place previousPlace : inTran.getInPlaces()) {  /* each place is a dependent path */
-                if (!visited.contains(previousPlace)) {
-                    findPathConditions(dependentPlaces, fromPlace, previousPlace, pathMap, visited);
-                }
+            Place currPlace = (Place) currNode;
+            for(Transition transition: currPlace.getInTransition()) {
+                generateAllSystemFromInput(transition);
+                transition.addVarMappingToAllSystems(currPlace);
+                currPlace.addListSystem(transition.getListSystem());
             }
 
-            /*  check if in those input places of [inTran], does any contain the [dependentPlaces]?
-                If not, we can safely early return here.
-                There is not path lead to [dependentPlaces] from [inTran] */
+            if (currPlace.isEmptyInput()) {
+                Set<Place> inputPlaces = new HashSet<>();
+                inputPlaces.add(currPlace);
+                currPlace.addSystem(new LinearSystem(inputPlaces));
+            }
+        }
 
-            boolean isContainStartPlace = false;
-            for (Place previousPlace : inTran.getInPlaces()) {
-                for (Path previousPath : pathMap.get(previousPlace)) {
-                    if (dependentPlaces.contains(previousPath.getStartPlace())) {
-                        isContainStartPlace = true;
-                        break;
-                    }
-                }
-                if (isContainStartPlace) break;
+        if (currNode instanceof Transition) {   /* Transition */
+
+            Transition currTran = (Transition) currNode;
+            for(Place place: currTran.getInPlaces()) {
+                generateAllSystemFromInput(place);
             }
 
-            if (!isContainStartPlace) continue; /* this transition doesn't lead to [dependentPlaces] */
-
-            List<Path> newPaths = Utils.generateAllPath(
-                    inTran.getInPlaces(), pathMap,
-                    inTran, dependentPlaces, fromPlace, toPlace
-            );
-            pathMap.get(toPlace).addAll(newPaths);
+            List<LinearSystem> linearSystems = Utils.generateAllSystems(currTran);
+            currTran.addListSystem(linearSystems);
         }
+
+        return currNode.getListSystem();
     }
 
+    List<LinearSystem> generateAllCompleteSystems(Place endPlace) {
+        List<LinearSystem> result = generateAllSystemFromInput(endPlace);
+        for (LinearSystem linearSystem : result) {
+            linearSystem.applyCurrentVarMapping();
+        }
 
+        return result;
+    }
 
     public HashSet<Place> findDependenciesStartPlace(Place end) {
 
@@ -323,22 +307,6 @@ public class Petrinet implements Serializable {
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
-
-        Place startPlace = net.getPlace(1);
-        Place endPlace = net.getPlace(7);
-
-        Set<Place> dependentPlaces = new HashSet<>();
-        dependentPlaces.add(net.getPlace(0));
-        dependentPlaces.add(startPlace);
-
-
-        Map<Place,List<Path>> pathMap = new HashMap<>();
-        Set<Place> visited = new HashSet<>();
-
-        findPathConditions(dependentPlaces,startPlace,endPlace,pathMap,visited);
-
-        Set<String> condition = pathMap.get(endPlace).get(0).getConditions();
-        print(condition.toString());
     }
 
     public static void print(String s){
