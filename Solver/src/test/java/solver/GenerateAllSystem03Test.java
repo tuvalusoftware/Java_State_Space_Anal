@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static solver.main.parseJson;
+import static solver.Utils.parseJson;
 import static org.junit.Assert.assertEquals;
 
 public class GenerateAllSystem03Test {

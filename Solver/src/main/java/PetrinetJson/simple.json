@@ -1,0 +1,27 @@
+{
+  "Expressions": [
+    [[2, " [ a b + ] "]]
+  ],
+  "Guards": [
+    "a 4 >="
+  ],
+  "Markings": [
+    "",
+    "",
+    ""
+  ],
+  "T": 1,
+  "Variables": [
+    [[0, " a "], [1, " b "]]
+  ],
+  "inPlace": [
+  ],
+  "outPlace": [
+  ],
+  "placeToColor": {
+    "0": "INT",
+    "1": "INT",
+    "2": "INT"
+  }
+}
+

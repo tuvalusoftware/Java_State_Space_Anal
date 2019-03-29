@@ -9,14 +9,10 @@
 
 package solver;
 
-import org.json.JSONObject;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-import static solver.main.parseJson;
-import static solver.Utils.generateAllBinding;
-import solver.Utils;
-import solver.generator.Converter;
+
+import static solver.Utils.parseJson;
 
 public class Petrinet implements Serializable {
 
@@ -319,11 +315,15 @@ public class Petrinet implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/combine.json";
+        String relativePath = "/src/main/java/PetrinetJson/multiplePath01.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
+
+
+        Map<Set<Place>, List<LinearSystem>> allPaths = net.generateMapCompleteSystems(net.getPlace(6));
+
     }
 
     public static void print(String s){
