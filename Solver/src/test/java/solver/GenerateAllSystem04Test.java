@@ -52,7 +52,7 @@ public class GenerateAllSystem04Test {
         assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
 
         it = listSystem.get(1).getInequalities().iterator();
-        assertEquals("e f * -1 <", it.next());
+        assertEquals("e f - -1 <", it.next());
         assertEquals("a b + 0 >", it.next());
         assertEquals("a b + e f + - 0 >", it.next());
 
@@ -70,7 +70,7 @@ public class GenerateAllSystem04Test {
         assertEquals(inputPlaces, listSystem.get(2).getInputPlaces());
 
         it = listSystem.get(3).getInequalities().iterator();
-        assertEquals("e f * -1 <", it.next());
+        assertEquals("e f - -1 <", it.next());
         assertEquals("c 0 >", it.next());
         assertEquals("c e f + - 0 >", it.next());
 
