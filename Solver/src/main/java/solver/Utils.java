@@ -174,7 +174,7 @@ final class Utils {
 
             String token = tokens[i].trim();
             if (Interpreter.getValueType(token) == Interpreter.ValueType.VARIABLE) {
-                tokens[i] = currentMapping.get(token).trim();
+                tokens[i] = currentMapping.getOrDefault(token, tokens[i]).trim();
             }
         }
 
@@ -212,49 +212,23 @@ final class Utils {
         return result;
     }
 
-    static List<Path> generateAllPath(List<Place> inputPlaces,
-                                      Map<Place, List<Path>> pathMap,
-                                      Transition inTran,
-                                      Set<Place> dependentPlaces,
-                                      Place fromPlace, Place toPlace) {
+    static List<LinearSystem> generateAllSystems(Transition currTran) {
 
-        List<List<Path>> paths = new ArrayList<>();
-        for (Place inputPlace : inputPlaces) {
-            paths.add(pathMap.get(inputPlace));
+        List<List<LinearSystem>> cartesianInput = new ArrayList<>();
+        for(Place place: currTran.getInPlaces()) {
+            cartesianInput.add(place.getListSystem());
         }
 
-        List<List<Path>> combinedPaths = Lists.cartesianProduct(paths);
+        List<List<LinearSystem>> combinedList = Lists.cartesianProduct(cartesianInput);
+        List<LinearSystem> result = new ArrayList<>();
 
-        List<Path> result = new ArrayList<>();
-
-        for (List<Path> listPath : combinedPaths) {
-
-            Path mainPath = null;
-            for (Path path : listPath) {
-                if (path.getStartPlace().getID() == fromPlace.getID()) mainPath = path;
-            }
-            if (mainPath == null) {
-                for (Path path : listPath) {
-                    if (dependentPlaces.contains(path.getStartPlace())) mainPath = path;
-                }
-            }
-
-            VarMapping currVarMapping = new VarMapping();
-            for (Path path : listPath) {
-                VarMapping pathVarMapping = path.getVarMappingOnPath(inTran);
-                currVarMapping.addVarsMapping(pathVarMapping);
-            }
-
-            Path path = new Path(mainPath);
-            path.addUpdatedCondition(currVarMapping, inTran.getGuard());
-            path.addPathNode(inTran);
-            path.addPathNode(toPlace);
-            path.combinePath(listPath);
-            result.add(path);
+        for(List<LinearSystem> listSystem: combinedList) {
+            LinearSystem newSystem = new LinearSystem(listSystem);
+            newSystem.addInequality(currTran.getGuard());
+            result.add(newSystem);
         }
 
         return result;
     }
-
 
 }
