@@ -38,7 +38,7 @@ public class GenerateAllSystem04Test {
 
     @Test
     public void testGenerateAllSystem() {
-        List<LinearSystem> listSystem = net.generateAllCompleteSystems(place06);
+        List<LinearSystem> listSystem = net.generateListCompleteSystems(place06);
 
         assertEquals(4, listSystem.size());
 

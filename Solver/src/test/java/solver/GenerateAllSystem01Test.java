@@ -34,7 +34,7 @@ public class GenerateAllSystem01Test {
 
     @Test
     public void testGenerateAllSystem01() {
-        List<LinearSystem> listSystem = net.generateAllCompleteSystems(place07);
+        List<LinearSystem> listSystem = net.generateListCompleteSystems(place07);
         assertEquals(2, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
@@ -56,7 +56,7 @@ public class GenerateAllSystem01Test {
 
     @Test
     public void testGenerateAllSystem02() {
-        List<LinearSystem> listSystem = net.generateAllCompleteSystems(place06);
+        List<LinearSystem> listSystem = net.generateListCompleteSystems(place06);
         assertEquals(1, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();

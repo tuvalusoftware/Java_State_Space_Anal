@@ -35,7 +35,7 @@ public class GenerateAllSystem02Test {
 
     @Test
     public void testGenerateAllSystem() {
-        List<LinearSystem> listSystem = net.generateAllCompleteSystems(place03);
+        List<LinearSystem> listSystem = net.generateListCompleteSystems(place03);
         assertEquals(2, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
