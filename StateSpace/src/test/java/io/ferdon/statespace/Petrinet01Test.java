@@ -34,8 +34,8 @@ public class Petrinet01Test {
             transition = net.getTransition(i);
             assertEquals(1, place.getInTransition().size());
             assertEquals(1, place.getOutTransition().size());
-            assertEquals(1, transition.getInPlaceArray().length);
-            assertEquals(1, transition.getOutPlaceArray().length);
+            assertEquals(1, transition.getInPlaceIDs().length);
+            assertEquals(1, transition.getOutPlaceIDs().length);
         }
     }
 
