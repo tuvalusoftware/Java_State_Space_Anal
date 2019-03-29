@@ -16,6 +16,7 @@ import java.util.*;
 import static solver.main.parseJson;
 import static solver.Utils.generateAllBinding;
 import solver.Utils;
+import solver.generator.Converter;
 
 public class Petrinet implements Serializable {
 
@@ -323,6 +324,7 @@ public class Petrinet implements Serializable {
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
+        Converter.init();
 
         Place startPlace = net.getPlace(1);
         Place endPlace = net.getPlace(7);
@@ -337,8 +339,10 @@ public class Petrinet implements Serializable {
 
         findPathConditions(dependentPlaces,startPlace,endPlace,pathMap,visited);
 
-        Set<String> condition = pathMap.get(endPlace).get(0).getConditions();
-        print(condition.toString());
+        Set<String> conditions = pathMap.get(endPlace).get(0).getConditions();
+        for (String cond: conditions){
+            print(Converter.postfixToInfix(cond));
+        }
     }
 
     public static void print(String s){
