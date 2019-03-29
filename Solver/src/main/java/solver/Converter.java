@@ -23,9 +23,21 @@ public class Converter {
         operator.put("&&",1);
     }
 
+    public static String flipSign(String s){
+        char[] temp = s.toCharArray();
+        for(int i=0; i<temp.length; i++){
+            if (temp[i] == '+') {
+                temp[i] = '-';
+            }
+            else if (temp[i] == '-') temp[i] = '+';
+        }
+        return String.valueOf(temp);
+    }
+
     public static String toInfix(String expression){
         Stack<String> stack = new Stack<>();
-        String prev = "";
+        String prevOp = "";
+        String prevToken = "";
         String result = "";
         for (String p: expression.split(" ")) {
             if (!operator.containsKey(p)) {
@@ -35,7 +47,7 @@ public class Converter {
                 String b = stack.pop();
                 String a = stack.pop();
                 //current operator > prev opertor
-                if (!prev.equals("") && operator.get(p)>operator.get(prev)){
+                if (!prevOp.equals("") && operator.get(p)>operator.get(prevOp)){
                     if (a.contains("+") || a.contains("-")){
                         stack.push("(" + a + ")" + p + b);
                     }
@@ -43,12 +55,17 @@ public class Converter {
                         stack.push(a + p + b);
                     }
                 }
-                //same priority
-                else{
-                    stack.push(a + p + b);
+                //if current is - and there are + - before current
+                else if (p.equals("-") && operator.containsKey(prevToken)){
+                    stack.push(a + p + "(" + b + ")");
                 }
-                prev = p;
+                else{
+                    stack.push(a+p+b);
+                }
+                prevOp = p;
             }
+            prevToken = p;
+
         }
         return stack.pop();
     }
@@ -56,7 +73,8 @@ public class Converter {
 
     public static String toInfixFlatten(String expression){
         Stack<String> stack = new Stack<>();
-        String prev = "";
+        String prevOp = "";
+        String prevToken = "";
         String result = "";
         for (String p: expression.split(" ")) {
             if (!operator.containsKey(p)) {
@@ -66,7 +84,7 @@ public class Converter {
                 String b = stack.pop();
                 String a = stack.pop();
                 //current operator > prev opertor
-                if (!prev.equals("") && operator.get(p)>operator.get(prev)){
+                if (!prevOp.equals("") && operator.get(p)>operator.get(prevOp)){
                     if (a.contains("+") || a.contains("-")){
                         String temp = "";
                         String var = "";
@@ -108,12 +126,17 @@ public class Converter {
                         stack.push(a + p + b);
                     }
                 }
-                //same priority
-                else{
+                //if current is - and there are + - before current
+                else if (p.equals("-") && operator.containsKey(prevToken)){
+                    b = flipSign(b);
                     stack.push(a + p + b);
                 }
-                prev = p;
+                else{
+                    stack.push(a+p+b);
+                }
+                prevOp = p;
             }
+            prevToken = p;
         }
         return stack.pop();
     }
@@ -128,8 +151,11 @@ public class Converter {
         5 x * 2 y * + 9 z * -
         5 x * 3 - 7 * 10 - y *
         12 3 + 4 -15 * 5 *
+
+        3 5 2 + -
+        3 5 1 + 2 - 3 + 4 + -
         */
-        String s = "5 x * 3 - 7 * 10 - y *";
+        String s = "7 1 2 - 3 + 4 5 - 6 + - -";
         print(toInfix(s));
         print(toInfixFlatten(s));
     }
