@@ -263,7 +263,7 @@ public class Petrinet implements Serializable {
         return currNode.getListSystem();
     }
 
-    List<LinearSystem> generateListCompleteSystems(Place endPlace) {
+    public List<LinearSystem> generateListCompleteSystems(Place endPlace) {
         List<LinearSystem> result = generateAllSystemFromInput(endPlace);
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();

@@ -73,7 +73,7 @@ public class Converter {
         return String.valueOf(temp);
     }
 
-    public static String mulCal(String result, String a, String b){
+    public static String mulCal(String a, String b){
         boolean signA = a.contains("-");
         boolean signB = b.contains("-");
         a = a.replace("-","");
@@ -85,6 +85,40 @@ public class Converter {
             return "-" + a + "*" + b;
         }
     }
+
+    public static String postProcess(String s){
+        String result = "";
+        String var = "";
+        Double coeff = 1.0;
+        Double free = 0.0;
+        for (String operand: s.split("(?=-)|\\+")){
+            coeff = 1.0;
+            var = "";
+            free = 0.0;
+            if (operand.matches("^[+-]?\\d+(\\.\\d+)?")){
+                free += Double.parseDouble(operand);
+            }
+            for (String e: operand.split("\\*")){
+                if (e.matches("^[+-]?\\d+(\\.\\d+)?")){
+                    coeff *= Double.parseDouble(e);
+                }
+                else{
+                    var += "*" + e;
+                }
+            }
+            result += coeff+var;
+        }
+        if (free>0){
+            return result + "+" + free;
+        }
+        else if (free<0){
+            return result + free;
+        }
+        else{
+            return result;
+        }
+    }
+
 
     public static String parseMultiplyOp(String a, String b){
         String result = "";
@@ -101,7 +135,7 @@ public class Converter {
                     //check to see if both operands are numbers
                     isNumA = operandA.matches("^[+-]?\\d+(\\.\\d+)?");
                     isNumB = operandB.matches("^[+-]?\\d+(\\.\\d+)?");
-                    //both are numbers
+                    //both are numbers then multiply
                     if (isNumA && isNumB){
                         Double coeff = Double.parseDouble(operandA)*Double.parseDouble(operandB);
                         if (coeff>=0){
@@ -112,11 +146,11 @@ public class Converter {
                     }
                     //string*number
                     else if (!isNumA && isNumB){
-                        result += mulCal(result,operandB,operandA);
+                        result += mulCal(operandB,operandA);
                     }
-                    //number*string or string*string
+                    //number*string
                     else{
-                        result += mulCal(result,operandA,operandB);
+                        result += mulCal(operandA,operandB);
                     }
                 }
             }
@@ -138,17 +172,18 @@ public class Converter {
             else{
                 String b = stack.pop();
                 String a = stack.pop();
-                print(a + "______-" + b);
-
                 //current operator is *
                 if (p.equals("*")){
                     //if just flatten and current op is * then continue to flatten
                     if (justFlatten){
                         stack.push(trimFirstPlus((parseMultiplyOp(a,b))));
                     }
-                    else if (operator.get(prevOp)==1){
+                    else if (operator.containsKey(prevOp) && operator.get(prevOp)==1) {
                         stack.push(trimFirstPlus((parseMultiplyOp(a,b))));
                         justFlatten = true;
+                    }
+                    else{
+                        stack.push(a+"*"+b);
                     }
                 }
                 //if current is - and there are + - before current
@@ -165,6 +200,7 @@ public class Converter {
             }
             prevToken = p;
         }
+        print(postProcess(stack.peek()));
         return stack.pop();
     }
 
@@ -181,8 +217,9 @@ public class Converter {
         3 5 2 + -
         3 5 1 + 2 - 3 + 4 + -
         x y + z t + * 5 *
+        a b - c 2 - * x y - 2 * 3 * +
         */
-        String s = "a b - c d - * e f + *";
+        String s = "5 x * 3 - 7 * 10 - y *";
         print(s);
         print(toInfix(s));
         print(toInfixFlatten(s));

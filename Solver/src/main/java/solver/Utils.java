@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-final class Utils {
+final public class Utils {
 
     static List<Binding> generateAllBinding(List<Marking> markings, Transition transition) {
 
@@ -63,7 +63,7 @@ final class Utils {
         return result;
     }
 
-    public static PetrinetModel parseJson(String filename) {
+    static PetrinetModel parseJson(String filename) {
 //        String json = Utils.jsonPostfix(filename);
 //        System.out.println(json);
         ObjectMapper mapper = new ObjectMapper();

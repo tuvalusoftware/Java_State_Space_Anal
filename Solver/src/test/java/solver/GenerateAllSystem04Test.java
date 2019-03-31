@@ -2,6 +2,7 @@ package solver;
 
 import org.junit.Before;
 import org.junit.Test;
+import solver.*;
 
 import java.util.*;
 import static org.junit.Assert.assertEquals;
