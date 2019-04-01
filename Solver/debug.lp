@@ -1,11 +1,15 @@
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 y + 0 z
+  0 e
 Subject To
- c: x >= 2
- c: x <= 1
+ c: c >= -3
+ c: a + b >= 0
+ c: a + b >= 1
+ c: 2 c + d <= 0
 Bounds
- x free
- y free
- z free
+ a free
+ b free
+ c free
+ d free
+ e free
 End

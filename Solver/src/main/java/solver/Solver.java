@@ -43,6 +43,7 @@ public class Solver {
 
              //parse constraints
              for (String equation : constraint) {
+                 print(equation);
                  char comp = getComparator(equation);
                  String[] temp = equation.split("\\>=|\\<=|\\=");
                  String leftSide = temp[0];

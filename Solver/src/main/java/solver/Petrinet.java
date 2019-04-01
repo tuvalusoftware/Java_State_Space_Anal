@@ -348,33 +348,6 @@ public class Petrinet implements Serializable {
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
-
-        Converter.init();
-
-        List<Place> endPlaces = net.getEndPlaces();
-        for (int i=0 ;i<endPlaces.size()-1; i++){
-            for (int j=i+1; j<endPlaces.size(); j++){
-                Map<Set<Place>,List<LinearSystem>> allPaths1 =net.generateMapCompleteSystems(endPlaces.get(i));
-                Map<Set<Place>,List<LinearSystem>> allPaths2 =net.generateMapCompleteSystems(endPlaces.get(j));
-
-                for(Set<Place> startPlaces1: allPaths1.keySet()){
-                    for(Set<Place> startPlaces2: allPaths2.keySet()){
-                        print(startPlaces1.toString() + "--->" + endPlaces.get(i).nodeID);
-                        print(startPlaces2.toString() + "--->" + endPlaces.get(j).nodeID);
-
-                        for (LinearSystem l1: allPaths1.get(startPlaces1)){
-                            for (LinearSystem l2: allPaths2.get(startPlaces2)){
-                                Set<String> mergedSystem = new HashSet<>();
-                                mergedSystem.addAll(l1.getInequalities());
-                                mergedSystem.addAll(l2.getInequalities());
-                                print(mergedSystem.toString());
-                                print("");
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public static void print(String s){

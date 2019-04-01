@@ -81,6 +81,23 @@ final public class Utils {
         return null;
     }
 
+    //Model petri net from String
+    public static PetrinetModel parseJsonString(String petrinetJson) {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        try {
+            PetrinetModel model = mapper.readValue(petrinetJson , PetrinetModel.class);
+            return model;
+        } catch (JsonGenerationException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     static Pair<List<String>, Integer> parseTokenWithNumber(String s) {
         if (s.isEmpty()) return new Pair<>(null, 0);
         int splitPos = s.indexOf('~');
