@@ -19,6 +19,15 @@ public class LinearSystem {
         return inputPlaces;
     }
 
+    public Set<Integer> getInputPlacesIDs() {
+
+        Set<Integer> result = new HashSet<>();
+        for(Place place: inputPlaces) {
+            result.add(place.getID());
+        }
+        return result;
+    }
+
     LinearSystem(Set<Place> inputPlaces) {
         this.inequalities = new HashSet<>();
         this.inputPlaces = inputPlaces;
