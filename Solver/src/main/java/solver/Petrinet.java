@@ -128,7 +128,7 @@ public class Petrinet implements Serializable {
         }
 
         interpreter = new Interpreter();
-
+        Converter.init();
     }
 
     public Place getPlace(int placeID) {

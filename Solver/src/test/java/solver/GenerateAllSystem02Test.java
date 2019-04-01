@@ -40,13 +40,13 @@ public class GenerateAllSystem02Test {
         assertEquals(2, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
-        assertEquals("a 1 + 0 >", it.next());
-        assertEquals("a 2 >", it.next());
+        assertEquals("a+1>0", it.next());
+        assertEquals("a>2", it.next());
 
 
         it = listSystem.get(1).getInequalities().iterator();
-        assertEquals("a 2 + a 1 + + 10 <", it.next());
-        assertEquals("a 2 >", it.next());
+        assertEquals("a+2+a+1<10", it.next());
+        assertEquals("a>2", it.next());
 
 
         Set<Place> inputPlaces = new HashSet<>();

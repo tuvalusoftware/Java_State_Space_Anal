@@ -36,7 +36,7 @@ public class GenerateAllSystem06Test {
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
         assertEquals("", it.next());
-        assertEquals("5 a -1 * * 1 3 - -10 a * -1 * -1 * * - 4 * 0 >", it.next());  // -100a > 0
+        assertEquals("-20.0*a+40.0*a-120.0*a>0", it.next());  // -100a > 0
 
         Set<Place> inputPlaces = new HashSet<>();
         Collections.addAll(inputPlaces, place00);

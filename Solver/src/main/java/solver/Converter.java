@@ -195,7 +195,7 @@ public class Converter {
             } else {
                 String b = stack.pop();
                 String a = stack.pop();
-                print(a + "__"+p+"__" + b);
+//                print(a + "__"+p+"__" + b);
                 //current operator is *
                 if (p.equals("*")) {
                     //if just flatten and current op is * then continue to flatten
