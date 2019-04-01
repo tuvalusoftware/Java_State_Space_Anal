@@ -195,7 +195,7 @@ public class Converter {
             } else {
                 String b = stack.pop();
                 String a = stack.pop();
-//                print(a + "__"+p+"__" + b);
+                print(a + "__"+p+"__" + b);
                 //current operator is *
                 if (p.equals("*")) {
                     //if just flatten and current op is * then continue to flatten
@@ -251,7 +251,10 @@ public class Converter {
                 "-a 2 + 4 1.2 - * 0 >",
                 "3 15 2 - 3 x - * 1.2 * - 5 3 x + -5 y - * - ==",
                 "5 3 -x 1 + * x 3 y - - * - 10 2 y * - <",
-                "5 2 x * + 3 4 y * - >"
+                "5 2 x * + 3 4 y * - >",
+                "5 a -1 * * 1 3 - -10 a * -1 * -1 * * - 4 *",
+                "-10 -10 - a *",
+                "4 -10 -a + -"
         };
 
         for (String s : expression) {
