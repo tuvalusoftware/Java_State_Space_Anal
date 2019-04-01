@@ -6,6 +6,7 @@ import gurobi.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Solver {
 
@@ -24,7 +25,7 @@ public class Solver {
         return status;
     }
 
-    public void solve(String[] vars, String[] constraint) {
+    public void solve(Set<String> vars, Set<String> constraint) {
 
          Map<String, GRBVar> dict = new HashMap<>();
 
@@ -52,8 +53,8 @@ public class Solver {
              model.set(GRB.IntParam.OutputFlag, 0);
              model.set(GRB.IntParam.DualReductions, 0);
 
-//             model.update();
-//             model.write("debug.lp");
+             model.update();
+             model.write("debug.lp");
 
              model.optimize();
 

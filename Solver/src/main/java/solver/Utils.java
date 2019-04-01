@@ -9,22 +9,19 @@
 
 package solver;
 
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.FileUtils;
-import solver.generator.*;
-import org.antlr.v4.runtime.CharStream;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.javatuples.Pair;
-import org.json.JSONArray;
-import org.json.JSONObject;
+
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-final class Utils {
+final public class Utils {
 
     static List<Binding> generateAllBinding(List<Marking> markings, Transition transition) {
 
@@ -66,6 +63,24 @@ final class Utils {
         return result;
     }
 
+    static PetrinetModel parseJson(String filename) {
+//        String json = Utils.jsonPostfix(filename);
+//        System.out.println(json);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        try {
+            PetrinetModel model = mapper.readValue(new File(filename) , PetrinetModel.class);
+            return model;
+        } catch (JsonGenerationException e) {
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     static Pair<List<String>, Integer> parseTokenWithNumber(String s) {
         if (s.isEmpty()) return new Pair<>(null, 0);
         int splitPos = s.indexOf('~');
@@ -79,91 +94,6 @@ final class Utils {
         return new Pair<>(tokenData, number);
     }
 
-
-    static String convertPostfix(String infix) {
-        infix += "\n";
-        CharStream input = CharStreams.fromString(infix);
-        mlLexer lexer = new mlLexer(input);
-        CommonTokenStream token = new CommonTokenStream(lexer);
-        mlParser parser = new mlParser(token);
-        ParseTreeWalker walker = new ParseTreeWalker();
-        ANTLRListener listener = new ANTLRListener();
-        walker.walk(listener, parser.prog());
-        return listener.getPostfix();
-    }
-
-    static String jsonPostfix(String file) {
-        String content = "";
-        try {
-            content = FileUtils.readFileToString(new File(file));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        JSONObject objIn = new JSONObject(content);
-        JSONObject objPost = new JSONObject();
-        // copy the fixed fields.
-        objPost.put("T", objIn.get("T"));
-        objPost.put("Markings", objIn.get("Markings"));
-        objPost.put("inPlace", objIn.get("inPlace"));
-        objPost.put("outPlace", objIn.get("outPlace"));
-        objPost.put("placeToColor", objIn.get("placeToColor"));
-        objPost.put("placeToType", objIn.get("placeToType"));
-        objPost.put("typeToColor", objIn.get("typeToColor"));
-        // convert expression from infix to postfix :)
-
-        JSONArray arr = objIn.getJSONArray("Guards");
-        int sz = arr.length();
-        for (int i = 0; i < sz; ++i) {
-            String infix = arr.getString(i);
-            if (!infix.isEmpty())
-                arr.put(i, convertPostfix(infix));
-            else
-                arr.put(i, "");
-        }
-        objPost.put("Guards", arr);
-
-        arr = objIn.getJSONArray("Expressions");
-
-        sz = arr.length();
-        for (int i = 0; i < sz; ++i) {
-            JSONArray toPlace = arr.getJSONArray(i);
-            int numberP = toPlace.length();
-            for (int j = 0; j < numberP; ++j) {
-                JSONArray arc = toPlace.getJSONArray(j);
-                int placeID = arc.getInt(0);
-                String expression = arc.getString(1);
-                arc.put(0, placeID);
-                arc.put(1, "[ " + convertPostfix(expression) + "]");
-                toPlace.put(j, arc);
-            }
-            arr.put(i, toPlace);
-        }
-        objPost.put("Expressions", arr);
-
-        arr = objIn.getJSONArray("Variables");
-
-        sz = arr.length();
-        for (int i = 0; i < sz; ++i) {
-            JSONArray toPlace = arr.getJSONArray(i);
-            int numberP = toPlace.length();
-            for (int j = 0; j < numberP; ++j) {
-                JSONArray arc = toPlace.getJSONArray(j);
-                int placeID = arc.getInt(0);
-                String expression = arc.getString(1);
-                arc.put(0, placeID);
-                if (expression.equals("1`()"))
-                    arc.put(1, "[ ]");
-                else
-                    arc.put(1, convertPostfix(expression));
-                toPlace.put(j, arc);
-            }
-            arr.put(i, toPlace);
-        }
-
-        objPost.put("Variables", arr);
-
-        return objPost.toString();
-    }
 
     static String replaceVar(Map<String, String> currentMapping, String exp) {
 

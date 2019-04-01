@@ -86,9 +86,7 @@ let s = [
 			y:""
 		},
 		constraints:{
-			"x+y<=4":"",
-			"x=2":"",
-			"y=2":""
+			"x+5-3+16-2.7+3*y<=4":"",
 		}
 	}
 ]
@@ -109,15 +107,7 @@ async function main(){
 
 
 
-	let system = Solver.merge(s[3],s[4])
-	Solver.printSystem(system)
-	print("----------------------------------")
-
-	let reduced = await Solver.trimRedundancy(system)
-	Solver.printSystem(reduced)
-	print("----------------------------------")
-
-	print(await Solver.solve(reduced))
+	print(await Solver.solve(s[5]))
 }
 
 main()

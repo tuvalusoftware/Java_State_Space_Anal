@@ -2,10 +2,11 @@ package solver;
 
 import org.junit.Before;
 import org.junit.Test;
+import solver.*;
 
 import java.util.*;
 
-import static solver.main.parseJson;
+import static solver.Utils.parseJson;
 import static org.junit.Assert.assertEquals;
 
 public class GenerateAllSystem02Test {

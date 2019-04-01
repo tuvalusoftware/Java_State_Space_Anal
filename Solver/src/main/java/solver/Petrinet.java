@@ -9,13 +9,12 @@
 
 package solver;
 
-import org.json.JSONObject;
-import java.io.IOException;
+import com.sun.org.apache.bcel.internal.generic.LNEG;
+
 import java.io.Serializable;
 import java.util.*;
-import static solver.main.parseJson;
-import static solver.Utils.generateAllBinding;
-import solver.Utils;
+
+import static solver.Utils.parseJson;
 
 public class Petrinet implements Serializable {
 
@@ -266,7 +265,7 @@ public class Petrinet implements Serializable {
         return currNode.getListSystem();
     }
 
-    List<LinearSystem> generateListCompleteSystems(Place endPlace) {
+    public List<LinearSystem> generateListCompleteSystems(Place endPlace) {
         List<LinearSystem> result = generateAllSystemFromInput(endPlace);
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();
@@ -317,12 +316,38 @@ public class Petrinet implements Serializable {
         return startPlaces;
     }
 
+    public List<Integer> getEndPlaces(){
+        List<Integer> endPlaces =  new ArrayList<>();
+        for (int i=0; i<getNumPlaces(); i++){
+            if (getPlace(i).isEmptyOutput()){
+                endPlaces.add(i);
+            }
+        }
+        return endPlaces;
+    }
+
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/combine.json";
+        String relativePath = "/src/main/java/PetrinetJson/petrinet02.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
+
+        Converter.init();
+
+
+        for (int endID: net.getEndPlaces()){
+            Map<Set<Place>,List<LinearSystem>> allPaths = net.generateMapCompleteSystems(net.getPlace(endID));
+            for(Set<Place> start: allPaths.keySet()){
+                for(LinearSystem s: allPaths.get(start)){
+                    List<String> inequalities = new ArrayList<>(s.getInequalities());
+                    for (String line: inequalities){
+                        print(line);
+                    }
+                }
+            }
+
+        }
     }
 
     public static void print(String s){

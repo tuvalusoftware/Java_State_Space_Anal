@@ -1,18 +1,29 @@
 package solver;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Inequalities {
 
-    private Map<String,String> vars;
-    private Map<String,String> constraints;
+    private Set<String> vars = new HashSet<>();
+    private Set<String> constraints = new HashSet<>();
 
-    public String[] getVars() {
-        return vars.keySet().toArray(new String[vars.size()]);
+    public Inequalities(String[] vars, String[] constraint){
+        for (String v: vars){
+            this.vars.add(v);
+        }
+        for (String c: constraint){
+            this.constraints.add(c);
+        }
     }
 
-    public String[] getConstraints() {
-        return constraints.keySet().toArray(new String[constraints.size()]);
+    public Set<String> getVars() {
+        return vars;
+    }
+
+    public Set<String>  getConstraints() {
+        return constraints;
     }
 
 }
