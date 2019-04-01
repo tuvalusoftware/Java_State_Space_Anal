@@ -1,9 +1,6 @@
 package solver;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class LinearSystem {
 
@@ -58,6 +55,20 @@ public class LinearSystem {
         }
 
         inequalities = newEqualities;
+    }
+
+    Set<String> getAllInputVars() {
+
+        Set<String> result = new HashSet<>();
+
+        for(Place place: inputPlaces) {
+            for(Transition transition: place.getOutTransition()) {
+                String[] varList = transition.getVars(place);
+                Collections.addAll(result, varList);
+            }
+        }
+
+        return result;
     }
 
     void convertAllToInfix() {
