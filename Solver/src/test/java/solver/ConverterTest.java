@@ -223,4 +223,85 @@ public class ConverterTest {
         assertEquals(infix, Converter.toInfix(s));
         assertEquals(infixFlatten,Converter.toInfixFlatten(s));
     }
+
+    @Test
+    public void toInfix25() {
+        String s = "-10 -a *";
+        String infix = "-10*-a";
+        String infixFlatten = "10.0*a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix26() {
+        String s = "-10 10 - 10 + -a 10 - *";
+        String infix = "(-10-10+10)*(-a-10)";
+        String infixFlatten = "10.0*a+100.0+10.0*a+100.0-10.0*a-100.0";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix27() {
+        String s = "3 a - 5 1 - * 1 2 - *";
+        String infix = "((3-a)*(5-1))*(1-2)";
+        String infixFlatten = "15.0-30.0-3.0+6.0-5.0*a+10.0*a+a-2.0*a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix28() {
+        String s = "5 1 - 5 1 - a 1 - * *";
+        String infix = "(5-1)*(5-1)*(a-1)";
+        String infixFlatten = "25.0*a-25.0-5.0*a+5.0-5.0*a+5.0+a-1.0";
+//        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix29() {
+        String s = "4 -10 -a - -";
+        String infix = "4-(-10--a)";
+        String infixFlatten = "4+10-a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix30() {
+        String s = "4 -10 -a + -";
+        String infix = "4-(-10+-a)";
+        String infixFlatten = "4+10+a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix31() {
+        String s = "4 -10 a + -";
+        String infix = "4-(-10+a)";
+        String infixFlatten = "4+10-a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix32() {
+        String s = "4 -10 - -a -";
+        String infix = "4--10--a";
+        String infixFlatten = "4+10+a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix33() {
+        String s = "4 -10 a - 2 10 - - -";
+        String infix = "4-(-10-a-(2-10))";
+        String infixFlatten = "4+10+a+2-10";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
 }

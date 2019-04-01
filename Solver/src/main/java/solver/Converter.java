@@ -213,6 +213,11 @@ public class Converter {
                     b = flipSign(b);
                     stack.push(a + b);
                     justFlatten = true;
+                }
+                //if current is + and b is -(...)
+                else if (p.equals("+") && b.charAt(0) == '-'){
+                    stack.push(a+b);
+                    justFlatten = false;
                 } else {
                     stack.push(a + p + b);
                     justFlatten = false;
