@@ -36,21 +36,24 @@ public class App {
                         break;
                     }
                 }
-                if (!solvable){
-                    FormalReport temp = new FormalReport(start, endPlaces.get(0).getID(), new HashSet<>(), -1, 3);
-                    report.add(temp);
+                if (solvable){
+                    break;
                 }
-                else{
-                    FormalReport temp = new FormalReport(start, endPlaces.get(0).getID(), new HashSet<>(), -1, 2);
-                    report.add(temp);
-                }
+            }
+            if (!solvable){
+                FormalReport temp = new FormalReport(new HashSet<>(), endPlaces.get(0).getID(), new HashSet<>(), -1, 3);
+                report.add(temp);
+            }
+            else{
+                FormalReport temp = new FormalReport(new HashSet<>(), endPlaces.get(0).getID(), new HashSet<>(), -1, 2);
+                report.add(temp);
             }
         }
         else{
             for (int i=0 ;i<endPlaces.size()-1; i++){
                 for (int j=i+1; j<endPlaces.size(); j++){
-                    Map<Set<Integer>,List<LinearSystem>> allPaths1 = net.generateMapCompleteSystems(endPlaces.get(0));
-                    Map<Set<Integer>,List<LinearSystem>> allPaths2 = net.generateMapCompleteSystems(endPlaces.get(0));
+                    Map<Set<Integer>,List<LinearSystem>> allPaths1 = net.generateMapCompleteSystems(endPlaces.get(i));
+                    Map<Set<Integer>,List<LinearSystem>> allPaths2 = net.generateMapCompleteSystems(endPlaces.get(j));
                     for(Set<Integer> startPlaces1: allPaths1.keySet()){
                         for(Set<Integer> startPlaces2: allPaths2.keySet()){
                             print(startPlaces1.toString() + "--->" + endPlaces.get(i).nodeID);
@@ -61,8 +64,8 @@ public class App {
                                     mergedSystem.addAll(l1.getInequalities());
                                     mergedSystem.addAll(l2.getInequalities());
 
-                                    print(l1.getInequalities().toString());
-                                    print(l2.getInequalities().toString());
+//                                    print(l1.getInequalities().toString());
+//                                    print(l2.getInequalities().toString());
 
                                     Set<String> vars = net.getAllInputVars();
                                     int result = Solver.solve(vars,mergedSystem);
