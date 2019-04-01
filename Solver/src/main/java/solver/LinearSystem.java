@@ -60,6 +60,17 @@ public class LinearSystem {
         inequalities = newEqualities;
     }
 
+    void convertAllToInfix() {
+
+        Set<String> newEqualities = new HashSet<>();
+        for(String inequality: inequalities) {
+            String newGuard = Converter.toInfixFlatten(inequality);
+            newEqualities.add(newGuard);
+        }
+
+        inequalities = newEqualities;
+    }
+
     public VarMapping getVarMapping() {
         return varMapping;
     }

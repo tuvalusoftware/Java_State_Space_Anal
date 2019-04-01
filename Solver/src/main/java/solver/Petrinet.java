@@ -269,6 +269,7 @@ public class Petrinet implements Serializable {
         List<LinearSystem> result = generateAllSystemFromInput(endPlace);
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();
+            linearSystem.convertAllToInfix();
         }
 
         return result;
