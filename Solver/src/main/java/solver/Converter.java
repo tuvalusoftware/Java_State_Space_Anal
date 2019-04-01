@@ -103,14 +103,9 @@ public class Converter {
         String result = "";
         String var = "";
         Double coeff = 1.0;
-        Double free = 0.0;
         for (String operand: s.split("(?=-)|\\+")){
-            //if operand is number
-            if (isNum(operand)){
-                free += Double.parseDouble(operand);
-            }
             //operand has variable
-            else{
+            if (!isNum(operand)){
                 coeff = 1.0;
                 var = "";
                 for (String e: operand.split("\\*")){
@@ -148,16 +143,16 @@ public class Converter {
                     }
                 }
             }
+            else{
+                if (operand.charAt(0) != '-' && !result.equals("")){
+                    result += "+" + operand;
+                }
+                else{
+                    result += operand;
+                }
+            }
         }
-        if (free>0){
-            return result + "+" + free;
-        }
-        else if (free<0){
-            return result + free;
-        }
-        else{
-            return result;
-        }
+        return result;
     }
 
 
@@ -252,21 +247,22 @@ public class Converter {
     public static void main(String[] args){
         init();
         String[] expression = {
-                "7 1 2 - 3 + 4 5 - 6 + - -",
-                "5 x * 2 y * + 9 z * -",
+                "7 1 2 - 3 + 4 5 - 6 + - - 15 - 3 x - 2 * >=",
+                "5 x * 2 y * + 9 z * - 24 3 x - - <",
                 "5 x * 3 - 7 * 10 - y *",
-                "12 3 + 4 15 - * 5 *",
-                "3 5 2 + -",
-                "3 5 1 + 2 - 3 + 4 + -",
-                "x y + z t + * 5 * 17 - 5 -",
-                "a b - c 2 - * x y - 2 * 3 * +",
-                "1 2 + 3 4 + -",
-                "a 5 - 1 6.3 + *",
-                "15 2 x * + 3 a - 4.1 b - * - 43 - a * 13 6.5 - +",
-                "15 2 a 3 - * -",
-                "-a 2 + 4 1.2 - *",
-                "3 15 2 - 3 x - * 1.2 * -",
-                "5 3 -x 1 + * x 3 y - - * -",
+                "12 3 + 4 15 - * 5 * 6 3 - >",
+                "3 5 2 + - 14 3 x - - ==",
+                "3 5 1 + 2 - 3 + 4 + - 0 ==",
+                "x y + z t + * 5 * 17 - 5 - 4 -x 3 + * >",
+                "a b - c 2 - * x y - 2 * 3 * + 4 15 3 x * - - <=",
+                "1 2 + 3 4 + - 3 x y * * ==",
+                "a 5 - 1 6.3 + * x y * <=",
+                "15 2 x * + 3 a - 4.1 b - * - 43 - a * 13 6.5 - + 3 4 5 6 - - - >=",
+                "15 2 a 3 - * - 3 5 x y - * - <=",
+                "-a 2 + 4 1.2 - * 0 >",
+                "3 15 2 - 3 x - * 1.2 * - 5 3 x + -5 y - * - ==",
+                "5 3 -x 1 + * x 3 y - - * - 10 2 y * - <",
+                "5 2 x * + 3 4 y * - >"
         };
 
         for(String s: expression){
