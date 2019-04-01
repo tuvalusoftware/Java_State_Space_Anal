@@ -9,11 +9,10 @@
 
 package solver;
 
-import com.sun.org.apache.bcel.internal.generic.LNEG;
-
 import java.io.Serializable;
 import java.util.*;
 
+import static solver.Utils.generateAllPossibleVarMapping;
 import static solver.Utils.parseJson;
 
 public class Petrinet implements Serializable {
@@ -316,11 +315,11 @@ public class Petrinet implements Serializable {
         return startPlaces;
     }
 
-    public List<Integer> getEndPlaces(){
-        List<Integer> endPlaces =  new ArrayList<>();
+    public List<Place> getEndPlaces(){
+        List<Place> endPlaces =  new ArrayList<>();
         for (int i=0; i<getNumPlaces(); i++){
             if (getPlace(i).isEmptyOutput()){
-                endPlaces.add(i);
+                endPlaces.add(getPlace(i));
             }
         }
         return endPlaces;
@@ -335,18 +334,29 @@ public class Petrinet implements Serializable {
 
         Converter.init();
 
+        List<Place> endPlaces = net.getEndPlaces();
+        for (int i=0 ;i<endPlaces.size()-1; i++){
+            for (int j=i+1; j<endPlaces.size(); j++){
+                Map<Set<Place>,List<LinearSystem>> allPaths1 =net.generateMapCompleteSystems(endPlaces.get(i));
+                Map<Set<Place>,List<LinearSystem>> allPaths2 =net.generateMapCompleteSystems(endPlaces.get(j));
 
-        for (int endID: net.getEndPlaces()){
-            Map<Set<Place>,List<LinearSystem>> allPaths = net.generateMapCompleteSystems(net.getPlace(endID));
-            for(Set<Place> start: allPaths.keySet()){
-                for(LinearSystem s: allPaths.get(start)){
-                    List<String> inequalities = new ArrayList<>(s.getInequalities());
-                    for (String line: inequalities){
-                        print(line);
+                for(Set<Place> startPlaces1: allPaths1.keySet()){
+                    for(Set<Place> startPlaces2: allPaths2.keySet()){
+                        print(startPlaces1.toString() + "--->" + endPlaces.get(i).nodeID);
+                        print(startPlaces2.toString() + "--->" + endPlaces.get(j).nodeID);
+
+                        for (LinearSystem l1: allPaths1.get(startPlaces1)){
+                            for (LinearSystem l2: allPaths2.get(startPlaces2)){
+                                Set<String> mergedSystem = new HashSet<>();
+                                mergedSystem.addAll(l1.getInequalities());
+                                mergedSystem.addAll(l2.getInequalities());
+                                print(mergedSystem.toString());
+                                print("");
+                            }
+                        }
                     }
                 }
             }
-
         }
     }
 

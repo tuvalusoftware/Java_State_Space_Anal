@@ -34,7 +34,7 @@ public class Converter {
             else{
                 String b = stack.pop();
                 String a = stack.pop();
-                //current operator > prev opertor
+                //current operator is * and prevOp is + or -
                 if (!prevOp.equals("") && operator.get(p)>operator.get(prevOp)){
                     if (a.contains("+") || a.contains("-")) a = "(" + a + ")";
                     if (b.contains("+") || b.contains("-")) b = "(" + b + ")";
@@ -208,7 +208,7 @@ public class Converter {
             else{
                 String b = stack.pop();
                 String a = stack.pop();
-//                print(a + "__"+p+"__" + b);
+                print(a + "__"+p+"__" + b);
                 //current operator is *
                 if (p.equals("*")){
                     //if just flatten and current op is * then continue to flatten
@@ -220,14 +220,19 @@ public class Converter {
                         justFlatten = true;
                     }
                     else{
-                        stack.push(a+"*"+b);
+                        stack.push(parseMultiplyOp(a,b));
                     }
                 }
                 //if current is - and there are + - before current
-                else if (p.equals("-") && (prevToken.equals("+") || prevToken.equals("-") || justFlatten)){
+                else if (p.equals("-")){
                     b = flipSign(b);
                     stack.push(a+b);
                     justFlatten = true;
+                }
+                //if current is + and b is -(...)
+                else if (p.equals("+") && b.charAt(0) == '-'){
+                    stack.push(a+b);
+                    justFlatten = false;
                 }
                 else{
                     stack.push(a+p+b);
@@ -262,7 +267,10 @@ public class Converter {
                 "-a 2 + 4 1.2 - * 0 >",
                 "3 15 2 - 3 x - * 1.2 * - 5 3 x + -5 y - * - ==",
                 "5 3 -x 1 + * x 3 y - - * - 10 2 y * - <",
-                "5 2 x * + 3 4 y * - >"
+                "5 2 x * + 3 4 y * - >",
+                "5 a -1 * * 1 3 - -10 a * -1 * -1 * * - 4 *",
+                "-10 -10 - a *",
+                "4 -10 -a + -"
         };
 
         for(String s: expression){
