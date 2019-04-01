@@ -161,6 +161,21 @@ public class Petrinet implements Serializable {
         transitions.get(tranID).addInputPlace(place, edge);
     }
 
+    Set<String> getAllInputVars() {
+
+        Set<String> result = new HashSet<>();
+        for(Place place: places.values()) {
+            if (!place.isEmptyInput()) continue;
+
+            for(Transition transition: place.getOutTransition()) {
+                String[] varList = transition.getVars(place);
+                Collections.addAll(result, varList);
+            }
+        }
+
+        return result;
+    }
+
     /**
      * parse Expression string and add to Petrinet data
      *
