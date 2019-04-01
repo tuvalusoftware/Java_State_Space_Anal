@@ -2,30 +2,13 @@ package solver;
 
 
 import gurobi.*;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class Solver {
 
-    private long id;
-    private int status;
-
-    Solver(long id){
-        this.id = id;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void solve(Set<String> vars, Set<String> constraint) {
+    public static int solve(Set<String> vars, Set<String> constraint) {
 
          Map<String, GRBVar> dict = new HashMap<>();
 
@@ -43,7 +26,6 @@ public class Solver {
 
              //parse constraints
              for (String equation : constraint) {
-                 print(equation);
                  char comp = getComparator(equation);
                  String[] temp = equation.split("\\>=|\\<=|\\=");
                  String leftSide = temp[0];
@@ -68,19 +50,21 @@ public class Solver {
              //3: Infeasible
              //5: Unbounded
              //more indexes at http://www.gurobi.com/documentation/8.1/refman/optimization_status_codes.html
-             this.status = model.get(GRB.IntAttr.Status);
+             return model.get(GRB.IntAttr.Status);
          }
          catch(Exception e){
              e.printStackTrace();
          }
+
+         return -1;
      }
 
-     private void print(String s){
+     private static void print(String s){
         System.out.println(s);
     }
 
 
-     private char getComparator(String equation){
+     private static  char getComparator(String equation){
         if (equation.contains(">=")){
             return GRB.GREATER_EQUAL;
         }
@@ -94,7 +78,7 @@ public class Solver {
     }
 
 
-     private GRBLinExpr parseOneSide(String side, Map<String,GRBVar> dict){
+     private static GRBLinExpr parseOneSide(String side, Map<String,GRBVar> dict){
         GRBLinExpr expression = new GRBLinExpr();
         for (String s: side.split("(?=-)|\\+")){
             String[] pair = s.split("\\*");

@@ -85,6 +85,8 @@ public class LinearSystem {
     }
 
     void addInequality(String inequality) {
-        inequalities.add(inequality);
+        if (!inequality.equals("")){
+            inequalities.add(inequality);
+        }
     }
 }
