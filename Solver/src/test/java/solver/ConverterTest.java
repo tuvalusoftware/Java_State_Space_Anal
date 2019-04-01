@@ -304,4 +304,22 @@ public class ConverterTest {
         assertEquals(infix, Converter.toInfix(s));
         assertEquals(infixFlatten,Converter.toInfixFlatten(s));
     }
+
+    @Test
+    public void toInfix34() {
+        String s = "4 -10 2 * -";
+        String infix = "4--10*2";
+        String infixFlatten = "4+20.0";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
+
+    @Test
+    public void toInfix35() {
+        String s = "4 -10 2 a * - -2 * -";
+        String infix = "4-(-10-2*a)*(-2)";
+        String infixFlatten = "4-20.0-4.0*a";
+        assertEquals(infix, Converter.toInfix(s));
+        assertEquals(infixFlatten,Converter.toInfixFlatten(s));
+    }
 }
