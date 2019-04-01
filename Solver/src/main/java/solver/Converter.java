@@ -5,47 +5,45 @@ import java.util.Map;
 import java.util.Stack;
 
 public class Converter {
-    private static Map<String,Integer> operator = new HashMap<>();
+    private static Map<String, Integer> operator = new HashMap<>();
 
-    public static void init(){
-        operator.put("+",1);
-        operator.put("-",1);
-        operator.put("*",2);
-        operator.put("/",2);
-        operator.put("%",2);
+    public static void init() {
+        operator.put("+", 1);
+        operator.put("-", 1);
+        operator.put("*", 2);
+        operator.put("/", 2);
+        operator.put("%", 2);
 
-        operator.put(">",1);
-        operator.put("<",1);
-        operator.put(">=",1);
-        operator.put("<=",1);
-        operator.put("==",1);
+        operator.put(">", 1);
+        operator.put("<", 1);
+        operator.put(">=", 1);
+        operator.put("<=", 1);
+        operator.put("==", 1);
 
-        operator.put("&&",1);
+        operator.put("&&", 1);
     }
 
-    public static String toInfix(String expression){
+    public static String toInfix(String expression) {
         Stack<String> stack = new Stack<>();
         String prevOp = "";
         String prevToken = "";
-        for (String p: expression.split(" ")) {
+        for (String p : expression.split(" ")) {
             if (!operator.containsKey(p)) {
                 stack.push(p);
-            }
-            else{
+            } else {
                 String b = stack.pop();
                 String a = stack.pop();
                 //current operator > prev opertor
-                if (!prevOp.equals("") && operator.get(p)>operator.get(prevOp)){
+                if (!prevOp.equals("") && operator.get(p) > operator.get(prevOp)) {
                     if (a.contains("+") || a.contains("-")) a = "(" + a + ")";
                     if (b.contains("+") || b.contains("-")) b = "(" + b + ")";
                     stack.push(a + p + b);
                 }
                 //if current is - and there are + - before current
-                else if (p.equals("-") && (prevToken.equals("+") || prevToken.equals("-"))){
+                else if (p.equals("-") && (prevToken.equals("+") || prevToken.equals("-"))) {
                     stack.push(a + p + "(" + b + ")");
-                }
-                else{
-                    stack.push(a+p+b);
+                } else {
+                    stack.push(a + p + b);
                 }
                 prevOp = p;
             }
@@ -55,99 +53,89 @@ public class Converter {
         return stack.pop();
     }
 
-    public static String flipSign(String s){
+    public static String flipSign(String s) {
         char[] temp = s.toCharArray();
-        for(int i=0; i<temp.length; i++){
+        for (int i = 0; i < temp.length; i++) {
             if (temp[i] == '+') {
                 temp[i] = '-';
-            }
-            else if (temp[i] == '-') {
+            } else if (temp[i] == '-') {
                 temp[i] = '+';
             }
         }
         String result = String.valueOf(temp);
         //add - if it doesnt have - at beginning
-        if (result.charAt(0) != '-' && result.charAt(0) != '+'){
+        if (result.charAt(0) != '-' && result.charAt(0) != '+') {
             return "-" + result;
-        }
-        else{
+        } else {
             return String.valueOf(temp);
         }
     }
 
-    public static String mulCal(String a, String b){
+    public static String mulCal(String a, String b) {
         boolean signA = a.contains("-");
         boolean signB = b.contains("-");
-        a = a.replace("-","");
-        b = b.replace("-","");
-        if ((signA && signB) || (!signA && !signB)){
+        a = a.replace("-", "");
+        b = b.replace("-", "");
+        if ((signA && signB) || (!signA && !signB)) {
             return "+" + a + "*" + b;
-        }
-        else{
+        } else {
             return "-" + a + "*" + b;
         }
     }
 
-    public static String trimFirstPlus(String s){
-        if (s.charAt(0) == '+'){
+    public static String trimFirstPlus(String s) {
+        if (s.charAt(0) == '+') {
             return s.substring(1);
         }
         return s;
     }
 
-    public static boolean isNum(String n){
+    public static boolean isNum(String n) {
         return n.matches("^[+-]?\\d+(\\.\\d+)?");
     }
 
-    public static String postProcess(String s){
+    public static String postProcess(String s) {
         String result = "";
         String var = "";
         Double coeff = 1.0;
-        for (String operand: s.split("(?=-)|\\+")){
+        for (String operand : s.split("(?=-)|\\+")) {
             //operand has variable
-            if (!isNum(operand)){
+            if (!isNum(operand)) {
                 coeff = 1.0;
                 var = "";
-                for (String e: operand.split("\\*")){
+                for (String e : operand.split("\\*")) {
                     //number
-                    if (isNum(e)){
+                    if (isNum(e)) {
                         coeff *= Double.parseDouble(e);
                     }
                     //var
-                    else if (!e.equals("*")){
+                    else if (!e.equals("*")) {
                         var += "*" + e;
                     }
                 }
                 //append result
-                if (coeff!=1){
-                    if (result.equals("") && coeff>=0){
-                        result += coeff+var;
+                if (coeff != 1) {
+                    if (result.equals("") && coeff >= 0) {
+                        result += coeff + var;
+                    } else if (coeff > 0) {
+                        result += "+" + coeff + var;
+                    } else {
+                        result += coeff + var;
                     }
-                    else if(coeff>0){
-                        result += "+"+coeff+var;
-                    }
-                    else{
-                        result += coeff+var;
-                    }
-                }
-                else{
+                } else {
                     String onlyVar = var.substring(1);
-                    if (result.equals("")){
+                    if (result.equals("")) {
                         result += onlyVar;
-                    }
-                    else if (onlyVar.charAt(0)=='-'){
+                    } else if (onlyVar.charAt(0) == '-') {
                         result += onlyVar;
-                    }
-                    else{
+                    } else {
                         result += "+" + onlyVar;
                     }
                 }
-            }
-            else{
-                if (operand.charAt(0) != '-' && !result.equals("")){
+            } else {
+                if (operand.charAt(0) != '-' && !result.equals("")) {
                     result += "+" + operand;
-                }
-                else{
+                } else {
                     result += operand;
                 }
             }
@@ -156,37 +144,37 @@ public class Converter {
     }
 
 
-    public static String parseMultiplyOp(String a, String b){
+    public static String parseMultiplyOp(String a, String b) {
         String result = "";
         //single operands
-        if (!a.contains("+") && !a.contains("-") && !b.contains("+") && !b.contains("-")){
+        if (!a.contains("+") && !a.contains("-") && !b.contains("+") && !b.contains("-")) {
             result = a + "*" + b;
         }
         //multiple operands
-        else{
+        else {
             boolean isNumA;
             boolean isNumB;
-            for (String operandA: a.split("(?=-)|\\+")) {
-                for (String operandB: b.split("(?=-)|\\+")){
+            for (String operandA : a.split("(?=-)|\\+")) {
+                for (String operandB : b.split("(?=-)|\\+")) {
                     //check to see if both operands are numbers
                     isNumA = isNum(operandA);
                     isNumB = isNum(operandB);
                     //both are numbers then multiply
-                    if (isNumA && isNumB){
-                        Double coeff = Double.parseDouble(operandA)*Double.parseDouble(operandB);
-                        if (coeff>=0){
-                            result += "+"+coeff;
-                        } else{
+                    if (isNumA && isNumB) {
+                        Double coeff = Double.parseDouble(operandA) * Double.parseDouble(operandB);
+                        if (coeff >= 0) {
+                            result += "+" + coeff;
+                        } else {
                             result += coeff;
                         }
                     }
                     //string*number
-                    else if (!isNumA && isNumB){
-                        result += mulCal(operandB,operandA);
+                    else if (!isNumA && isNumB) {
+                        result += mulCal(operandB, operandA);
                     }
                     //number*string, string*string
-                    else{
-                        result += mulCal(operandA,operandB);
+                    else {
+                        result += mulCal(operandA, operandB);
                     }
                 }
             }
@@ -195,42 +183,38 @@ public class Converter {
     }
 
 
-    public static String toInfixFlatten(String expression){
+    public static String toInfixFlatten(String expression) {
         Stack<String> stack = new Stack<>();
         String prevOp = "";
         String prevToken = "";
         boolean justFlatten = false;
-        for (String p: expression.split(" ")) {
+        for (String p : expression.split(" ")) {
             //if operand then just p
             if (!operator.containsKey(p)) {
                 stack.push(p);
-            }
-            else{
+            } else {
                 String b = stack.pop();
                 String a = stack.pop();
 //                print(a + "__"+p+"__" + b);
                 //current operator is *
-                if (p.equals("*")){
+                if (p.equals("*")) {
                     //if just flatten and current op is * then continue to flatten
-                    if (justFlatten){
-                        stack.push(trimFirstPlus(parseMultiplyOp(a,b)));
-                    }
-                    else if (!prevOp.equals("") && operator.get(prevOp)==1) {
-                        stack.push(trimFirstPlus(parseMultiplyOp(a,b)));
+                    if (justFlatten) {
+                        stack.push(trimFirstPlus(parseMultiplyOp(a, b)));
+                    } else if (!prevOp.equals("") && operator.get(prevOp) == 1) {
+                        stack.push(trimFirstPlus(parseMultiplyOp(a, b)));
                         justFlatten = true;
-                    }
-                    else{
-                        stack.push(a+"*"+b);
+                    } else {
+                        stack.push(trimFirstPlus(parseMultiplyOp(a, b)));
                     }
                 }
                 //if current is - and there are + - before current
-                else if (p.equals("-") && (prevToken.equals("+") || prevToken.equals("-") || justFlatten)){
+                else if (p.equals("-")) {
                     b = flipSign(b);
-                    stack.push(a+b);
+                    stack.push(a + b);
                     justFlatten = true;
-                }
-                else{
-                    stack.push(a+p+b);
+                } else {
+                    stack.push(a + p + b);
                     justFlatten = false;
                 }
                 prevOp = p;
@@ -240,11 +224,11 @@ public class Converter {
         return postProcess(stack.pop());
     }
 
-    public static void print(String s){
+    public static void print(String s) {
         System.out.println(s);
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         init();
         String[] expression = {
                 "7 1 2 - 3 + 4 5 - 6 + - - 15 - 3 x - 2 * >=",
@@ -265,7 +249,7 @@ public class Converter {
                 "5 2 x * + 3 4 y * - >"
         };
 
-        for(String s: expression){
+        for (String s : expression) {
             print(s);
             print(toInfix(s));
             print(toInfixFlatten(s));
