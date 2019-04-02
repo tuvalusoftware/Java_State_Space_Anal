@@ -82,11 +82,24 @@ let s = [
 	},
 	{
 		vars:{
-			x:"",
-			y:""
+			a:"",
+			b:"",
+			d:""
 		},
 		constraints:{
-			"x+5-3+16-2.7+3*y<=4":"",
+			"a+b>=0":"",
+			"a+b>=1":"",
+		}
+	},
+	{
+		vars:{
+			a:"",
+			b:"",
+			d:""
+		},
+		constraints:{
+			"a+b>=0":"",
+			"a+a+d<=0":"",
 		}
 	}
 ]
@@ -105,9 +118,7 @@ async function main(){
 	// Solver.printSystem(reduced)
 	// print("----------------------------------")
 
-
-
-	print(await Solver.solve(s[5]))
+	print(await Solver.isSubset(s[5],s[6]))
 }
 
 main()

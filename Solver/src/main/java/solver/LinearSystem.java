@@ -16,6 +16,15 @@ public class LinearSystem {
         return inputPlaces;
     }
 
+    public Set<Integer> getInputPlacesIDs() {
+
+        Set<Integer> result = new HashSet<>();
+        for(Place place: inputPlaces) {
+            result.add(place.getID());
+        }
+        return result;
+    }
+
     LinearSystem(Set<Place> inputPlaces) {
         this.inequalities = new HashSet<>();
         this.inputPlaces = inputPlaces;
@@ -75,9 +84,7 @@ public class LinearSystem {
 
         Set<String> newEqualities = new HashSet<>();
         for(String inequality: inequalities) {
-            System.out.println(inequality);
             String newGuard = Converter.toInfixFlatten(inequality);
-            System.out.println(newGuard);
             newEqualities.add(newGuard);
         }
 
@@ -89,6 +96,8 @@ public class LinearSystem {
     }
 
     void addInequality(String inequality) {
-        inequalities.add(inequality);
+        if (!inequality.equals("")){
+            inequalities.add(inequality);
+        }
     }
 }

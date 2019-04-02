@@ -19,7 +19,7 @@ String.prototype.format = function() {
 }
 
 let decimalOffset = 0.00001
-let url = 'http://localhost:6000/solver'
+let url = 'http://localhost:6000/solve'
 
 module.exports = {
 	//2: optimized
@@ -30,12 +30,7 @@ module.exports = {
   		request.post(url, {json: system}, (err, res, body) => {
   			if (err) reject(err)
   			if (res.statusCode == 200){
-          if (body.status == 2 || body.status == 5){
-            resolve(true)
-          }
-          else{
-            resolve(false)
-          }
+					resolve(body)
   			}
   		})
     })
