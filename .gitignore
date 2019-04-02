@@ -3,6 +3,9 @@ Solver/.DS_Store
 Solver/out
 Solver/.gradle
 
+Solver/build/*
+!Solver/build/libs
+
 StateSpace/.idea
 StateSpace/.DS_Store
 StateSpace/out
