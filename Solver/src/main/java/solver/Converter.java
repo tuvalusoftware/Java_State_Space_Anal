@@ -101,7 +101,7 @@ public class Converter {
             sense = ">=";
         }
         else if(s.contains("<=")){
-            sense = ">=";
+            sense = "<=";
         }
         else if(s.contains("=")){
             sense = "=";
@@ -129,7 +129,7 @@ public class Converter {
             print(operand);
             //operand has variable
             if (!isNum(operand)) {
-                print("here " + operand);
+//                print("here " + operand);
                 coeff = 1.0;
                 var = "";
                 for (String e : operand.split("\\*")) {
