@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="solver.GenerateAllSystem03Test" tests="1" skipped="0" failures="0" errors="0" timestamp="2019-04-02T07:08:09" hostname="Macbooks-MacBook-Pro.local" time="0.007">
+  <properties/>
+  <testcase name="addGenerateAllSystem" classname="solver.GenerateAllSystem03Test" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
