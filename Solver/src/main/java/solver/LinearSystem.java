@@ -75,7 +75,9 @@ public class LinearSystem {
 
         Set<String> newEqualities = new HashSet<>();
         for(String inequality: inequalities) {
+            System.out.println(inequality);
             String newGuard = Converter.toInfixFlatten(inequality);
+            System.out.println(newGuard);
             newEqualities.add(newGuard);
         }
 
