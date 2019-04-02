@@ -3,7 +3,7 @@ package Response;
 
 import java.util.Set;
 
-public class FormalReport {
+public class ReachableReport {
     Set<Integer> startPath1;
     int endPath1;
     Set<Integer> startPath2;
@@ -30,7 +30,7 @@ public class FormalReport {
         return reachable;
     }
 
-    public FormalReport(Set<Integer> startPath1, int endPath1, Set<Integer> startPath2, int endPath2, int reachable) {
+    public ReachableReport(Set<Integer> startPath1, int endPath1, Set<Integer> startPath2, int endPath2, int reachable) {
         this.startPath1 = startPath1;
         this.endPath1 = endPath1;
         this.startPath2 = startPath2;

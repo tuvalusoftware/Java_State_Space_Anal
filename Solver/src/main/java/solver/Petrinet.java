@@ -9,12 +9,11 @@
 
 package solver;
 
-import Response.FormalReport;
+import Response.ReachableReport;
+import Response.SubsetReport;
 
 import java.io.Serializable;
 import java.util.*;
-
-import static solver.Utils.generateAllPossibleVarMapping;
 import static solver.Utils.parseJson;
 
 public class Petrinet implements Serializable {
@@ -352,45 +351,10 @@ public class Petrinet implements Serializable {
         Petrinet net = new Petrinet(model);
 
         List<Place> endPlaces = net.getEndPlaces();
-        List<FormalReport> report = new ArrayList<>();
+        List<SubsetReport> report = new ArrayList<>();
 
+        print(report.toString());
 
-        if (endPlaces.size() == 1){
-            Map<Set<Integer>,List<LinearSystem>> allPaths = net.generateMapCompleteSystems(endPlaces.get(0));
-            for(Set<Integer> start: allPaths.keySet()){
-                print("single end place");
-                print(start.toString() + "--->" + endPlaces.get(0).getID());
-                for(LinearSystem l: allPaths.get(start)){
-                    print(l.getInequalities().toString());
-                }
-            }
-        }
-        else{
-            for (int i=0 ;i<endPlaces.size()-1; i++){
-                for (int j=i+1; j<endPlaces.size(); j++){
-                    Map<Set<Integer>,List<LinearSystem>> allPaths1 = net.generateMapCompleteSystems(endPlaces.get(i));
-                    Map<Set<Integer>,List<LinearSystem>> allPaths2 = net.generateMapCompleteSystems(endPlaces.get(j));
-                    for(Set<Integer> startPlaces1: allPaths1.keySet()){
-                        for(Set<Integer> startPlaces2: allPaths2.keySet()){
-                            print("multiple end places");
-                            print(startPlaces1.toString() + "--->" + endPlaces.get(i).nodeID);
-                            print(startPlaces2.toString() + "--->" + endPlaces.get(j).nodeID);
-                            for (LinearSystem l1: allPaths1.get(startPlaces1)){
-                                for (LinearSystem l2: allPaths2.get(startPlaces2)){
-                                    Set<String> mergedSystem = new HashSet<>();
-                                    mergedSystem.addAll(l1.getInequalities());
-                                    mergedSystem.addAll(l2.getInequalities());
-
-                                    print(l1.getInequalities().toString());
-                                    print(l2.getInequalities().toString());
-                                    print(mergedSystem.toString());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     public static void print(String s){

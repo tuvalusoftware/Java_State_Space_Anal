@@ -3,12 +3,13 @@ package solver;
 
 import gurobi.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class Solver {
 
-    public static int solve(Set<String> vars, Set<String> constraint) {
+    public static boolean solve(Set<String> vars, Set<String> constraint) {
 
          Map<String, GRBVar> dict = new HashMap<>();
 
@@ -50,13 +51,17 @@ public class Solver {
              //3: Infeasible
              //5: Unbounded
              //more indexes at http://www.gurobi.com/documentation/8.1/refman/optimization_status_codes.html
-             return model.get(GRB.IntAttr.Status);
+             if (model.get(GRB.IntAttr.Status) == 2 || model.get(GRB.IntAttr.Status) == 5){
+                 return true;
+             }
+             else{
+                 return false;
+             }
          }
          catch(Exception e){
              e.printStackTrace();
          }
-
-         return -1;
+         return false;
      }
 
      private static void print(String s){
@@ -76,7 +81,6 @@ public class Solver {
         }
         return 0;
     }
-
 
      private static GRBLinExpr parseOneSide(String side, Map<String,GRBVar> dict){
         GRBLinExpr expression = new GRBLinExpr();
@@ -112,5 +116,45 @@ public class Solver {
         }
         return expression;
     }
+
+    private static Set<String> negate(Set<String> system){
+        Set<String> result = new HashSet<>();
+
+        for (String s: system) {
+            if (s.contains(">=")){
+                result.add(s.replace(">=","<=") + "-0.00001");
+            }
+            else if(s.contains("<=")){
+                result.add(s.replace("<=",">=") + "+0.00001");
+            }
+            else if (s.contains("=")){
+                result.add(s.replace("=",">=") + "+0.00001");
+                result.add(s.replace("=","<=") + "-0.00001");
+            }
+        }
+        return result;
+    }
+
+    //check if s1 is father of s2, s1 C s2
+    public static boolean isSubset(Set<String> s1, Set<String> s2, Set<String> vars){
+        if (!solve(vars,s1) && !solve(vars,s2)){
+            return false;
+        }
+        s2 = negate(s2);
+        //check solvable
+        for (String key: s2){
+            Set<String> temp = new HashSet<>();
+            //create new system for each system in !s1
+            temp.add(key);
+            temp.addAll(s1);
+            //if 1 of them is solvable then s1 is not subset
+            if (solve(vars,temp)){
+                return false;
+            }
+        }
+        //if none is solvable then s1 is subset
+        return true;
+    }
+
 
 }
