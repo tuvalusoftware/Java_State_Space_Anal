@@ -41,7 +41,7 @@ module.exports = {
 
     let dot = ''
 
-    let T = 'T{0} [shape=rectangle, fontcolor="#cccccc", color="#cccccc", style="rounded", label="{1}"]'
+    let T = 'T{0} [shape=rectangle, fontcolor=white, color=white, fillcolor="#3f51b5", style="filled,rounded", label="{1}"]'
     for (let i=0; i<guard.length; i++){
       dot += T.format(i,guard[i]) + '\n'
     }
