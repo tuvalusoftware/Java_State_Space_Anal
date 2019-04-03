@@ -16,25 +16,51 @@ String.prototype.format = function() {
   return a
 }
 
-function main(){
-    // let data = "digraph G {start [shape=Mdiamond];}"
-    // let result = await viz.renderString(data,{engine:"dot"})
-    // console.log(result)
-    // fs.writeFile("./cac.svg",result,err=>{
-    //   console.log(err)
-    // })
-    // console.log("The file was saved!");
-    let path = "../src/main/java/PetrinetJson{0}"
-    fs.readdir(path.format(""), function (err, files) {
-      if (err) return "Error in reading path"
-      for(filename of files){
-        fs.readFile(path.format("/"+filename),"utf8",(err,petrinet)=>{
-          if (err) return "Error in reading file"
-          petrinet = JSON.parse(petrinet)
-          print(petrinet)
-        })
-      }
+function readDir(path){
+  return new Promise((resolve, reject)=>{
+    fs.readdir(path,(err,files)=>{
+      if (err) reject(err)
+      resolve(files)
     })
+  })
 }
 
-print(main())
+function readFile(path){
+  return new Promise((resolve, reject)=>{
+    fs.readFile(path,"utf8",(err,petrinet)=>{
+      if (err) reject(err)
+      resolve(JSON.parse(petrinet))
+    })
+  })
+}
+
+function writeFile(path,data){
+  return new Promise((resolve, reject)=>{
+    fs.writeFile(path,data,err=>{
+      if (err) reject(err)
+      resolve()
+      print("Graph generated!")
+    })
+  })
+}
+
+async function main(){
+    let path = "../src/main/java/PetrinetJson{0}"
+    let files = await readDir(path.format(""))
+    // loop through files in directory
+    for(filename of files){
+      //check extension to read only json
+      if(filename.substring(filename.length-4)=="json"){
+        //read file
+        let petrinet = await readFile(path.format("/"+filename))
+        let graph = dotParser.graph(petrinet)
+        let result = await viz.renderString(graph,{engine:"dot"})
+        //build path and filename.svg to write
+        let writeTo = path.format("/"+filename.substring(0,filename.length-4)+"svg")
+        print(writeTo)
+        await writeFile(writeTo,result)
+      }
+    }
+}
+
+main()
