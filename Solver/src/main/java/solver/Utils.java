@@ -137,7 +137,7 @@ final public class Utils {
         List<String> varOrder = new ArrayList<>();
         List<List<String>> allVars = new ArrayList<>();
 
-        for (String var : combinedMapping.getVarSet()) {
+        for (String var : combinedMapping.getFromVarSet()) {
             allVars.add(combinedMapping.getValueList(var));
             varOrder.add(var);
         }
