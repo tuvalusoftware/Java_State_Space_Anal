@@ -31,7 +31,11 @@ public class LinearSystem {
         this.varMapping = new VarMapping();
     }
 
-    LinearSystem(LinearSystem linearSystem) {  /* deep copy linearSystem */
+    /**
+     * deep copy linearSystem
+     * @param linearSystem Linear System that need to deep copy
+     */
+    LinearSystem(LinearSystem linearSystem) {
 
         this.inequalities = new HashSet<>();
         this.inequalities.addAll(linearSystem.getInequalities());
@@ -84,6 +88,10 @@ public class LinearSystem {
         inequalities = newEqualities;
     }
 
+    /**
+     * Get all input variables of this system
+     * @return set of string, each string is a input variable
+     */
     Set<String> getAllInputVars() {
 
         Set<String> result = new HashSet<>();

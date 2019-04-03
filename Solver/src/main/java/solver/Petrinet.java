@@ -11,6 +11,7 @@ package solver;
 
 import Response.ReachableReport;
 import Response.SubsetReport;
+import com.google.common.collect.Lists;
 
 import java.io.Serializable;
 import java.util.*;
@@ -302,6 +303,26 @@ public class Petrinet implements Serializable {
 
             if (!result.containsKey(linearSystem.getInputPlacesIDs())) result.put(linearSystem.getInputPlacesIDs(), new ArrayList<>());
             result.get(linearSystem.getInputPlacesIDs()).add(linearSystem);
+        }
+
+        return result;
+    }
+
+    List<LinearSystem> isReachable(Set<Place> endPlaces) {
+
+        List<List<LinearSystem>> casterianInput = new ArrayList<>();
+        for(Place place: endPlaces) {
+            generateAllSystemFromInput(place);
+            casterianInput.add(place.getListSystem());
+        }
+
+        List<LinearSystem> result = new ArrayList<>();
+        List<List<LinearSystem>> combinedSystem = Lists.cartesianProduct(casterianInput);
+
+        for(List<LinearSystem> listSystem: combinedSystem) {
+            LinearSystem newSystem = new LinearSystem(listSystem);
+            boolean solvable = Solver.solve(getAllInputVars(), newSystem.getInequalities());
+            if (solvable) result.add(newSystem);
         }
 
         return result;
