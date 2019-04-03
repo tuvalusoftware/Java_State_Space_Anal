@@ -255,8 +255,8 @@ public class Petrinet implements Serializable {
             Place currPlace = (Place) currNode;
             for(Transition transition: currPlace.getInTransition()) {
                 generateAllSystemFromInput(transition);
-                transition.addVarMappingToAllSystems(currPlace);
-                currPlace.addListSystem(transition.getListSystem());
+                List<LinearSystem> newSystems = transition.addVarMappingToAllSystems(currPlace);
+                currPlace.addListSystem(newSystems);
             }
 
             if (currPlace.isEmptyInput()) {
