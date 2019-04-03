@@ -6,6 +6,8 @@ import Response.ReachableReport;
 import Response.SubsetReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
+
+import javax.sound.sampled.Line;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -49,7 +51,36 @@ public class App {
         return Solver.solve(system.getVars(),system.getConstraints());
     }
 
+    @PostMapping("/queryreachable")
+    public String queryreachable(@RequestBody String json, @RequestParam String param) {
+        PetrinetModel model = Utils.parseJsonString(json);
+        Petrinet net = new Petrinet(model);
 
+        Set<Place> endPlaces = new HashSet<>();
+        Set<Integer> end = new HashSet<>();
+        for(String p: param.split(",")){
+            int placeID = Integer.parseInt(p);
+            endPlaces.add(net.getPlace(placeID));
+            end.add(placeID);
+        }
+
+        List<ReachableReport> report = new ArrayList<>();
+        for (LinearSystem s: net.isReachable(endPlaces)){
+            ReachableReport temp = new ReachableReport(s.getInputPlacesIDs(),end,s.getInequalities());
+            report.add(temp);
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        try{
+            return mapper.writeValueAsString(report);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return "Error in solver";
+    }
 
     private List<SubsetReport> subsetTable(Petrinet net){
         List<Place> endPlaces = net.getEndPlaces();
@@ -63,27 +94,29 @@ public class App {
                     for (Set<Integer> startPlaces2 : allPaths2.keySet()) {
                         for (LinearSystem l1: allPaths1.get(startPlaces1)) {
                             for (LinearSystem l2 : allPaths2.get(startPlaces2)) {
-                                Set<String> vars = net.getAllInputVars();
-                                boolean isSubset1 = Solver.isSubset(l1.getInequalities(),l2.getInequalities(),vars);
-                                boolean isSubset2 = Solver.isSubset(l2.getInequalities(),l1.getInequalities(),vars);
-                                int status = -1;
-                                if (isSubset1 && isSubset2){
-                                    status = 3;
+                                if (!l1.getInequalities().containsAll(l2.getInequalities())){
+                                    Set<String> vars = net.getAllInputVars();
+                                    boolean isSubset1 = Solver.isSubset(l1.getInequalities(),l2.getInequalities(),vars);
+                                    boolean isSubset2 = Solver.isSubset(l2.getInequalities(),l1.getInequalities(),vars);
+                                    int status = -1;
+                                    if (isSubset1 && isSubset2){
+                                        status = 3;
+                                    }
+                                    else if (!isSubset1 && isSubset2){
+                                        status = 2;
+                                    }
+                                    else if (isSubset1 && !isSubset2){
+                                        status = 1;
+                                    }
+                                    else if (!isSubset1 && !isSubset2){
+                                        status = 0;
+                                    }
+                                    SubsetReport temp = new SubsetReport(
+                                            new Path(startPlaces1,endPlaces.get(i).getID(),l1.getInequalities()),
+                                            new Path(startPlaces2,endPlaces.get(j).getID(),l2.getInequalities()),
+                                            status);
+                                    report.add(temp);
                                 }
-                                else if (!isSubset1 && isSubset2){
-                                    status = 2;
-                                }
-                                else if (isSubset1 && !isSubset2){
-                                    status = 1;
-                                }
-                                else if (!isSubset1 && !isSubset2){
-                                    status = 0;
-                                }
-                                SubsetReport temp = new SubsetReport(
-                                        new Path(startPlaces1,endPlaces.get(i).getID(),l1.getInequalities()),
-                                        new Path(startPlaces2,endPlaces.get(j).getID(),l2.getInequalities()),
-                                        status);
-                                report.add(temp);
                             }
                         }
                     }
@@ -95,79 +128,36 @@ public class App {
     }
 
     private List<ReachableReport> reachableTable(Petrinet net){
-        List<Place> endPlaces = net.getEndPlaces();
         List<ReachableReport> report = new ArrayList<>();
-        boolean solvable = false;
-//        1 end has multiple starts
-//        1 start->end has multiple paths
-//        one path is solvable then that start->end is solvable
+        List<Place> endPlaces = net.getEndPlaces();
+        print(endPlaces.toString());
         if (endPlaces.size() == 1){
-            Map<Set<Integer>,List<LinearSystem>> allPaths = net.generateMapCompleteSystems(endPlaces.get(0));
-            for(Set<Integer> start: allPaths.keySet()){
-                solvable = false;
-                print(start.toString() + "--->" + endPlaces.get(0).nodeID);
-                for(LinearSystem l: allPaths.get(start)){
-                    boolean result = Solver.solve(net.getAllInputVars(),l.getInequalities());
-                    if (result){
-                        solvable = true;
-                        break;
-                    }
-                }
-                if (solvable){
-                    break;
-                }
-            }
-            if (!solvable){
-                ReachableReport temp = new ReachableReport(new HashSet<>(), endPlaces.get(0).getID(), new HashSet<>(), -1, 3);
-                report.add(temp);
-            }
-            else{
-                ReachableReport temp = new ReachableReport(new HashSet<>(), endPlaces.get(0).getID(), new HashSet<>(), -1, 2);
+            Set<Place> query = new HashSet<>();
+            Set<Integer> end = new HashSet<>();
+            query.add(endPlaces.get(0));
+            end.add(endPlaces.get(0).getID());
+            for (LinearSystem s: net.isReachable(query)){
+                ReachableReport temp = new ReachableReport(s.getInputPlacesIDs(),end,s.getInequalities());
                 report.add(temp);
             }
         }
         else{
-            for (int i=0 ;i<endPlaces.size()-1; i++){
+            for (int i=0; i<endPlaces.size()-1; i++){
                 for (int j=i+1; j<endPlaces.size(); j++){
-                    Map<Set<Integer>,List<LinearSystem>> allPaths1 = net.generateMapCompleteSystems(endPlaces.get(i));
-                    Map<Set<Integer>,List<LinearSystem>> allPaths2 = net.generateMapCompleteSystems(endPlaces.get(j));
-                    for(Set<Integer> startPlaces1: allPaths1.keySet()){
-                        for(Set<Integer> startPlaces2: allPaths2.keySet()){
-                            print(startPlaces1.toString() + "--->" + endPlaces.get(i).nodeID);
-                            print(startPlaces2.toString() + "--->" + endPlaces.get(j).nodeID);
-                            for (LinearSystem l1: allPaths1.get(startPlaces1)){
-                                for (LinearSystem l2: allPaths2.get(startPlaces2)){
-                                    Set<String> mergedSystem = new HashSet<>();
-                                    mergedSystem.addAll(l1.getInequalities());
-                                    mergedSystem.addAll(l2.getInequalities());
-
-//                                    print(l1.getInequalities().toString());
-//                                    print(l2.getInequalities().toString());
-
-                                    Set<String> vars = net.getAllInputVars();
-                                    boolean result = Solver.solve(vars,mergedSystem);
-                                    if (result){
-                                        solvable = true;
-                                        break;
-                                    }
-                                }
-                                if (solvable){
-                                    break;
-                                }
-                            }
-                            if (!solvable){
-                                ReachableReport temp = new ReachableReport(startPlaces1, endPlaces.get(i).getID(), startPlaces2, endPlaces.get(j).getID(),3);
-                                report.add(temp);
-                            }
-                            else{
-                                ReachableReport temp = new ReachableReport(startPlaces1, endPlaces.get(i).getID(), startPlaces2, endPlaces.get(j).getID(),2);
-                                report.add(temp);
-                            }
-                        }
+                    Set<Place> query = new HashSet<>();
+                    Set<Integer> end = new HashSet<>();
+                    query.add(endPlaces.get(i));
+                    query.add(endPlaces.get(j));
+                    end.add(endPlaces.get(i).getID());
+                    end.add(endPlaces.get(j).getID());
+                    for (LinearSystem s: net.isReachable(query)){
+                        ReachableReport temp = new ReachableReport(s.getInputPlacesIDs(),end,s.getInequalities());
+                        report.add(temp);
                     }
                 }
             }
         }
+
         return report;
     }
 

@@ -1,40 +1,30 @@
 package Response;
 
+import solver.LinearSystem;
 
+import java.util.List;
 import java.util.Set;
 
 public class ReachableReport {
-    Set<Integer> startPath1;
-    int endPath1;
-    Set<Integer> startPath2;
-    int endPath2;
-    int reachable;
+    Set<Integer> startPlaces;
+    Set<Integer> endPlaces;
+    Set<String> system;
 
-    public Set<Integer> getStartPath1() {
-        return startPath1;
+    public ReachableReport(Set<Integer> startPlaces, Set<Integer> endPlaces, Set<String> system) {
+        this.startPlaces = startPlaces;
+        this.endPlaces = endPlaces;
+        this.system = system;
     }
 
-    public int getEndPath1() {
-        return endPath1;
+    public Set<Integer> getStartPlaces() {
+        return startPlaces;
     }
 
-    public Set<Integer> getStartPath2() {
-        return startPath2;
+    public Set<Integer> getEndPlaces() {
+        return endPlaces;
     }
 
-    public int getEndPath2() {
-        return endPath2;
-    }
-
-    public int getReachable() {
-        return reachable;
-    }
-
-    public ReachableReport(Set<Integer> startPath1, int endPath1, Set<Integer> startPath2, int endPath2, int reachable) {
-        this.startPath1 = startPath1;
-        this.endPath1 = endPath1;
-        this.startPath2 = startPath2;
-        this.endPath2 = endPath2;
-        this.reachable = reachable;
+    public Set<String> getSystem() {
+        return system;
     }
 }

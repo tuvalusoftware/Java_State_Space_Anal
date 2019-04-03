@@ -124,9 +124,7 @@ public class Converter {
         String result = "";
         String var = "";
         Double coeff = 1.0;
-        print("------" + s + "-------");
         for (String operand : s.split("(?=-)|\\+")) {
-            print(operand);
             //operand has variable
             if (!isNum(operand)) {
 //                print("here " + operand);

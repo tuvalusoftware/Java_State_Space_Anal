@@ -321,6 +321,7 @@ public class Petrinet implements Serializable {
 
         for(List<LinearSystem> listSystem: combinedSystem) {
             LinearSystem newSystem = new LinearSystem(listSystem);
+            print(newSystem.getInequalities().toString());
             boolean solvable = Solver.solve(getAllInputVars(), newSystem.getInequalities());
             if (solvable) result.add(newSystem);
         }
@@ -365,16 +366,21 @@ public class Petrinet implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/petrinet02.json";
+        String relativePath = "/src/main/java/PetrinetJson/2end.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
         List<Place> endPlaces = net.getEndPlaces();
-        List<SubsetReport> report = new ArrayList<>();
+        Set<Place> query = new HashSet<>();
+        query.add(net.getPlace(4));
 
-        print(report.toString());
+
+        for (LinearSystem s: net.isReachable(query)){
+            print(s.getInputPlacesIDs().toString());
+        }
+
 
     }
 
