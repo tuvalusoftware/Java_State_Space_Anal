@@ -312,8 +312,8 @@ public class Petrinet implements Serializable {
 
         List<List<LinearSystem>> casterianInput = new ArrayList<>();
         for(Place place: endPlaces) {
-            generateAllSystemFromInput(place);
-            casterianInput.add(place.getListSystem());
+            List<LinearSystem> listSystem = generateListCompleteSystems(place);
+            casterianInput.add(listSystem);
         }
 
         List<LinearSystem> result = new ArrayList<>();
