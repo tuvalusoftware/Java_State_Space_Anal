@@ -53,7 +53,7 @@ public class ConverterTest {
     public void toInfix05() {
         String s = "3 5 2 + - 14 3 x - - ==";
         String infix = "3-(5+2)==14-(3-x)";
-        String infixFlatten = "3-5-2==14-3+x";
+        String infixFlatten = "3-5-2=14-3+x";
         assertEquals(infix, Converter.toInfix(s));
         assertEquals(infixFlatten,Converter.toInfixFlatten(s));
     }
@@ -62,7 +62,7 @@ public class ConverterTest {
     public void toInfix06() {
         String s = "3 5 1 + 2 - 3 + 4 + - 0 ==";
         String infix = "3-(5+1-2+3+4)==0";
-        String infixFlatten = "3-5-1+2-3-4==0";
+        String infixFlatten = "3-5-1+2-3-4=0";
         assertEquals(infix, Converter.toInfix(s));
         assertEquals(infixFlatten,Converter.toInfixFlatten(s));
     }
@@ -89,7 +89,7 @@ public class ConverterTest {
     public void toInfix09() {
         String s = "1 2 + 3 4 + - 3 x y * * ==";
         String infix = "1+2-(3+4)==3*x*y";
-        String infixFlatten = "1+2-3-4==3*x*y";
+        String infixFlatten = "1+2-3-4=3.0*x*y";
         assertEquals(infix, Converter.toInfix(s));
         assertEquals(infixFlatten,Converter.toInfixFlatten(s));
     }
@@ -134,7 +134,7 @@ public class ConverterTest {
     public void toInfix14() {
         String s = "3 15 2 - 3 x - * 1.2 * - 5 3 x + -5 y - * - ==";
         String infix = "3-(15-2)*(3-x)*1.2==5-(3+x)*(-5-y)";
-        String infixFlatten = "3-54.0+18.0*x+7.199999999999999-2.4*x==5+15.0+3.0*y+5.0*x+x*y";
+        String infixFlatten = "3-54.0+18.0*x+7.199999999999999-2.4*x=5+15.0+3.0*y+5.0*x+x*y";
         assertEquals(infix, Converter.toInfix(s));
         assertEquals(infixFlatten,Converter.toInfixFlatten(s));
     }

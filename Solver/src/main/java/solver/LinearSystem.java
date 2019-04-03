@@ -31,6 +31,24 @@ public class LinearSystem {
         this.varMapping = new VarMapping();
     }
 
+    LinearSystem(LinearSystem linearSystem) {  /* deep copy linearSystem */
+
+        this.inequalities = new HashSet<>();
+        this.inequalities.addAll(linearSystem.getInequalities());
+
+        this.inputPlaces = new HashSet<>();
+        this.inputPlaces.addAll(linearSystem.getInputPlaces());
+
+        Map<String, Set<String>> oldData = linearSystem.getVarMapping().getData();
+        Map<String, Set<String>> newData = new HashMap<>();
+
+        for(String fromVar: oldData.keySet()) {
+            Set<String> toVarSet = new HashSet<>(oldData.get(fromVar));
+            newData.put(fromVar, toVarSet);
+        }
+        this.varMapping = new VarMapping(newData);
+    }
+
     /**
      * Create new LinearSystem object by combining other systems. (Combine inequalities and input places).
      * @param listSystems list of Linear System objects
@@ -96,8 +114,7 @@ public class LinearSystem {
     }
 
     void addInequality(String inequality) {
-        if (!inequality.equals("")){
-            inequalities.add(inequality);
-        }
+        if (inequality.trim().isEmpty()) return;
+        inequalities.add(inequality);
     }
 }
