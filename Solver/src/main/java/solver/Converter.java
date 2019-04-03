@@ -103,11 +103,11 @@ public class Converter {
         else if(s.contains("<=")){
             sense = "<=";
         }
-        else if(s.contains("=")){
+        else if(s.contains("==")){
             sense = "=";
         }
 
-        for (String side: s.split(">=|<=|=")){
+        for (String side: s.split(">=|<=|==")){
             if (result.equals("")){
                 result += postProcessOneSide(side);
                 result += sense;
@@ -286,6 +286,7 @@ public class Converter {
                 "-10 -10 - a *",
                 "4 -10 -a + -",
                 "3 f 2 - 4 * f 1 - 3 * - * 1 3 g h - 2 * h g - 3 * + * - 4 * + 5 * 10 - f 2 - 4 * f 1 - 3 * - 3 - 2 * 4 g h - 2 * h g - 3 * + * + >=",
+                "a 5 + 4 =="
 
         };
         
