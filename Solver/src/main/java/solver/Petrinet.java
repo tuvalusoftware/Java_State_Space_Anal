@@ -311,14 +311,16 @@ public class Petrinet implements Serializable {
     List<ReachableReport> isReachable(Set<Place> endPlaces) {
 
         List<List<LinearSystem>> casterianInput = new ArrayList<>();
+        Set<Integer> endPlaceIDs = new HashSet<>();
+
         for(Place place: endPlaces) {
             List<LinearSystem> listSystem = generateListCompleteSystems(place);
             casterianInput.add(listSystem);
+            endPlaceIDs.add(place.getID());
         }
 
         List<ReachableReport> result = new ArrayList<>();
         List<List<LinearSystem>> combinedSystem = Lists.cartesianProduct(casterianInput);
-        Set<Integer> endPlaceIDs = new HashSet<>();
 
         for(List<LinearSystem> listSystem: combinedSystem) {
 

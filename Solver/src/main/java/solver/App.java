@@ -49,7 +49,7 @@ public class App {
         return Solver.solve(system.getVars(), system.getConstraints());
     }
 
-    @PostMapping("/queryreachable")
+    @PostMapping("/reachablequery")
     public String queryreachable(@RequestBody String json, @RequestParam String param) {
         PetrinetModel model = Utils.parseJsonString(json);
         Petrinet net = new Petrinet(model);

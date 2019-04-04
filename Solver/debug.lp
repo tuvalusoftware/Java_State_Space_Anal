@@ -1,14 +1,17 @@
 \ LP format - for model browsing. Use MPS format to capture full model detail.
 Minimize
-  0 e
+  0 a + 0 b + 0 c + 0 d + 0 e
 Subject To
- c: 2 c + d >= 1e-05
- c: 2 a + d <= 0
- c: a + b >= 0
+ c: g - h <= -3
+ c: f <= -1
+ c: 13 f + 64 g - 64 h >= 49
 Bounds
  a free
  b free
  c free
  d free
  e free
+ f free
+ g free
+ h free
 End
