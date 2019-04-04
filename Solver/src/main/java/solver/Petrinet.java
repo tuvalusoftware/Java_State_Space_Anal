@@ -308,7 +308,7 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    List<LinearSystem> isReachable(Set<Place> endPlaces) {
+    List<ReachableReport> isReachable(Set<Place> endPlaces) {
 
         List<List<LinearSystem>> casterianInput = new ArrayList<>();
         for(Place place: endPlaces) {
@@ -316,14 +316,19 @@ public class Petrinet implements Serializable {
             casterianInput.add(listSystem);
         }
 
-        List<LinearSystem> result = new ArrayList<>();
+        List<ReachableReport> result = new ArrayList<>();
         List<List<LinearSystem>> combinedSystem = Lists.cartesianProduct(casterianInput);
+        Set<Integer> endPlaceIDs = new HashSet<>();
 
         for(List<LinearSystem> listSystem: combinedSystem) {
+
             LinearSystem newSystem = new LinearSystem(listSystem);
-            print(newSystem.getInequalities().toString());
             boolean solvable = Solver.solve(getAllInputVars(), newSystem.getInequalities());
-            if (solvable) result.add(newSystem);
+
+            ReachableReport report = new ReachableReport(
+                    newSystem.getInputPlacesIDs(), endPlaceIDs, newSystem.getInequalities(), solvable
+            );
+            result.add(report);
         }
 
         return result;
@@ -376,10 +381,10 @@ public class Petrinet implements Serializable {
         Set<Place> query = new HashSet<>();
         query.add(net.getPlace(4));
 
-
-        for (LinearSystem s: net.isReachable(query)){
-            print(s.getInputPlacesIDs().toString());
-        }
+//
+//        for (LinearSystem s: net.isReachable(query)){
+//            print(s.getInputPlacesIDs().toString());
+//        }
 
 
     }
