@@ -2,6 +2,7 @@ Solver/.idea
 Solver/.DS_Store
 Solver/out
 Solver/.gradle
+Solver/debug.lp
 
 Solver/build/*
 !Solver/build/libs
