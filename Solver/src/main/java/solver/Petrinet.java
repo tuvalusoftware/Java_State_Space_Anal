@@ -9,9 +9,12 @@
 
 package solver;
 
+import Response.ReachableReport;
+import Response.SubsetReport;
+import com.google.common.collect.Lists;
+
 import java.io.Serializable;
 import java.util.*;
-
 import static solver.Utils.parseJson;
 
 public class Petrinet implements Serializable {
@@ -313,6 +316,34 @@ public class Petrinet implements Serializable {
         return result;
     }
 
+    List<ReachableReport> isReachable(Set<Place> endPlaces) {
+
+        List<List<LinearSystem>> casterianInput = new ArrayList<>();
+        Set<Integer> endPlaceIDs = new HashSet<>();
+
+        for(Place place: endPlaces) {
+            List<LinearSystem> listSystem = combineGuardFromEndNode(place);
+            casterianInput.add(listSystem);
+            endPlaceIDs.add(place.getID());
+        }
+
+        List<ReachableReport> result = new ArrayList<>();
+        List<List<LinearSystem>> combinedSystem = Lists.cartesianProduct(casterianInput);
+
+        for(List<LinearSystem> listSystem: combinedSystem) {
+
+            LinearSystem newSystem = new LinearSystem(listSystem);
+            boolean solvable = Solver.solve(getAllInputVars(), newSystem.getInequalities());
+
+            ReachableReport report = new ReachableReport(
+                    newSystem.getInputPlacesIDs(), endPlaceIDs, newSystem.getInequalities(), solvable
+            );
+            result.add(report);
+        }
+
+        return result;
+    }
+
     List<List<LinearSystem>> generateListCompleteSystemsFromStart(Place startPlace) {
 
         List<List<LinearSystem>> answer = new ArrayList<>();
@@ -399,16 +430,25 @@ public class Petrinet implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/complexGuard02.json";
+        String relativePath = "/src/main/java/PetrinetJson/2end.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
         List<Place> endPlaces = net.getEndPlaces();
+        Set<Place> query = new HashSet<>();
+        query.add(net.getPlace(4));
+
+//
+//        for (LinearSystem s: net.isReachable(query)){
+//            print(s.getInputPlacesIDs().toString());
+//        }
+
+
     }
 
-    public static void print(String s) {
+    public static void print(String s){
         System.out.println(s);
     }
 }

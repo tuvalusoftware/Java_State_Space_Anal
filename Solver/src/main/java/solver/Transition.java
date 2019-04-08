@@ -122,16 +122,22 @@ public class Transition extends Node {
         return result;
     }
 
-    void addVarMappingToAllSystems(Place nextPlace) {
+    List<LinearSystem> addVarMappingToAllSystems(Place nextPlace) {
 
+        List<LinearSystem> result = new ArrayList<>();
         List<Transition> inTrans = new ArrayList<>();
         inTrans.add(this);
 
         Transition outTran = (nextPlace.isEmptyOutput()) ? null : nextPlace.getOutTransition().get(0);
         VarMapping currMapping = new VarMapping(inTrans, nextPlace, outTran);
+
         for(LinearSystem linearSystem: getListSystem()) {
-            linearSystem.getVarMapping().addVarsMapping(currMapping);
+            LinearSystem newSystem = new LinearSystem(linearSystem);
+            newSystem.getVarMapping().addVarsMapping(currMapping);
+            result.add(newSystem);
         }
+
+        return result;
     }
 
     VarMapping combineVars() {

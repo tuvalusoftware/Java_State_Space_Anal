@@ -101,13 +101,13 @@ public class Converter {
             sense = ">=";
         }
         else if(s.contains("<=")){
-            sense = ">=";
+            sense = "<=";
         }
-        else if(s.contains("=")){
+        else if(s.contains("==")){
             sense = "=";
         }
 
-        for (String side: s.split(">=|<=|=")){
+        for (String side: s.split(">=|<=|==")){
             if (result.equals("")){
                 result += postProcessOneSide(side);
                 result += sense;
@@ -124,12 +124,10 @@ public class Converter {
         String result = "";
         String var = "";
         Double coeff = 1.0;
-        print("------" + s + "-------");
         for (String operand : s.split("(?=-)|\\+")) {
-            print(operand);
             //operand has variable
             if (!isNum(operand)) {
-                print("here " + operand);
+//                print("here " + operand);
                 coeff = 1.0;
                 var = "";
                 for (String e : operand.split("\\*")) {
@@ -286,6 +284,7 @@ public class Converter {
                 "-10 -10 - a *",
                 "4 -10 -a + -",
                 "3 f 2 - 4 * f 1 - 3 * - * 1 3 g h - 2 * h g - 3 * + * - 4 * + 5 * 10 - f 2 - 4 * f 1 - 3 * - 3 - 2 * 4 g h - 2 * h g - 3 * + * + >=",
+                "a 5 + 4 =="
 
         };
         

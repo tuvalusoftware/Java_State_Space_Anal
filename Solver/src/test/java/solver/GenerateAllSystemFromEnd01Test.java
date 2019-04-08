@@ -37,12 +37,14 @@ public class GenerateAllSystemFromEnd01Test {
         assertEquals(2, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
-        assertEquals("a+b>0", it.next());
-        assertEquals("a+b+a-b+d<0", it.next());
+        assertEquals("a+b+a-b+d<=0", it.next());
+        assertEquals("a+b>=0", it.next());
+
 
         it = listSystem.get(1).getInequalities().iterator();
-        assertEquals("c-1+c+1+d<0", it.next());
-        assertEquals("c+3>0", it.next());
+        assertEquals("c+3>=0", it.next());
+        assertEquals("c-1+c+1+d<=0", it.next());
+
 
         Set<Place> inputPlaces = new HashSet<>();
         Collections.addAll(inputPlaces, place00, place01, place05);
@@ -59,7 +61,7 @@ public class GenerateAllSystemFromEnd01Test {
         assertEquals(1, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
-        assertEquals("a+b>0", it.next());
+        assertEquals("a+b>=0", it.next());
         assertEquals("a+b>=1", it.next());
 
         Set<Place> inputPlaces = new HashSet<>();

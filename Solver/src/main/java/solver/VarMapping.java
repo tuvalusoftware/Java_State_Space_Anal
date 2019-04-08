@@ -20,6 +20,10 @@ public class VarMapping {
         data = new HashMap<>();
     }
 
+    VarMapping(Map<String, Set<String>> data) {
+        this.data = data;
+    }
+
     public Map<String, Set<String>> getData() {
         return data;
     }
@@ -49,7 +53,7 @@ public class VarMapping {
                 continue;
             }
 
-            for (String var : combinedMapping.getVarSet()) {
+            for (String var : combinedMapping.getFromVarSet()) {
                 allVars.add(combinedMapping.getValueList(var));
                 varOrder.add(var);
             }
@@ -79,7 +83,7 @@ public class VarMapping {
         }
     }
 
-    Set<String> getVarSet() {
+    Set<String> getFromVarSet() {
         return data.keySet();
     }
 
@@ -101,7 +105,7 @@ public class VarMapping {
     }
 
     void addVarsMapping(VarMapping vars) {
-        for(String varName: vars.getVarSet()) {
+        for(String varName: vars.getFromVarSet()) {
             if (!data.containsKey(varName)) data.put(varName, new HashSet<>());
             data.get(varName).addAll(vars.getValueList(varName));
         }

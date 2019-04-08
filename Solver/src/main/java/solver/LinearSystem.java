@@ -1,9 +1,6 @@
 package solver;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class LinearSystem {
 
@@ -32,6 +29,28 @@ public class LinearSystem {
         this.inequalities = new HashSet<>();
         this.inputPlaces = inputPlaces;
         this.varMapping = new VarMapping();
+    }
+
+    /**
+     * deep copy linearSystem
+     * @param linearSystem Linear System that need to deep copy
+     */
+    LinearSystem(LinearSystem linearSystem) {
+
+        this.inequalities = new HashSet<>();
+        this.inequalities.addAll(linearSystem.getInequalities());
+
+        this.inputPlaces = new HashSet<>();
+        this.inputPlaces.addAll(linearSystem.getInputPlaces());
+
+        Map<String, Set<String>> oldData = linearSystem.getVarMapping().getData();
+        Map<String, Set<String>> newData = new HashMap<>();
+
+        for(String fromVar: oldData.keySet()) {
+            Set<String> toVarSet = new HashSet<>(oldData.get(fromVar));
+            newData.put(fromVar, toVarSet);
+        }
+        this.varMapping = new VarMapping(newData);
     }
 
     /**
@@ -69,6 +88,24 @@ public class LinearSystem {
         inequalities = newEqualities;
     }
 
+    /**
+     * Get all input variables of this system
+     * @return set of string, each string is a input variable
+     */
+    Set<String> getAllInputVars() {
+
+        Set<String> result = new HashSet<>();
+
+        for(Place place: inputPlaces) {
+            for(Transition transition: place.getOutTransition()) {
+                String[] varList = transition.getVars(place);
+                Collections.addAll(result, varList);
+            }
+        }
+
+        return result;
+    }
+
     void convertAllToInfix() {
 
         Set<String> newEqualities = new HashSet<>();
@@ -85,8 +122,7 @@ public class LinearSystem {
     }
 
     void addInequality(String inequality) {
-        if (!inequality.equals("")){
-            inequalities.add(inequality);
-        }
+        if (inequality.trim().isEmpty()) return;
+        inequalities.add(inequality);
     }
 }
