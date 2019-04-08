@@ -2,16 +2,12 @@ package solver;
 
 import org.junit.Before;
 import org.junit.Test;
-import solver.LinearSystem;
-import solver.Petrinet;
-import solver.PetrinetModel;
-import solver.Place;
 
 import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static solver.Utils.parseJson;
 
-public class GenerateAllSystem01Test {
+public class GenerateAllSystemFromEnd01Test {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -37,7 +33,7 @@ public class GenerateAllSystem01Test {
 
     @Test
     public void testGenerateAllSystem01() {
-        List<LinearSystem> listSystem = net.generateListCompleteSystems(place07);
+        List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place07);
         assertEquals(2, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
@@ -59,7 +55,7 @@ public class GenerateAllSystem01Test {
 
     @Test
     public void testGenerateAllSystem02() {
-        List<LinearSystem> listSystem = net.generateListCompleteSystems(place06);
+        List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place06);
         assertEquals(1, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();

@@ -2,14 +2,13 @@ package solver;
 
 import org.junit.Before;
 import org.junit.Test;
-import solver.*;
 
 import java.util.*;
 
 import static solver.Utils.parseJson;
 import static org.junit.Assert.assertEquals;
 
-public class GenerateAllSystem03Test {
+public class GenerateAllSystemFromEnd03Test {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -32,7 +31,7 @@ public class GenerateAllSystem03Test {
 
     @Test
     public void addGenerateAllSystem() {
-        List<LinearSystem> listSystem = net.generateListCompleteSystems(place02);
+        List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place02);
 
         assertEquals(1, listSystem.size());
 
