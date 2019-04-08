@@ -38,7 +38,7 @@ public class GenerateAllSystem07Test {
 
     @Test
     public void testGenerateAllSystem01() {
-        List<LinearSystem> listSystem = net.generateListCompleteSystems(place12);
+        List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place12);
         assertEquals(2, listSystem.size());
 
         Set<Place> inputPlaces = new HashSet<>();
@@ -60,7 +60,7 @@ public class GenerateAllSystem07Test {
 
     @Test
     public void testGenerateAllSystem02() {
-        List<LinearSystem> listSystem = net.generateListCompleteSystems(place13);
+        List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place13);
         assertEquals(6, listSystem.size());
 
         Set<Place> inputPlaces = new HashSet<>();
