@@ -9,9 +9,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
-
-import com.google.errorprone.annotations.Var;
+package Solver;
 
 import java.io.Serializable;
 import java.util.ArrayList;

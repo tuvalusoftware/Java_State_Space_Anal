@@ -1,4 +1,4 @@
-package solver;
+package Solver;
 
 import org.junit.Before;
 import org.junit.Test;

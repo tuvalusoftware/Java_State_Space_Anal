@@ -8,7 +8,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 import org.apache.commons.lang3.StringEscapeUtils;
 import java.io.Serializable;
 import java.util.*;

@@ -1,4 +1,4 @@
-package solver;
+package Solver;
 
 import org.javatuples.Pair;
 

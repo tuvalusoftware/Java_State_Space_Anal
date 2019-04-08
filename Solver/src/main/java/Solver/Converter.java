@@ -1,8 +1,6 @@
-package solver;
+package Solver;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 
 public class Converter {
     private static Map<String, Integer> operator = new HashMap<>();
@@ -19,8 +17,11 @@ public class Converter {
         operator.put(">=", 1);
         operator.put("<=", 1);
         operator.put("==", 1);
+        operator.put("!=", 1);
 
         operator.put("&&", 1);
+        operator.put("||", 1);
+
     }
 
     public static String toInfix(String expression) {
@@ -257,6 +258,82 @@ public class Converter {
         return postProcess(stack.pop());
     }
 
+    public static String getSystemComplementation(Set<String> system) {
+        Set<String> complement = new HashSet<>();
+        String result = "";
+
+        for(String inequality: system){
+            String[] op = inequality.split(" ");
+            String temp = "";
+            for (int j=0; j<op.length; j++){
+                if (op[j].equals(">=")) {
+                    complement.add(temp + "<");
+                }
+                else if (op[j].equals("<=")){
+                    complement.add(temp + ">");
+                }
+                else if (op[j].equals(">")){
+                    complement.add(temp + "<=");
+                }
+                else if (op[j].equals("<")){
+                    complement.add(temp + ">=");
+                }
+                else if (op[j].equals("!=")){
+                    complement.add(temp + "==");
+                }
+                else if (op[j].equals("==")){
+                    complement.add(temp + "!=");
+                }
+                else{
+                    temp += op[j] + " ";
+                }
+            }
+        }
+        int i=0;
+        for (String inequality: complement){
+            if (i<=1){
+                result += inequality + " ";
+            }
+            else{
+                result += "|| " + inequality + " ";
+            }
+            i += 1;
+        }
+        if (i>=2){
+            result += "|| ";
+        }
+        return result;
+    }
+
+    public static String getPlaceComplementation(List<Set<String>> systems){
+        String result = "";
+        int i = 0;
+        for (Set<String> system: systems){
+            if (i<=1){
+                result += getSystemComplementation(system);
+            }
+            else{
+                result += "&& " + getSystemComplementation(system);
+            }
+            i += 1;
+        }
+        if (i>=2){
+            result += "&&";
+        }
+        return result;
+    }
+
+    public static List<List<String>> splitGuard(String guard){
+        List<List<String>> result = new ArrayList<>();
+
+
+
+
+        return result;
+    }
+
+
+
     public static void print(String s) {
         System.out.println(s);
     }
@@ -284,17 +361,37 @@ public class Converter {
                 "-10 -10 - a *",
                 "4 -10 -a + -",
                 "3 f 2 - 4 * f 1 - 3 * - * 1 3 g h - 2 * h g - 3 * + * - 4 * + 5 * 10 - f 2 - 4 * f 1 - 3 * - 3 - 2 * 4 g h - 2 * h g - 3 * + * + >=",
-                "a 5 + 4 =="
-
+                "a 5 + 4 ==",
         };
-        
-        for (String s : expression) {
-            print(s);
-            print(toInfix(s));
-            print(toInfixFlatten(s));
-            print("__________________________________________");
-        }
+
+//        for (String s : expression) {
+//            print(s);
+//            print(toInfix(s));
+//            print(toInfixFlatten(s));
+//            print("__________________________________________");
+//        }
+
+        Set<String> system1 = new HashSet<>();
+        system1.add("b 10 ==");
+        system1.add("a 20 ==");
 
 
+        Set<String> system3 = new HashSet<>();
+        system3.add("a 1 <=");
+
+        List<Set<String>> list = new ArrayList<>();
+        list.add(system1);
+        list.add(system3);
+
+
+        Interpreter ip = new Interpreter();
+        Map<String,String> vars = new HashMap<>();
+        vars.put("a","10");
+        vars.put("b","10");
+        vars.put("x","1");
+        vars.put("y","2");
+
+        print(getPlaceComplementation(list));
+        print(ip.interpretFromString(getPlaceComplementation(list),vars) + "");
     }
 }

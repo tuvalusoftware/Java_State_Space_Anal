@@ -8,7 +8,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import java.io.Serializable;
 import java.util.HashMap;

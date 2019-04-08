@@ -7,7 +7,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;

@@ -9,13 +9,13 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static solver.Utils.generateAllBinding;
+import static Solver.Utils.generateAllBinding;
 
 public class Transition extends Node {
     private List<Place> inPlaces;

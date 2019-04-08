@@ -7,7 +7,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import com.google.common.collect.Lists;
 

@@ -8,7 +8,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import org.javatuples.Pair;
 

@@ -7,15 +7,14 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import Response.ReachableReport;
-import Response.SubsetReport;
 import com.google.common.collect.Lists;
 
 import java.io.Serializable;
 import java.util.*;
-import static solver.Utils.parseJson;
+import static Solver.Utils.parseJson;
 
 public class Petrinet implements Serializable {
 

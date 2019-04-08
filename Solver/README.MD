@@ -6,4 +6,4 @@ Make sure to config env variables in .bashrc
 
 In root directory of Solver project
 >gradle build bootJar -x test
->java -jar build/libs/solver-1.2.jar
+>java -jar build/libs/Solver-1.2.jar

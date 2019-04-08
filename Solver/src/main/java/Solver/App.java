@@ -1,4 +1,4 @@
-package solver;
+package Solver;
 
 import Request.Inequalities;
 import Response.Path;
@@ -7,9 +7,7 @@ import Response.SubsetReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 
-import javax.sound.sampled.Line;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class App {
@@ -25,7 +23,7 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "Error in solver";
+        return "Error in Solver";
     }
 
     @PostMapping("/subset")
@@ -39,7 +37,7 @@ public class App {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "Error in solver";
+        return "Error in Solver";
     }
 
     @PostMapping("/solve")
@@ -71,7 +69,7 @@ public class App {
             e.printStackTrace();
         }
 
-        return "Error in solver";
+        return "Error in Solver";
     }
 
     private List<SubsetReport> subsetTable(Petrinet net) {

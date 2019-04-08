@@ -9,7 +9,7 @@
  * Author: Nguyen The Thong
  */
 
-package solver;
+package Solver;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;

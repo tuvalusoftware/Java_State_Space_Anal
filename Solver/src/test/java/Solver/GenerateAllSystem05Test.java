@@ -1,4 +1,4 @@
-package solver;
+package Solver;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,9 +6,9 @@ import org.junit.Test;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static solver.Utils.parseJson;
+import static Solver.Utils.parseJson;
 
-public class GenerateAllSystem06Test {
+public class GenerateAllSystem05Test {
 
     private PetrinetModel model;
     private Petrinet net;
@@ -18,24 +18,26 @@ public class GenerateAllSystem06Test {
 
     @Before
     public void setUp() {
-        String relativePath = "/src/main/java/PetrinetJson/complexGuard02.json";
+        String relativePath = "/src/main/java/PetrinetJson/complexGuard01.json";
         String filename = System.getProperty("user.dir") + relativePath;
         model = parseJson(filename);
         net = new Petrinet(model);
         place00 = net.getPlace(0);
         place01 = net.getPlace(1);
         place02 = net.getPlace(2);
+        place03 = net.getPlace(3);
         transition00 = net.getTransition(0);
         interpreter = new Interpreter();
     }
 
     @Test
     public void testGenerateAllSystem() {
-        List<LinearSystem> listSystem = net.generateListCompleteSystems(place02);
+        List<LinearSystem> listSystem = net.generateListCompleteSystems(place03);
         assertEquals(1, listSystem.size());
 
         Iterator it = listSystem.get(0).getInequalities().iterator();
-        assertEquals("-20.0*a+40.0*a-120.0*a>=0", it.next());  // -100a > 0
+        assertEquals("3.0*a+3.0*b-6.0*a+6.0*b+3-a+b>=0", it.next());
+        assertEquals("10.0*a+10.0*b-20.0*a+20.0*b-3-5.0*a-5.0*b+10.0*a-10.0*b+3>=0", it.next());  // 15b - 5a > 0
 
         Set<Place> inputPlaces = new HashSet<>();
         Collections.addAll(inputPlaces, place00);

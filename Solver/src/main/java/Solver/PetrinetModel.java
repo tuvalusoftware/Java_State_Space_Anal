@@ -7,7 +7,7 @@
  * Author: Dang Duy Nam
  */
 
-package solver;
+package Solver;
 
 import java.util.Map;
 
