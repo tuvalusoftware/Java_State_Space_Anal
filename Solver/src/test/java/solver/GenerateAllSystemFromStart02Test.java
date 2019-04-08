@@ -64,7 +64,7 @@ public class GenerateAllSystemFromStart02Test {
                 )
         );
         tmp.add(new Pair<>(
-                        new HashSet<>(Arrays.asList("a+2+a+1>=10", "a>=2")),
+                        new HashSet<>(Arrays.asList("a+2+a+1<=10", "a>=2")),
                         new HashSet<>(Arrays.asList(place00))
                 )
         );

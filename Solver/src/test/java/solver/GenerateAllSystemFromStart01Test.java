@@ -69,12 +69,11 @@ public class GenerateAllSystemFromStart01Test {
 
         tmp = HashMultiset.create();
         tmp.add(new Pair<>(
-                new HashSet<>(Arrays.asList("a+b+a-b+d>=0", "a+b>=0")),
+                new HashSet<>(Arrays.asList("a+b+a-b+d<=0", "a+b>=0")),
                 new HashSet<>(Arrays.asList(place00, place01, place05))
         ));
         exptSet.add(tmp);
-        System.out.println(exptSet);
-        System.out.println(hopeSet);
+
         assertEquals(exptSize, hopeSize);
         assertEquals(exptSet, hopeSet);
     }
@@ -106,12 +105,12 @@ public class GenerateAllSystemFromStart01Test {
 
         tmp = HashMultiset.create();
         tmp.add(new Pair<>(
-                        new HashSet<>(Arrays.asList("a+b+a-b+d>=0", "a+b>=0")),
+                        new HashSet<>(Arrays.asList("a+b+a-b+d<=0", "a+b>=0")),
                         new HashSet<>(Arrays.asList(place00, place01, place05))
                 )
         );
         tmp.add(new Pair<>(
-                        new HashSet<>(Arrays.asList("c+3>=0", "c-1+c+1+d>=0")),
+                        new HashSet<>(Arrays.asList("c+3>=0", "c-1+c+1+d<=0")),
                         new HashSet<>(Arrays.asList(place03, place05))
                 )
         );

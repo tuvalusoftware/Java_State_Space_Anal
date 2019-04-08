@@ -65,7 +65,7 @@ public class GenerateAllSystemFromStart04Test {
                 new HashSet<>(Arrays.asList(place00, place02))
         ));
         tmp.add(new Pair<>(
-                new HashSet<>(Arrays.asList("e-f>=-1", "a+b>=0","a+b-e-f>=0")),
+                new HashSet<>(Arrays.asList("e-f<=-1", "a+b>=0","a+b-e-f>=0")),
                 new HashSet<>(Arrays.asList(place00, place03))
         ));
         exptSet.add(tmp);
@@ -104,7 +104,7 @@ public class GenerateAllSystemFromStart04Test {
                 new HashSet<>(Arrays.asList(place02, place01))
         ));
         tmp.add(new Pair<>(
-                new HashSet<>(Arrays.asList("c-e-f>=0", "c>=0","e-f>=-1")),
+                new HashSet<>(Arrays.asList("c-e-f>=0", "c>=0","e-f<=-1")),
                 new HashSet<>(Arrays.asList(place01, place03))
         ));
         exptSet.add(tmp);
