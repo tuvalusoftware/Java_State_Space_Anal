@@ -159,6 +159,8 @@ final public class Utils {
         return result;
     }
 
+
+
     static List<LinearSystem> generateAllSystems(Transition currTran) {
 
         List<List<LinearSystem>> cartesianInput = new ArrayList<>();
@@ -168,13 +170,17 @@ final public class Utils {
 
         List<List<LinearSystem>> combinedList = Lists.cartesianProduct(cartesianInput);
         List<LinearSystem> result = new ArrayList<>();
+        List<List<String>> splitList = Converter.splitGuard(currTran.getGuard());
 
         for(List<LinearSystem> listSystem: combinedList) {
-            LinearSystem newSystem = new LinearSystem(listSystem);
-            newSystem.addInequality(currTran.getGuard());
-            result.add(newSystem);
+            for (List<String> elements : splitList) {
+                LinearSystem newSystem = new LinearSystem(listSystem);
+                for (String logicExpress : elements)
+                    newSystem.addInequality(logicExpress);
+                result.add(newSystem);
+            }
         }
-
+        
         return result;
     }
 

@@ -286,7 +286,6 @@ public class Petrinet implements Serializable {
             linearSystem.applyCurrentVarMapping();
             linearSystem.convertAllToInfix();
         }
-
         return result;
     }
 
@@ -372,7 +371,7 @@ public class Petrinet implements Serializable {
     }
 
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/2end.json";
+        String relativePath = "/src/main/java/PetrinetJson/logic1.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
@@ -380,12 +379,7 @@ public class Petrinet implements Serializable {
 
         List<Place> endPlaces = net.getEndPlaces();
         Set<Place> query = new HashSet<>();
-        query.add(net.getPlace(4));
 
-//
-//        for (LinearSystem s: net.isReachable(query)){
-//            print(s.getInputPlacesIDs().toString());
-//        }
 
 
     }
