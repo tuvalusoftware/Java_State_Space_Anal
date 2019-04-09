@@ -214,7 +214,6 @@ public class Converter {
     public static String toInfixFlatten(String expression) {
         Stack<String> stack = new Stack<>();
         String prevOp = "";
-        String prevToken = "";
         boolean justFlatten = false;
         for (String p : expression.split(" ")) {
             //if operand then just p
@@ -253,7 +252,6 @@ public class Converter {
                 prevOp = p;
 //                print(stack.peek());
             }
-            prevToken = p;
         }
         return postProcess(stack.pop());
     }
@@ -323,15 +321,68 @@ public class Converter {
         return result;
     }
 
-    public static List<List<String>> splitGuard(String guard){
-        List<List<String>> result = new ArrayList<>();
+    public static int traceIndex(String condition){
+        int operatorCount = 0;
+        int operandCount = 0;
+        int index = condition.length()-1;
+        int lastSpace = condition.length();
+        do{
+            if(condition.charAt(index) == ' '){
+                String op = condition.substring(index+1,lastSpace);
+                lastSpace = index;
+                if (operator.containsKey(op)){
+                    operatorCount += 1;
+                }
+                else if (!op.equals(" ")){
+                    operandCount += 1;
+                }
+            }
+            index -= 1;
+        }
+        while(operandCount<=operatorCount);
+        return index+1;
+    }
 
-
-
-
+    public static List<String> splitByAnd (String guard){
+        List<String> result = new ArrayList<>();
+        //cant split then just return
+        if (!guard.contains("&&")){
+            result.add(guard);
+            return result;
+        }
+        //first element contains 2 conditions
+        String[] conditions = guard.split("( && )|( &&)");
+        int index = traceIndex(conditions[0]);
+        result.add(conditions[0].substring(0,index));
+        result.add(conditions[0].substring(index+1));
+        //others contain 1 condition
+        for (int i=1; i<conditions.length; i++){
+            result.add(conditions[i]);
+        }
         return result;
     }
 
+    public static List<List<String>> splitGuard (String guard){
+        List<List<String>> result = new ArrayList<>();
+        //cant split then just return
+        if (!guard.contains("||")){
+            result.add(splitByAnd(guard));
+            return result;
+        }
+        //first element contains 2 conditions
+        String[] conditions = guard.split("( \\|\\| )|( \\|\\|)");
+        int index = traceIndex(conditions[0]);
+
+
+        result.add(splitByAnd(conditions[0].substring(0,index)));
+        result.add(splitByAnd(conditions[0].substring(index+1)));
+
+        //others contain 1 condition
+        for (int i=1; i<conditions.length; i++){
+            result.add(splitByAnd(conditions[i]));
+        }
+        return result;
+    }
 
 
     public static void print(String s) {
@@ -371,27 +422,11 @@ public class Converter {
 //            print("__________________________________________");
 //        }
 
-        Set<String> system1 = new HashSet<>();
-        system1.add("b 10 ==");
-        system1.add("a 20 ==");
+        String guard = "a 535353 + 4 == c 10 >= && b 2 a * - 0 == &&";
 
+        print(toInfix((guard)));
 
-        Set<String> system3 = new HashSet<>();
-        system3.add("a 1 <=");
+        print(splitGuard(guard).toString());
 
-        List<Set<String>> list = new ArrayList<>();
-        list.add(system1);
-        list.add(system3);
-
-
-        Interpreter ip = new Interpreter();
-        Map<String,String> vars = new HashMap<>();
-        vars.put("a","10");
-        vars.put("b","10");
-        vars.put("x","1");
-        vars.put("y","2");
-
-        print(getPlaceComplementation(list));
-        print(ip.interpretFromString(getPlaceComplementation(list),vars) + "");
     }
 }
