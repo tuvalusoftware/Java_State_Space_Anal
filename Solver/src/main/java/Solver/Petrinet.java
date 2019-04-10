@@ -165,10 +165,10 @@ public class Petrinet implements Serializable {
     Set<String> getAllInputVars() {
 
         Set<String> result = new HashSet<>();
-        for(Place place: places.values()) {
+        for (Place place : places.values()) {
             if (!place.isEmptyInput()) continue;
 
-            for(Transition transition: place.getOutTransition()) {
+            for (Transition transition : place.getOutTransition()) {
                 String[] varList = transition.getVars(place);
                 Collections.addAll(result, varList);
             }
@@ -246,15 +246,22 @@ public class Petrinet implements Serializable {
 
     }
 
-    private List<LinearSystem> generateAllSystemFromInput(Node currNode) {
+    /**
+     * Generate list of Linear System
+     * !!! Warning: the system is not applied replace variables and convert to infix.
+     *
+     * @param currNode Node (Place or Transition)
+     * @return list of System
+     */
+    private List<LinearSystem> combineGuardFromEndNode(Node currNode) {
 
         if (!currNode.getListSystem().isEmpty()) return currNode.getListSystem();
 
         if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
-            for(Transition transition: currPlace.getInTransition()) {
-                generateAllSystemFromInput(transition);
+            for (Transition transition : currPlace.getInTransition()) {
+                combineGuardFromEndNode(transition);
                 List<LinearSystem> newSystems = transition.addVarMappingToAllSystems(currPlace);
                 currPlace.addListSystem(newSystems);
             }
@@ -269,8 +276,8 @@ public class Petrinet implements Serializable {
         if (currNode instanceof Transition) {   /* Transition */
 
             Transition currTran = (Transition) currNode;
-            for(Place place: currTran.getInPlaces()) {
-                generateAllSystemFromInput(place);
+            for (Place place : currTran.getInPlaces()) {
+                combineGuardFromEndNode(place);
             }
 
             List<LinearSystem> linearSystems = Utils.generateAllSystems(currTran);
@@ -280,8 +287,8 @@ public class Petrinet implements Serializable {
         return currNode.getListSystem();
     }
 
-    public List<LinearSystem> generateListCompleteSystems(Place endPlace) {
-        List<LinearSystem> result = generateAllSystemFromInput(endPlace);
+    public List<LinearSystem> generateListCompleteSystemsFromEnd(Place endPlace) {
+        List<LinearSystem> result = combineGuardFromEndNode(endPlace);
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();
             linearSystem.convertAllToInfix();
@@ -292,7 +299,7 @@ public class Petrinet implements Serializable {
 
     Map<Set<Integer>, List<LinearSystem>> generateMapCompleteSystems(Place endPlace) {
 
-        List<LinearSystem> listSystem = generateAllSystemFromInput(endPlace);
+        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
         Map<Set<Integer>, List<LinearSystem>> result = new HashMap<>();
 
         for (LinearSystem linearSystem : listSystem) {
@@ -300,7 +307,8 @@ public class Petrinet implements Serializable {
             linearSystem.applyCurrentVarMapping();
             linearSystem.convertAllToInfix();
 
-            if (!result.containsKey(linearSystem.getInputPlacesIDs())) result.put(linearSystem.getInputPlacesIDs(), new ArrayList<>());
+            if (!result.containsKey(linearSystem.getInputPlacesIDs()))
+                result.put(linearSystem.getInputPlacesIDs(), new ArrayList<>());
             result.get(linearSystem.getInputPlacesIDs()).add(linearSystem);
         }
 
@@ -313,7 +321,7 @@ public class Petrinet implements Serializable {
         Set<Integer> endPlaceIDs = new HashSet<>();
 
         for(Place place: endPlaces) {
-            List<LinearSystem> listSystem = generateListCompleteSystems(place);
+            List<LinearSystem> listSystem = combineGuardFromEndNode(place);
             casterianInput.add(listSystem);
             endPlaceIDs.add(place.getID());
         }
@@ -333,6 +341,55 @@ public class Petrinet implements Serializable {
         }
 
         return result;
+    }
+
+    List<List<LinearSystem>> generateListCompleteSystemsFromStart(Place startPlace) {
+
+        List<List<LinearSystem>> answer = new ArrayList<>();
+        HashSet<Place> endPlaces = findDependenciesEndPlace(startPlace);
+
+        for (Place end : endPlaces) {
+
+            List<LinearSystem> linearFromEnds = generateListCompleteSystemsFromEnd(end);
+            List<LinearSystem> linearFromStarts = new ArrayList<>();
+
+            for (LinearSystem linearSystem : linearFromEnds) {
+                if (linearSystem.getInputPlaces().contains(startPlace)) {
+                    linearFromStarts.add(linearSystem);
+                }
+            }
+
+            answer.add(linearFromStarts);
+        }
+
+        return answer;
+    }
+
+
+    public HashSet<Place> findDependenciesEndPlace(Place start) {
+
+        HashSet<Integer> marked = new HashSet<>();
+        HashSet<Place> endPlaces = new HashSet<>();
+        Queue<Integer> bfsQueue = new LinkedList<>();
+
+        marked.add(start.getID());
+        bfsQueue.add(start.getID());
+
+        while (!bfsQueue.isEmpty()) {
+            Place currPlace = getPlace(bfsQueue.poll());
+
+            if (currPlace.isEmptyOutput()) endPlaces.add(currPlace);
+
+            for (Transition transition : currPlace.getOutTransition()) {
+                for (Place place : transition.getOutPlaces()) {
+                    if (marked.contains(place.getID()))
+                        continue;
+                    marked.add(place.getID());
+                    bfsQueue.add(place.getID());
+                }
+            }
+        }
+        return endPlaces;
     }
 
     public HashSet<Place> findDependenciesStartPlace(Place end) {
@@ -361,10 +418,10 @@ public class Petrinet implements Serializable {
         return startPlaces;
     }
 
-    public List<Place> getEndPlaces(){
-        List<Place> endPlaces =  new ArrayList<>();
-        for (int i=0; i<getNumPlaces(); i++){
-            if (getPlace(i).isEmptyOutput()){
+    public List<Place> getEndPlaces() {
+        List<Place> endPlaces = new ArrayList<>();
+        for (int i = 0; i < getNumPlaces(); i++) {
+            if (getPlace(i).isEmptyOutput()) {
                 endPlaces.add(getPlace(i));
             }
         }
