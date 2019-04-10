@@ -10,10 +10,7 @@
 
 package io.ferdon.statespace;
 
-import com.google.errorprone.annotations.Var;
-import com.sun.org.apache.xpath.internal.operations.Variable;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.mutable.MutableInt;
 
 import java.io.Serializable;
 import java.util.*;

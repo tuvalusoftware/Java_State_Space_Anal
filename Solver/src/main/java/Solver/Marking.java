@@ -96,9 +96,8 @@ public class Marking implements Serializable {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
-        for (Token token : data) {
-            s.append(token.toString());
-            s.append(",");
+        for (Token token : data.elementSet()) {
+            s.append(token.toString() + ":" + data.count(token) + ", ");
         }
 
         return (s.toString().isEmpty()) ? s.toString() : s.substring(0, s.length() - 1);

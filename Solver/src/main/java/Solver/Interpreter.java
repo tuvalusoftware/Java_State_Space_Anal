@@ -727,7 +727,6 @@ class Interpreter implements Serializable {
      * @throws Exception token's grammar is wrong
      */
     private void pushOperandToStack(String token) throws IllegalArgumentException {
-
         ValueType valueType = getValueType(token);
         if (valueType == null) throw new IllegalArgumentException("Syntax Error");
 

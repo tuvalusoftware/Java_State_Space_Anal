@@ -488,14 +488,14 @@ public class Petrinet implements Serializable {
 
     public static void main(String[] args) throws Exception {
         String option = "analysis";
-        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/petrinet02.json";
+        String relativePath = "/src/test/java/io/ferdon/statespace/PetrinetJson/sale.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
-        //net.generateStateSpace(net.generateCurrentState());
-        HashSet<Place> tmp = net.findDependenciesStartPlace(net.getPlace(6));
-        System.out.println(tmp.toString());
+        for (int i=0; i<20; i++){
+            System.out.println(net.executeWithID(0,0).toString());
+        }
     }
 }
