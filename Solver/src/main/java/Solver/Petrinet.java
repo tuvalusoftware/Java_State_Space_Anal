@@ -12,6 +12,7 @@ package Solver;
 import Response.ReachableReport;
 import com.google.common.collect.Lists;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 import static Solver.Utils.parseJson;
@@ -371,23 +372,43 @@ public class Petrinet implements Serializable {
         return endPlaces;
     }
 
+    State generateCurrentState() throws IOException, ClassNotFoundException {
+        Map<Place, Marking> data = new HashMap<>();
+
+        for (Place place : places.values()) {
+            Marking marking = place.getMarking().deepCopy();
+            data.put(place, marking);
+        }
+
+        State state = new State(numStates, data);
+        numStates++;
+        return state;
+    }
+
+    public Map<Integer, Marking> getAllMarking() {
+        Map<Integer, Marking> allMarking = new HashMap<>();
+        for (int id = 0; id < numPlaces; ++id) {
+            allMarking.put(id, places.get(id).getMarking());
+        }
+        return allMarking;
+    }
+
+    State executeWithID(int tranID, int bindID) throws IOException, ClassNotFoundException {
+        transitions.get(tranID).executeWithID(bindID, interpreter);
+        return generateCurrentState();
+    }
+
     public static void main(String[] args) throws Exception {
-        String relativePath = "/src/main/java/PetrinetJson/2end.json";
+        String relativePath = "/src/main/java/PetrinetJson/sale.json";
         String filename = System.getProperty("user.dir") + relativePath;
 
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
-        List<Place> endPlaces = net.getEndPlaces();
-        Set<Place> query = new HashSet<>();
-        query.add(net.getPlace(4));
-
-//
-//        for (LinearSystem s: net.isReachable(query)){
-//            print(s.getInputPlacesIDs().toString());
-//        }
-
-
+        for (int i=0; i<21; i++){
+            print(net.getAllMarking().toString());
+            net.executeWithID(0,0);
+        }
     }
 
     public static void print(String s){

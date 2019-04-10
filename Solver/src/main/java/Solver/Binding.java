@@ -32,6 +32,10 @@ public class Binding implements Serializable {
         this.transition = transition;
     }
 
+    public Map<Place, Token>  getBindingData(){
+        return data;
+    }
+
     Binding(Map<String, String> vars) {
         this.vars = vars;
     }
@@ -66,7 +70,7 @@ public class Binding implements Serializable {
                 String varname = varNames[varIndex];
                 String tokenValue = token.get(varIndex);
 
-                if (vars.containsKey(varname)) return null;  /* variable's value conflicted! */
+                if (vars.containsKey(varname) && !vars.get(varname).equals(tokenValue)) return null;  /* variable's value conflicted! */
                 vars.put(varname, tokenValue);
             }
         }

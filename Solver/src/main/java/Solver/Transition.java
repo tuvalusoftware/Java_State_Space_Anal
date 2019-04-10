@@ -199,7 +199,6 @@ public class Transition extends Node {
             bindingID %= fireableBindings.size();
             fireBinding = fireableBindings.get(bindingID);
         }
-
         executeWithBinding(fireBinding, interpreter);
     }
 

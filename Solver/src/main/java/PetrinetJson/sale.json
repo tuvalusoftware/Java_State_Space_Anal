@@ -1,0 +1,50 @@
+{
+  "Expressions": [
+    [[1, "[ productName , price ]"], [2, "date 21 <= [ productName , price , date , operator , influencer , shopper , retailer ] [ productName , price 0.9 * , date , operator , influencer , shopper , retailer ] ifelse"]],
+    [[3, "productCount count == date 21 > && flag False == && [ influencer , influencerComission 0.01 + , productCount , influencerBalance , True ] [ influencer , influencerComission , productCount , influencerBalance , flag ] ifelse"], [4, "count"], [5, "[ productName , price , date , operator , influencer , shopper , retailer ]"]],
+    [[3, "productCount 10 == [ influencer , influencerComission 0.01 + , productCount 1 + , influencerBalance influencerComission price * + , flag ] [ influencer , influencerComission , productCount 1 + , influencerBalance influencerComission price * + , flag ] ifelse"], [4, "count productCount <= [ productCount 1 + ] [ count ] ifelse"], [6, "[ shopper , shopperComission , shopperBalance shopperComission price * + ]"], [7, "[ retailer , retailerComission , retailerBalance 1.0 operatorComission - shopperComission - influencerComission - price * + ]"], [8, "[ operator , operatorComission , operatorBalance operatorComission price * + ]"]]
+  ],
+  "Guards": [
+    "date 31 <=",
+    "",
+    ""
+  ],
+  "Markings": [
+    "7~['Phone',400.0,24,'operator','influencerA','shopperB','retailerC'], 12~['TV',1000.0,27,'operator','influencerE','shopperA','retailerB'], ['TV',1000.0,34,'operator','influencerE','shopperA','retailerB']",
+    "['Phone',400.0], ['TV',1000.0]",
+    "",
+    "['influencerA',0.1,0,0.0,False], ['influencerB',0.07,0,0.0,False], ['influencerC',0.07,0,0.0,False], ['influencerD',0.05,0,0.0,False], ['influencerE',0.04,0,0.0,False]",
+    "[0]",
+    "",
+    "['shopperA',0.07,0.0], ['shopperB',0.07,0.0], ['shopperC',0.07,0.0]",
+    "['retailerA',0.0,0.0], ['retailerB',0.0,0.0], ['retailerC',0.0,0.0]",
+    "['operator',0.0,0.0]"
+  ],
+  "T": 3,
+  "Variables": [
+    [[0, "productName,price,date,operator,influencer,shopper,retailer"], [1, "productName,price"]],
+    [[2, "productName,price,date,operator,influencer,shopper,retailer"], [3, "influencer,influencerComission,productCount,influencerBalance,flag"], [4, "count"]],
+    [[3 , "influencer,influencerComission,productCount,influencerBalance,flag"], [4, "count"], [5, "productName,price,date,operator,influencer,shopper,retailer)"], [6, "shopper,shopperComission,shopperBalance"], [7, "retailer,retailerComission,retailerBalance"], [8, "operator,operatorComission,operatorBalance"]]
+  ],
+  "inPlace": [
+    [0,1],
+    [2,3,4],
+    [3,4,5,6,7,8]
+  ],
+  "outPlace": [
+    [1,2],
+    [3,4,5],
+    [3,4,6,7,8]
+  ],
+  "placeToColor": {
+    "0": "STRING*REAL*INT*STRING*STRING*STRING*STRING",
+    "1": "STRING*REAL",
+    "2": "STRING*REAL*INT*STRING*STRING*STRING*STRING",
+    "3": "STRING*REAL*INT*REAL*BOOL",
+    "4": "INT",
+    "5": "STRING*REAL*INT*STRING*STRING*STRING*STRING",
+    "6": "STRING*REAL*REAL",
+    "7": "STRING*REAL*REAL",
+    "8": "STRING*REAL*REAL"
+  }
+}
