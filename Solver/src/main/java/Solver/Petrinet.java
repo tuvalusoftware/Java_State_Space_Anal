@@ -11,6 +11,7 @@ package Solver;
 
 import Response.ReachableReport;
 import com.google.common.collect.Lists;
+import org.javatuples.Pair;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -462,10 +463,33 @@ public class Petrinet implements Serializable {
         PetrinetModel model = parseJson(filename);
         Petrinet net = new Petrinet(model);
 
-        for (int i=0; i<21; i++){
-            print(net.getAllMarking().toString());
-            net.executeWithID(0,0);
-        }
+
+        String token = "5~['TV',1000.0,14,'operator','influencerE','shopperA','retailerB']";
+
+        Pair<List<String>,Integer> tokenValue = Utils.parseTokenWithNumber(token);
+
+        net.getPlace(0).addToken(new Token(tokenValue.getValue0()),tokenValue.getValue1());
+
+        net.executeWithID(0,0);
+        print(net.getAllMarking().toString());
+
+        net.executeWithID(0,0);
+        print(net.getAllMarking().toString());
+
+        net.executeWithID(1,0);
+        print(net.getAllMarking().toString());
+
+        net.executeWithID(1,0);
+        print(net.getAllMarking().toString());
+
+        net.executeWithID(2,0);
+        print(net.getAllMarking().toString());
+
+        net.executeWithID(2,0);
+        print(net.getAllMarking().toString());
+
+
+
     }
 
     public static void print(String s){

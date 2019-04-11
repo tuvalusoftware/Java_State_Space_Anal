@@ -11,6 +11,7 @@
 package Solver;
 import org.apache.commons.lang3.StringEscapeUtils;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.*;
 
 class Interpreter implements Serializable {
@@ -213,23 +214,33 @@ class Interpreter implements Serializable {
         }
 
         public ArithmeticValue add(ArithmeticValue x) {
-            return new RealExpression(this.value + x.getReal());
+            DecimalFormat newFormat = new DecimalFormat("#.##");
+            double twoDecimal =  Double.valueOf(newFormat.format(this.value + x.getReal()));
+            return new RealExpression(twoDecimal);
         }
 
         public ArithmeticValue sub(ArithmeticValue x) {
-            return new RealExpression(this.value - x.getReal());
+            DecimalFormat newFormat = new DecimalFormat("#.##");
+            double twoDecimal =  Double.valueOf(newFormat.format(this.value - x.getReal()));
+            return new RealExpression(twoDecimal);
         }
 
         public ArithmeticValue mul(ArithmeticValue x) {
-            return new RealExpression(this.value * x.getReal());
+            DecimalFormat newFormat = new DecimalFormat("#.##");
+            double twoDecimal =  Double.valueOf(newFormat.format(this.value * x.getReal()));
+            return new RealExpression(twoDecimal);
         }
 
         public ArithmeticValue div(ArithmeticValue x) {
-            return new RealExpression(this.value / x.getReal());
+            DecimalFormat newFormat = new DecimalFormat("#.##");
+            double twoDecimal =  Double.valueOf(newFormat.format(this.value / x.getReal()));
+            return new RealExpression(twoDecimal);
         }
 
         public ArithmeticValue mod(ArithmeticValue x) {
-            return new RealExpression(this.value % x.getReal());
+            DecimalFormat newFormat = new DecimalFormat("#.##");
+            double twoDecimal =  Double.valueOf(newFormat.format(this.value % x.getReal()));
+            return new RealExpression(twoDecimal);
         }
 
         public BooleanExpression isEqual(ArithmeticValue x) {
