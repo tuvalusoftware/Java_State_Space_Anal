@@ -50,7 +50,7 @@ public class GenerateAllSystemFromStart04Test {
             tmp = HashMultiset.create();
             hopeSize.add(linearSystems.size());
             for (LinearSystem linearSystem : linearSystems) {
-                tmp.add(new Pair<>(linearSystem.getInequalities(), linearSystem.getInputPlaces()));
+                tmp.add(new Pair<>(linearSystem.getInfixInequalities(), linearSystem.getInputPlaces()));
             }
             hopeSet.add(tmp);
         }
@@ -89,7 +89,7 @@ public class GenerateAllSystemFromStart04Test {
             tmp = HashMultiset.create();
             hopeSize.add(linearSystems.size());
             for (LinearSystem linearSystem : linearSystems) {
-                tmp.add(new Pair<>(linearSystem.getInequalities(), linearSystem.getInputPlaces()));
+                tmp.add(new Pair<>(linearSystem.getInfixInequalities(), linearSystem.getInputPlaces()));
             }
             hopeSet.add(tmp);
         }

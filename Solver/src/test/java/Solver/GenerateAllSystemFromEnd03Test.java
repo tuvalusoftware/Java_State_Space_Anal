@@ -35,7 +35,7 @@ public class GenerateAllSystemFromEnd03Test {
 
         assertEquals(1, listSystem.size());
 
-        Iterator it = listSystem.get(0).getInequalities().iterator();
+        Iterator it = listSystem.get(0).getInfixInequalities().iterator();
         assertEquals("a>=4", it.next());
 
         Set<Place> inputPlaces = new HashSet<>();

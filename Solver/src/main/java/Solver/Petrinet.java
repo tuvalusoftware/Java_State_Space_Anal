@@ -26,6 +26,7 @@ public class Petrinet implements Serializable {
 
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
+    private Map<Place, List<LinearSystem>> filter;
 
     private static Interpreter interpreter;
 
@@ -79,6 +80,8 @@ public class Petrinet implements Serializable {
             places.get(Integer.parseInt(placeID)).setColor(placeToColor.get(placeID));
         }
         interpreter = new Interpreter();
+        Converter.init();
+        filter = null;
     }
 
     public int getNumPlaces() {
@@ -132,6 +135,7 @@ public class Petrinet implements Serializable {
 
         interpreter = new Interpreter();
         Converter.init();
+        filter = null;
     }
 
     public Place getPlace(int placeID) {
@@ -293,13 +297,12 @@ public class Petrinet implements Serializable {
         List<LinearSystem> result = combineGuardFromEndNode(endPlace);
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();
-            linearSystem.convertAllToInfix();
         }
 
         return result;
     }
 
-    Map<Set<Integer>, List<LinearSystem>> generateMapCompleteSystems(Place endPlace) {
+    Map<Set<Integer>, List<LinearSystem>> generateMapCompleteSystemsFromEnd(Place endPlace) {
 
         List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
         Map<Set<Integer>, List<LinearSystem>> result = new HashMap<>();
@@ -307,7 +310,6 @@ public class Petrinet implements Serializable {
         for (LinearSystem linearSystem : listSystem) {
 
             linearSystem.applyCurrentVarMapping();
-            linearSystem.convertAllToInfix();
 
             if (!result.containsKey(linearSystem.getInputPlacesIDs()))
                 result.put(linearSystem.getInputPlacesIDs(), new ArrayList<>());
@@ -334,15 +336,57 @@ public class Petrinet implements Serializable {
         for(List<LinearSystem> listSystem: combinedSystem) {
 
             LinearSystem newSystem = new LinearSystem(listSystem);
-            boolean solvable = Solver.solve(getAllInputVars(), newSystem.getInequalities());
+            boolean solvable = Solver.solve(getAllInputVars(), newSystem.getInfixInequalities());
 
             ReachableReport report = new ReachableReport(
-                    newSystem.getInputPlacesIDs(), endPlaceIDs, newSystem.getInequalities(), solvable
+                    newSystem.getInputPlacesIDs(), endPlaceIDs, newSystem.getInfixInequalities(), solvable
             );
             result.add(report);
         }
 
         return result;
+    }
+
+    Map<Place, List<LinearSystem>> generateMapAllSystemsFromStarts() {
+
+        Map<Place, List<LinearSystem>> res = new HashMap<>();
+
+        for(Place endPlace: places.values()) {
+            if (!endPlace.isEmptyOutput()) continue;
+            List<LinearSystem> systemFromEnds = generateListCompleteSystemsFromEnd(endPlace);
+
+            for(LinearSystem li: systemFromEnds) {
+                for(Place inputPlace: li.getInputPlaces()) {
+                    if (!res.containsKey(inputPlace)) res.put(inputPlace, new ArrayList<>());
+                    res.get(inputPlace).add(li);
+                }
+            }
+        }
+
+        return res;
+    }
+
+    boolean isTokenGetStuck(Map<String, String> vars, Place startPlace) {
+
+        for(LinearSystem li: filter.get(startPlace)) {
+
+            for(String requiredVar: li.getAllInputVars()) {
+                if (!vars.containsKey(requiredVar)) return true;
+            }
+
+            for(String inequality: li.getInequalities()) {
+
+            }
+        }
+    }
+
+    List<LinearSystem> createInputFilter() {
+
+        Map<Place, List<LinearSystem>> startSystems = generateMapAllSystemsFromStarts();
+        for(Place startPlace: startSystems.keySet()) {
+
+
+        }
     }
 
     List<List<LinearSystem>> generateListCompleteSystemsFromStart(Place startPlace) {
@@ -360,7 +404,6 @@ public class Petrinet implements Serializable {
                     linearFromStarts.add(linearSystem);
                 }
             }
-
             answer.add(linearFromStarts);
         }
 
@@ -368,7 +411,7 @@ public class Petrinet implements Serializable {
     }
 
 
-    public HashSet<Place> findDependenciesEndPlace(Place start) {
+    HashSet<Place> findDependenciesEndPlace(Place start) {
 
         HashSet<Integer> marked = new HashSet<>();
         HashSet<Place> endPlaces = new HashSet<>();

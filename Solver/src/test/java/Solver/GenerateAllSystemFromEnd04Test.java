@@ -40,7 +40,7 @@ public class GenerateAllSystemFromEnd04Test {
 
         assertEquals(4, listSystem.size());
 
-        Iterator it = listSystem.get(0).getInequalities().iterator();
+        Iterator it = listSystem.get(0).getInfixInequalities().iterator();
         assertEquals("a+b>=0", it.next());
         assertEquals("a+b-d-1>=0", it.next());
         assertEquals("d+1>=0", it.next());
@@ -49,7 +49,7 @@ public class GenerateAllSystemFromEnd04Test {
         Collections.addAll(inputPlaces, place00, place02);
         assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
 
-        it = listSystem.get(1).getInequalities().iterator();
+        it = listSystem.get(1).getInfixInequalities().iterator();
         assertEquals("a+b>=0", it.next());
         assertEquals("a+b-e-f>=0", it.next());
         assertEquals("e-f<=-1", it.next());
@@ -58,7 +58,7 @@ public class GenerateAllSystemFromEnd04Test {
         Collections.addAll(inputPlaces, place00, place03);
         assertEquals(inputPlaces, listSystem.get(1).getInputPlaces());
 
-        it = listSystem.get(2).getInequalities().iterator();
+        it = listSystem.get(2).getInfixInequalities().iterator();
         assertEquals("c-d-1>=0", it.next());
         assertEquals("c>=0", it.next());
         assertEquals("d+1>=0", it.next());
@@ -68,7 +68,7 @@ public class GenerateAllSystemFromEnd04Test {
         Collections.addAll(inputPlaces, place01, place02);
         assertEquals(inputPlaces, listSystem.get(2).getInputPlaces());
 
-        it = listSystem.get(3).getInequalities().iterator();
+        it = listSystem.get(3).getInfixInequalities().iterator();
         assertEquals("c-e-f>=0", it.next());
         assertEquals("c>=0", it.next());
         assertEquals("e-f<=-1", it.next());

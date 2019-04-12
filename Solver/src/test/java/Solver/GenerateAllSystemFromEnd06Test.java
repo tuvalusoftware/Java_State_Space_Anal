@@ -34,7 +34,7 @@ public class GenerateAllSystemFromEnd06Test {
         List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place02);
         assertEquals(1, listSystem.size());
 
-        Iterator it = listSystem.get(0).getInequalities().iterator();
+        Iterator it = listSystem.get(0).getInfixInequalities().iterator();
         assertEquals("-20.0*a+40.0*a-120.0*a>=0", it.next());  // -100a > 0
 
         Set<Place> inputPlaces = new HashSet<>();

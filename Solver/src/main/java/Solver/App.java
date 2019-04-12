@@ -84,10 +84,10 @@ public class App {
                     for (Set<Integer> startPlaces2 : allPaths2.keySet()) {
                         for (LinearSystem l1 : allPaths1.get(startPlaces1)) {
                             for (LinearSystem l2 : allPaths2.get(startPlaces2)) {
-                                if (!l1.getInequalities().containsAll(l2.getInequalities())) {
+                                if (!l1.getInfixInequalities().containsAll(l2.getInfixInequalities())) {
                                     Set<String> vars = net.getAllInputVars();
-                                    boolean isSubset1 = Solver.isSubset(l1.getInequalities(), l2.getInequalities(), vars);
-                                    boolean isSubset2 = Solver.isSubset(l2.getInequalities(), l1.getInequalities(), vars);
+                                    boolean isSubset1 = Solver.isSubset(l1.getInfixInequalities(), l2.getInfixInequalities(), vars);
+                                    boolean isSubset2 = Solver.isSubset(l2.getInfixInequalities(), l1.getInfixInequalities(), vars);
                                     int status = -1;
                                     if (isSubset1 && isSubset2) {
                                         status = 3;
@@ -99,8 +99,8 @@ public class App {
                                         status = 0;
                                     }
                                     SubsetReport temp = new SubsetReport(
-                                            new Path(startPlaces1, endPlaces.get(i).getID(), l1.getInequalities()),
-                                            new Path(startPlaces2, endPlaces.get(j).getID(), l2.getInequalities()),
+                                            new Path(startPlaces1, endPlaces.get(i).getID(), l1.getInfixInequalities()),
+                                            new Path(startPlaces2, endPlaces.get(j).getID(), l2.getInfixInequalities()),
                                             status);
                                     report.add(temp);
                                 }
