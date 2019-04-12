@@ -368,25 +368,26 @@ public class Petrinet implements Serializable {
 
     boolean isTokenGetStuck(Map<String, String> vars, Place startPlace) {
 
-        for(LinearSystem li: filter.get(startPlace)) {
+        if (filter == null) createInputFilter();
 
+        for(LinearSystem li: filter.get(startPlace)) {
             for(String requiredVar: li.getAllInputVars()) {
                 if (!vars.containsKey(requiredVar)) return true;
             }
 
-            for(String inequality: li.getInequalities()) {
-
+            boolean isPassSystem = true;
+            for(String inequality: li.getPostfixInequalities()) {
+                Interpreter.Value isPassInequality = interpreter.interpretFromString(inequality, vars);
+                isPassSystem &= isPassInequality.getBoolean();
             }
+            if (isPassSystem) return false;
         }
+
+        return false;
     }
 
-    List<LinearSystem> createInputFilter() {
-
-        Map<Place, List<LinearSystem>> startSystems = generateMapAllSystemsFromStarts();
-        for(Place startPlace: startSystems.keySet()) {
-
-
-        }
+    void createInputFilter() {
+        filter = generateMapAllSystemsFromStarts();
     }
 
     List<List<LinearSystem>> generateListCompleteSystemsFromStart(Place startPlace) {
