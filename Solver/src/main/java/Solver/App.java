@@ -78,8 +78,8 @@ public class App {
 
         for (int i = 0; i < endPlaces.size(); i++) {
             for (int j = 0; j < endPlaces.size(); j++) {
-                Map<Set<Integer>, List<LinearSystem>> allPaths1 = net.generateMapCompleteSystems(endPlaces.get(i));
-                Map<Set<Integer>, List<LinearSystem>> allPaths2 = net.generateMapCompleteSystems(endPlaces.get(j));
+                Map<Set<Integer>, List<LinearSystem>> allPaths1 = net.generateMapCompleteSystemsFromEnd(endPlaces.get(i));
+                Map<Set<Integer>, List<LinearSystem>> allPaths2 = net.generateMapCompleteSystemsFromEnd(endPlaces.get(j));
                 for (Set<Integer> startPlaces1 : allPaths1.keySet()) {
                     for (Set<Integer> startPlaces2 : allPaths2.keySet()) {
                         for (LinearSystem l1 : allPaths1.get(startPlaces1)) {
