@@ -23,7 +23,7 @@ import java.util.*;
 
 final public class Utils {
 
-    static List<Binding> generateAllBinding(List<Marking> markings, Transition transition) {
+    static List<Binding> generateAllBindingFromOneTransition(List<Marking> markings, Transition transition) {
 
         List<List<Token>> tokenWrapper = new ArrayList<>();
         List<Place> places = new ArrayList<>();
@@ -41,6 +41,27 @@ final public class Utils {
             Binding b = new Binding();
             for (int id = 0; id < tokens.size(); id++) {
                 b.addToken(places.get(id), transition, tokens.get(id));
+            }
+            result.add(b);
+        }
+
+        return result;
+    }
+
+    static List<Binding> generateAllBindingFromMultipleTransition(List<Place> places, List<Transition> transitions) {
+
+        List<List<Token>> tokenWrapper = new ArrayList<>();
+        for(Place place: places) {
+            tokenWrapper.add(place.getMarking().getTokenList());
+        }
+
+        List<List<Token>> rawBindings = Lists.cartesianProduct(tokenWrapper);
+        List<Binding> result = new ArrayList<>();
+
+        for (List<Token> tokens : rawBindings) {
+            Binding b = new Binding();
+            for (int id = 0; id < tokens.size(); id++) {
+                b.addToken(places.get(id), transitions.get(id), tokens.get(id));
             }
             result.add(b);
         }

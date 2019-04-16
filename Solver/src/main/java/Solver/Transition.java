@@ -174,7 +174,7 @@ public class Transition extends Node {
 
         List<Binding> fireableBindings = new ArrayList<>();
         List<Marking> markings = getPlaceMarkings();
-        List<Binding> allBinding = Utils.generateAllBinding(markings, this);
+        List<Binding> allBinding = Utils.generateAllBindingFromOneTransition(markings, this);
 
         for(Binding b: allBinding) {
             Map<String, String> varMapping = b.assignValueToVariables();
