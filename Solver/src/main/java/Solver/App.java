@@ -95,10 +95,11 @@ public class App {
                 if (isStuck) break;
             }
 
-            response.append('"').append(startPlace.getID()).append("\":").append(isStuck);
+            response.append('"').append(startPlace.getID()).append("\":").append(isStuck).append(",");
         }
 
-        response.replace(response.length() - 1, response.length() - 1, "}");
+        response.replace(response.length() - 1, response.length(), "}");
+        System.out.println(response.toString());
         return response.toString();
     }
 
