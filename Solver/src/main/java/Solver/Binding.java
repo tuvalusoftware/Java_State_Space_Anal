@@ -32,14 +32,6 @@ public class Binding implements Serializable {
         this.transition = transition;
     }
 
-    public Map<Place, Token>  getBindingData(){
-        return data;
-    }
-
-    Binding(Map<String, String> vars) {
-        this.vars = vars;
-    }
-
     boolean isEmpty() {
         return data.size() == 0 && transition == null;
     }
@@ -49,13 +41,10 @@ public class Binding implements Serializable {
     }
 
     void addToken(Place place, Token token) {
-        if (data == null) return;
         data.put(place, token);
     }
 
     Map<String, String> assignValueToVariables() {
-
-        if (data == null) return vars;
 
         Map<String, String> vars = new HashMap<>();
         for (Place place : data.keySet()) {

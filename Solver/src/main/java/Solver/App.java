@@ -87,7 +87,7 @@ public class App {
 
         for(Place startPlace: net.getStartPlaces()) {
             Transition outTran = startPlace.getOutTransition().get(0);  /* the start place only have 1 out transition */
-            List<Binding> bindings = outTran.getFireableBinding(interpreter);
+            List<Binding> bindings = outTran.generateAllBinding(false, interpreter);
 
             boolean isStuck = false;
             for(Binding b: bindings) {
@@ -99,7 +99,6 @@ public class App {
         }
 
         response.replace(response.length() - 1, response.length(), "}");
-        System.out.println(response.toString());
         return response.toString();
     }
 

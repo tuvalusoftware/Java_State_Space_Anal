@@ -366,7 +366,7 @@ public class Petrinet implements Serializable {
         return res;
     }
 
-    boolean isTokenGetStuck(Map<String, String> vars, Place startPlace) {
+    boolean isTokenGetStuck(Map<String, String> inputVars, Place startPlace) {
 
         if (filter == null) createInputFilter();
 
@@ -379,10 +379,10 @@ public class Petrinet implements Serializable {
 
         List<String> varList = Interpreter.getVarList(isStuckCondition);
         for(String var: varList) {
-            if (!vars.containsKey(var)) return false;  /* token is not get stuck if there it is waiting */
+            if (!inputVars.containsKey(var)) return false;  /* token is not get stuck if it is waiting */
         }
 
-        return interpreter.interpretFromString(isStuckCondition, vars).getBoolean();
+        return interpreter.interpretFromString(isStuckCondition, inputVars).getBoolean();
     }
 
     void createInputFilter() {

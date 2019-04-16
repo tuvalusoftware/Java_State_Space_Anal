@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static Solver.Utils.generateAllBinding;
 
 public class Transition extends Node {
     private List<Place> inPlaces;
@@ -171,16 +170,16 @@ public class Transition extends Node {
         return new Token(tokenData);
     }
 
-    List<Binding> getFireableBinding(Interpreter interpreter) {
+    List<Binding> generateAllBinding(boolean checkingGuard, Interpreter interpreter) {
 
         List<Binding> fireableBindings = new ArrayList<>();
         List<Marking> markings = getPlaceMarkings();
-        List<Binding> allBinding = generateAllBinding(markings, this);
+        List<Binding> allBinding = Utils.generateAllBinding(markings, this);
 
         for(Binding b: allBinding) {
             Map<String, String> varMapping = b.assignValueToVariables();
             if (varMapping == null) continue;
-            if (stopByGuard(varMapping, interpreter)) continue;
+            if (checkingGuard && stopByGuard(varMapping, interpreter)) continue;
 
             fireableBindings.add(b);
         }
@@ -190,7 +189,7 @@ public class Transition extends Node {
 
     void executeWithID(int bindingID, Interpreter interpreter) {
 
-        List<Binding> fireableBindings = getFireableBinding(interpreter);
+        List<Binding> fireableBindings = generateAllBinding(true, interpreter);
 
         Binding fireBinding;
         if (fireableBindings.isEmpty()) {
