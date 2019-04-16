@@ -370,20 +370,19 @@ public class Petrinet implements Serializable {
 
         if (filter == null) createInputFilter();
 
+        List<Set<String>> systems = new ArrayList<>();
         for(LinearSystem li: filter.get(startPlace)) {
-            for(String requiredVar: li.getAllInputVars()) {
-                if (!vars.containsKey(requiredVar)) return true;
-            }
-
-            boolean isPassSystem = true;
-            for(String inequality: li.getPostfixInequalities()) {
-                Interpreter.Value isPassInequality = interpreter.interpretFromString(inequality, vars);
-                isPassSystem &= isPassInequality.getBoolean();
-            }
-            if (isPassSystem) return false;
+            systems.add(li.getPostfixInequalities());
         }
 
-        return false;
+        String isStuckCondition = Converter.getPlaceComplementation(systems);
+
+        List<String> varList = Interpreter.getVarList(isStuckCondition);
+        for(String var: varList) {
+            if (!vars.containsKey(var)) return false;  /* token is not get stuck if there it is waiting */
+        }
+
+        return interpreter.interpretFromString(isStuckCondition, vars).getBoolean();
     }
 
     void createInputFilter() {

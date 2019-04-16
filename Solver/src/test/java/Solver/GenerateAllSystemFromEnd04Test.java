@@ -6,6 +6,7 @@ import org.junit.Test;
 import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static Solver.Utils.parseJson;
+import static org.junit.Assert.assertFalse;
 
 public class GenerateAllSystemFromEnd04Test {
 
@@ -15,6 +16,7 @@ public class GenerateAllSystemFromEnd04Test {
     private Transition transition00;
     private Interpreter interpreter;
     private Set<Place> startPlaces;
+    private Map<String, String> vars;
 
     @Before
     public void setUp() {
@@ -29,6 +31,7 @@ public class GenerateAllSystemFromEnd04Test {
         place06 = net.getPlace(6);
         transition00 = net.getTransition(0);
         interpreter = new Interpreter();
+        vars = new HashMap<>();
 
         startPlaces = new HashSet<>();
         Collections.addAll(startPlaces, place00, place02);
@@ -76,5 +79,38 @@ public class GenerateAllSystemFromEnd04Test {
         inputPlaces = new HashSet<>();
         Collections.addAll(inputPlaces, place01, place03);
         assertEquals(inputPlaces, listSystem.get(3).getInputPlaces());
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck04() {
+        vars.put("f", "3");
+        vars.put("e", "2");
+        vars.put("c", "5");
+        assertFalse(net.isTokenGetStuck(vars, place03));
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck03() {
+        vars.put("a", "0");
+        vars.put("b", "2");
+        vars.put("d", "2");
+        vars.put("c", "5");
+        assertFalse(net.isTokenGetStuck(vars, place02));
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck01() {
+        vars.put("a", "0");
+        vars.put("b", "2");
+        vars.put("d", "1");
+        assertFalse(net.isTokenGetStuck(vars, place02));
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck02() {
+        vars.put("a", "0");
+        vars.put("b", "2");
+        vars.put("d", "2");
+        assertFalse(net.isTokenGetStuck(vars, place02));
     }
 }

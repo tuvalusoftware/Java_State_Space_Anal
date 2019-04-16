@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.*;
 
 import static Solver.Utils.parseJson;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 public class GenerateAllSystemFromEnd02Test {
     private PetrinetModel model;
@@ -15,6 +15,7 @@ public class GenerateAllSystemFromEnd02Test {
     private Transition transition00;
     private Interpreter interpreter;
     private Set<Place> startPlaces;
+    private Map<String, String> vars;
 
     @Before
     public void setUp() {
@@ -29,6 +30,7 @@ public class GenerateAllSystemFromEnd02Test {
         transition00 = net.getTransition(0);
         interpreter = new Interpreter();
 
+        vars = new HashMap<>();
         startPlaces = new HashSet<>();
         Collections.addAll(startPlaces, place00);
     }
@@ -55,5 +57,28 @@ public class GenerateAllSystemFromEnd02Test {
         inputPlaces = new HashSet<>();
         Collections.addAll(inputPlaces, place00);
         assertEquals(inputPlaces, listSystem.get(1).getInputPlaces());
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck04() {
+        vars.put("a", "1");
+        assertTrue(net.isTokenGetStuck(vars, place00));
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck01() {
+        vars.put("a", "2");
+        assertFalse(net.isTokenGetStuck(vars, place00));
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck02() {
+        assertFalse(net.isTokenGetStuck(vars, place00));
+    }
+
+    @Test
+    public void testCheckingTokenGetStuck03() {
+        vars.put("a", "0");
+        assertTrue(net.isTokenGetStuck(vars, place00));
     }
 }
