@@ -26,7 +26,6 @@ public class Petrinet implements Serializable {
 
     private Map<Integer, Place> places;
     private Map<Integer, Transition> transitions;
-    private Map<Place, List<LinearSystem>> filter;
 
     private static Interpreter interpreter;
 
@@ -81,7 +80,6 @@ public class Petrinet implements Serializable {
         }
         interpreter = new Interpreter();
         Converter.init();
-        filter = null;
     }
 
     public int getNumPlaces() {
@@ -135,7 +133,6 @@ public class Petrinet implements Serializable {
 
         interpreter = new Interpreter();
         Converter.init();
-        filter = null;
     }
 
     public Place getPlace(int placeID) {
@@ -302,7 +299,7 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    Map<Set<Integer>, List<LinearSystem>> generateMapCompleteSystemsFromEnd(Place endPlace) {
+    Map<Set<Integer>, List<LinearSystem>> generateMapIDsCompleteSystemsFromEnd(Place endPlace) {
 
         List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
         Map<Set<Integer>, List<LinearSystem>> result = new HashMap<>();
@@ -314,6 +311,23 @@ public class Petrinet implements Serializable {
             if (!result.containsKey(linearSystem.getInputPlacesIDs()))
                 result.put(linearSystem.getInputPlacesIDs(), new ArrayList<>());
             result.get(linearSystem.getInputPlacesIDs()).add(linearSystem);
+        }
+
+        return result;
+    }
+
+    Map<Set<Place>, List<LinearSystem>> generateMapCompleteSystemsFromEnd(Place endPlace) {
+
+        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
+        Map<Set<Place>, List<LinearSystem>> result = new HashMap<>();
+
+        for (LinearSystem linearSystem : listSystem) {
+
+            linearSystem.applyCurrentVarMapping();
+
+            if (!result.containsKey(linearSystem.getInputPlaces()))
+                result.put(linearSystem.getInputPlaces(), new ArrayList<>());
+            result.get(linearSystem.getInputPlaces()).add(linearSystem);
         }
 
         return result;
@@ -347,47 +361,117 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-    Map<Place, List<LinearSystem>> generateMapAllSystemsFromStarts() {
+    Map<Set<Place>, List<LinearSystem>> generateMapAllSystemsFromStarts() {
 
-        Map<Place, List<LinearSystem>> res = new HashMap<>();
+        Map<Set<Place>, List<LinearSystem>> res = new HashMap<>();
 
         for(Place endPlace: places.values()) {
             if (!endPlace.isEmptyOutput()) continue;
             List<LinearSystem> systemFromEnds = generateListCompleteSystemsFromEnd(endPlace);
 
             for(LinearSystem li: systemFromEnds) {
-                for(Place inputPlace: li.getInputPlaces()) {
-                    if (!res.containsKey(inputPlace)) res.put(inputPlace, new ArrayList<>());
-                    res.get(inputPlace).add(li);
-                }
+                    Set<Place> inputPlaces = li.getInputPlaces();
+                    if (!res.containsKey(inputPlaces)) res.put(inputPlaces, new ArrayList<>());
+                    res.get(inputPlaces).add(li);
             }
         }
 
         return res;
     }
 
-    boolean isTokenGetStuck(Map<String, String> inputVars, Place startPlace) {
+    List<Binding> getListStuckToken() {
 
-        if (filter == null) createInputFilter();
+        Map<Set<Place>, List<LinearSystem>> allSystems = generateMapAllSystemsFromStarts();
+        List<Binding> result = new ArrayList<>();
 
-        List<Set<String>> systems = new ArrayList<>();
-        for(LinearSystem li: filter.get(startPlace)) {
-            systems.add(li.getPostfixInequalities());
+        for(Set<Place> inputs: allSystems.keySet()) {
+
+            /* Step 1: create input for generating binding */
+            List<Place> inputPlaces = new ArrayList<>();
+            List<Transition> inputTransitions = new ArrayList<>();
+
+            for(Place inputPlace: inputs) {
+                inputPlaces.add(inputPlace);
+                inputTransitions.add(inputPlace.getOutTransition().get(0));
+            }
+
+            List<Binding> bindings = Utils.generateAllBindingFromMultipleTransition(inputPlaces, inputTransitions);
+
+            /* Step 2: create single condition for checking a binding is stuck or not */
+            List<Set<String>> plainSystem = new ArrayList<>();
+            for(LinearSystem li: allSystems.get(inputs)) {
+                plainSystem.add(li.getPostfixInequalities());
+            }
+            String stuckCondition = Converter.getComplementaryMultipleSystems(plainSystem);
+
+            /* Step 3: check to see which binding is stuck, variables is enough for interpreter to run */
+            for(Binding b: bindings) {
+                Interpreter.Value isStuck = interpreter.interpretFromString(stuckCondition, b.assignValueToVariables());
+                if (isStuck.getBoolean()) result.add(b);
+            }
         }
 
-        String isStuckCondition = Converter.getPlaceComplementation(systems);
-
-        List<String> varList = Interpreter.getVarList(isStuckCondition);
-        for(String var: varList) {
-            if (!inputVars.containsKey(var)) return false;  /* token is not get stuck if it is waiting */
-        }
-
-        return interpreter.interpretFromString(isStuckCondition, inputVars).getBoolean();
+        return result;
     }
 
-    void createInputFilter() {
-        filter = generateMapAllSystemsFromStarts();
-    }
+//    boolean isTokenGetStuck(Place startPlace) {
+//
+//        if (filter == null) createInputFilter();
+//        boolean result = false;
+//
+//        for(LinearSystem li: filter.get(startPlace)) {
+//
+//            /* generate all binding (start place only have 1 output transition) */
+//            List<Transition> transitions = new ArrayList<>();
+//            List<Place> places = new ArrayList<>();
+//
+//            for(Place inputPlace: li.getInputPlaces()) {
+//                places.add(inputPlace);
+//                transitions.add(inputPlace.getOutTransition().get(0));
+//            }
+//
+//            List<Binding> bindings = Utils.generateAllBindingFromMultipleTransition(places, transitions);
+//
+//            boolean thisSystemFailed = false;
+//            for(String requiredVar: li.getInputVars()) {
+//                if (!vars.containsKey(requiredVar)) {
+//                    thisSystemFailed = true;
+//                    break;
+//                }
+//            }
+//
+//            result &= ;
+//            if (result)
+//
+//            if (thisSystemFailed) continue;  /* not enough variable's values, move to next system */
+//
+//            boolean isPassSystem = true;
+//            for(String inequality: li.getPostfixInequalities()) {
+//                Interpreter.Value isPassInequality = interpreter.interpretFromString(inequality, vars);
+//                isPassSystem &= isPassInequality.getBoolean();
+//            }
+//            if (isPassSystem) return false;  /* one system pass, token is not get stuck */
+//        }
+//
+//        return true;
+//
+//
+//        if (filter == null) createInputFilter();
+//
+//        List<Set<String>> systems = new ArrayList<>();
+//        for(LinearSystem li: filter.get(startPlace)) {
+//            systems.add(li.getPostfixInequalities());
+//        }
+//
+//        String isStuckCondition = Converter.getComplementaryMultipleSystems(systems);
+//
+//        List<String> varList = Interpreter.getVarList(isStuckCondition);
+//        for(String var: varList) {
+//            if (!inputVars.containsKey(var)) return false;  /* token is not get stuck if it is waiting */
+//        }
+//
+//        return interpreter.interpretFromString(isStuckCondition, inputVars).getBoolean();
+//    }
 
     List<List<LinearSystem>> generateListCompleteSystemsFromStart(Place startPlace) {
 

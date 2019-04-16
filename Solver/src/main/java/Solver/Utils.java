@@ -52,6 +52,7 @@ final public class Utils {
 
         List<List<Token>> tokenWrapper = new ArrayList<>();
         for(Place place: places) {
+            if (place.getMarking().size() == 0) return new ArrayList<>();  /* there is place that doesn't have token */
             tokenWrapper.add(place.getMarking().getTokenList());
         }
 
