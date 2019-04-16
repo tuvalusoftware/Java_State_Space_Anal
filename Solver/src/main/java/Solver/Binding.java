@@ -2,7 +2,7 @@
  * File name: Binding.java
  * File Description:
  *      Object represent a binding in Petrinet
- *      Binding is generated when a transition is executed
+ *      Binding is generated when a transitions is executed
  *
  * Copyright (c) 2019 - Ferdon Vietnam Limited
  * Author: Nguyen The Thong
@@ -17,31 +17,28 @@ import java.util.Map;
 public class Binding implements Serializable {
 
     private Map<Place, Token> data;
-    private Transition transition;
+    private Map<Place, Transition> transitions;
 
     Map<String, String> vars;
 
-
     Binding() {
         this.data = new HashMap<>();
-        this.transition = null;
-    }
-
-    Binding(Transition transition) {
-        this.data = new HashMap<>();
-        this.transition = transition;
+        this.transitions = null;
     }
 
     boolean isEmpty() {
-        return data.size() == 0 && transition == null;
+        return data.size() == 0 && transitions == null;
     }
 
     Token getToken(Place place) {
         return data.get(place);
     }
 
-    void addToken(Place place, Token token) {
+    void addToken(Place place, Transition transition, Token token) {
         data.put(place, token);
+
+        if (transitions == null) transitions = new HashMap<>();
+        transitions.put(place, transition);
     }
 
     Map<String, String> assignValueToVariables() {
@@ -53,7 +50,7 @@ public class Binding implements Serializable {
             if (token.isUnit()) continue;
 
             /* the order of varNames is the same the order of values inside Token */
-            String[] varNames = transition.getVars(place);
+            String[] varNames = transitions.get(place).getVars(place);
             for (int varIndex = 0; varIndex < varNames.length; varIndex++) {
 
                 String varname = varNames[varIndex];

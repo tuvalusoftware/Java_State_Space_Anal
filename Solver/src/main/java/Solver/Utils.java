@@ -38,9 +38,9 @@ final public class Utils {
         List<Binding> result = new ArrayList<>();
         for (List<Token> tokens : rawBindings) {
 
-            Binding b = new Binding(transition);
+            Binding b = new Binding();
             for (int id = 0; id < tokens.size(); id++) {
-                b.addToken(places.get(id), tokens.get(id));
+                b.addToken(places.get(id), transition, tokens.get(id));
             }
             result.add(b);
         }
