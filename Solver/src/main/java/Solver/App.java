@@ -72,6 +72,36 @@ public class App {
         return "Error in Solver";
     }
 
+    /**
+     * For all start places, check which place contains a stuck token.
+     * @param json petri net json string
+     * @return json string response
+     */
+    @PostMapping("/stuckquery")
+    public String stuckQuery(@RequestBody String json) {
+
+        PetrinetModel model = Utils.parseJsonString(json);
+        Petrinet net = new Petrinet(model);
+        Interpreter interpreter = new Interpreter();
+        StringBuilder response = new StringBuilder("{");
+
+        for(Place startPlace: net.getStartPlaces()) {
+            Transition outTran = startPlace.getOutTransition().get(0);  /* the start place only have 1 out transition */
+            List<Binding> bindings = outTran.getFireableBinding(interpreter);
+
+            boolean isStuck = false;
+            for(Binding b: bindings) {
+                isStuck = net.isTokenGetStuck(b.assignValueToVariables(), startPlace);
+                if (isStuck) break;
+            }
+
+            response.append('"').append(startPlace.getID()).append("\":").append(isStuck);
+        }
+
+        response.replace(response.length() - 1, response.length() - 1, "}");
+        return response.toString();
+    }
+
     private List<SubsetReport> subsetTable(Petrinet net) {
         List<Place> endPlaces = net.getEndPlaces();
         List<SubsetReport> report = new ArrayList<>();

@@ -464,13 +464,19 @@ public class Petrinet implements Serializable {
     }
 
     public List<Place> getEndPlaces() {
-        List<Place> endPlaces = new ArrayList<>();
-        for (int i = 0; i < getNumPlaces(); i++) {
-            if (getPlace(i).isEmptyOutput()) {
-                endPlaces.add(getPlace(i));
-            }
+        List<Place> result = new ArrayList<>();
+        for(Place place: places.values()) {
+            if (place.isEmptyOutput()) result.add(place);
         }
-        return endPlaces;
+        return result;
+    }
+
+    List<Place> getStartPlaces() {
+        List<Place> result = new ArrayList<>();
+        for(Place place: places.values()) {
+            if (place.isEmptyInput()) result.add(place);
+        }
+        return result;
     }
 
     State generateCurrentState() throws IOException, ClassNotFoundException {
