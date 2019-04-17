@@ -40,12 +40,11 @@ public class GenerateAllSystemFromEnd02Test {
         List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place03);
         assertEquals(2, listSystem.size());
 
-        Iterator it = listSystem.get(0).getInfixInequalities().iterator();
+        Iterator it = listSystem.get(1).getInfixInequalities().iterator();
         assertEquals("a+1>=0", it.next());
         assertEquals("a>=2", it.next());
 
-
-        it = listSystem.get(1).getInfixInequalities().iterator();
+        it = listSystem.get(0).getInfixInequalities().iterator();
         assertEquals("a+2+a+1<=10", it.next());
         assertEquals("a>=2", it.next());
 
