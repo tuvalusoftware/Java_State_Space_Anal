@@ -78,16 +78,9 @@ public class Petrinet implements Serializable {
         for (String placeID : placeToColor.keySet()) {
             places.get(Integer.parseInt(placeID)).setColor(placeToColor.get(placeID));
         }
+
         interpreter = new Interpreter();
         Converter.init();
-    }
-
-    public int getNumPlaces() {
-        return numPlaces;
-    }
-
-    public int getNumTransitions() {
-        return numTransitions;
     }
 
     public Petrinet(PetrinetModel model) {
@@ -135,6 +128,14 @@ public class Petrinet implements Serializable {
         Converter.init();
     }
 
+    public int getNumPlaces() {
+        return numPlaces;
+    }
+
+    public int getNumTransitions() {
+        return numTransitions;
+    }
+
     public Place getPlace(int placeID) {
         return places.get(placeID);
     }
@@ -143,28 +144,50 @@ public class Petrinet implements Serializable {
         return transitions.get(tranID);
     }
 
+    private void warning(String s) {
+        System.out.println("[WARNING]: " + s);
+    }
+
     public void addPlace(int placeID) {
+        if (places.containsKey(placeID)) warning("Place ID existed!");
+
         Place place = new Place(placeID);
         places.put(placeID, place);
     }
 
     public void addTransition(int transitionID) {
+        if (places.containsKey(transitionID)) warning("Transition ID existed!");
+
         Transition transition = new Transition(transitionID);
         transitions.put(transitionID, transition);
     }
 
+    /**
+     * Add variables to edge from placeID ~> transitionID
+     * @param placeID ID of place
+     * @param tranID ID of transition
+     * @param varData " a , b , c , d " (space between tokens in necessary!)
+     */
     public void addVars(int placeID, int tranID, String varData) {
 
         Place place = places.get(placeID);
         Transition transition = transitions.get(tranID);
 
-        if (place == null || transition == null) return;
+        if (place == null || transition == null) {
+            warning("Place or Transition is not existed!");
+            return;
+        }
+
         Edge edge = new Edge(place, transition, varData);
 
         places.get(placeID).addOutputTransition(transition);
         transitions.get(tranID).addInputPlace(place, edge);
     }
 
+    /**
+     * Return a set of string that all the variables user can put into the petri net (indirectly by adding token)
+     * @return a set of variables (string)
+     */
     Set<String> getAllInputVars() {
 
         Set<String> result = new HashSet<>();
@@ -181,7 +204,7 @@ public class Petrinet implements Serializable {
     }
 
     /**
-     * parse Expression string and add to Petrinet data
+     * parse Expression string and add to petri net data
      *
      * @param tranID  transitionID (index of array)
      * @param placeID placeID (first element)
@@ -192,7 +215,10 @@ public class Petrinet implements Serializable {
         Place place = places.get(placeID);
         Transition transition = transitions.get(tranID);
 
-        if (place == null || transition == null) return;
+        if (place == null || transition == null) {
+            warning("Place or Transition is not existed!");
+            return;
+        }
         Edge edge = new Edge(transition, place, varData);
 
         transitions.get(tranID).addOutputPlace(place, edge);
@@ -258,36 +284,38 @@ public class Petrinet implements Serializable {
      */
     private List<LinearSystem> combineGuardFromEndNode(Node currNode) {
 
-        if (!currNode.getListSystem().isEmpty()) return currNode.getListSystem();
-
         if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
+            if (!currPlace.isEmptySystem()) return currPlace.getAllListSystem();
+
             for (Transition transition : currPlace.getInTransition()) {
                 combineGuardFromEndNode(transition);
-                List<LinearSystem> newSystems = transition.addVarMappingToAllSystems(currPlace);
-                currPlace.addListSystem(newSystems);
+                List<LinearSystem> newSystems = transition.deepCopySystems();
+                currPlace.addListSystem(transition, newSystems);
             }
 
             if (currPlace.isEmptyInput()) {
                 Set<Place> inputPlaces = new HashSet<>();
                 inputPlaces.add(currPlace);
-                currPlace.addSystem(new LinearSystem(inputPlaces));
+                currPlace.addSystem(Utils.DUMMY_TRANSITION, new LinearSystem(inputPlaces));
             }
+
+            return currPlace.getAllListSystem();
         }
 
-        if (currNode instanceof Transition) {   /* Transition */
+        else {   /* Transition */
 
             Transition currTran = (Transition) currNode;
-            for (Place place : currTran.getInPlaces()) {
-                combineGuardFromEndNode(place);
-            }
+            if (!currTran.getListSystem().isEmpty()) return currTran.getListSystem();
 
-            List<LinearSystem> linearSystems = Utils.generateAllSystems(currTran);
+            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place);
+
+            List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran);
             currTran.addListSystem(linearSystems);
-        }
 
-        return currNode.getListSystem();
+            return currTran.getListSystem();
+        }
     }
 
     public List<LinearSystem> generateListCompleteSystemsFromEnd(Place endPlace) {

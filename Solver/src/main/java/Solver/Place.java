@@ -13,7 +13,9 @@ package Solver;
 import org.javatuples.Pair;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Place extends Node {
 
@@ -22,12 +24,14 @@ public class Place extends Node {
     private List<String> color;
     private Marking marking;
     private VarMapping varMapping;
+    private Map<Transition, List<LinearSystem>> linearSystemMap;
 
     Place(int nodeID) {
         super(nodeID);
         inTransition = new ArrayList<>();
         outTransition = new ArrayList<>();
         color = new ArrayList<>();
+        linearSystemMap = new HashMap<>();
     }
 
     public List<Transition> getInTransition() {
@@ -98,6 +102,31 @@ public class Place extends Node {
 
     void addToken(Token token, int num) {
         marking.addToken(token, num);
+    }
+
+    boolean isEmptySystem() {
+        return linearSystemMap.isEmpty();
+    }
+
+    void addListSystem(Transition transition, List<LinearSystem> listSystem) {
+        if (!linearSystemMap.containsKey(transition)) linearSystemMap.put(transition, new ArrayList<>());
+        linearSystemMap.get(transition).addAll(listSystem);
+    }
+
+    void addSystem(Transition transition, LinearSystem linearSystem) {
+        if (!linearSystemMap.containsKey(transition)) linearSystemMap.put(transition, new ArrayList<>());
+        linearSystemMap.get(transition).add(linearSystem);
+    }
+
+    List<LinearSystem> getListSystem(Transition transition) {
+        return linearSystemMap.get(transition);
+    }
+
+    List<LinearSystem> getAllListSystem() {
+
+        List<LinearSystem> result = new ArrayList<>();
+        for(List<LinearSystem> listSystem: linearSystemMap.values()) result.addAll(listSystem);
+        return result;
     }
 
     /**

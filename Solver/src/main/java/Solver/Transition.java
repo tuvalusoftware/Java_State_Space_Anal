@@ -24,6 +24,11 @@ public class Transition extends Node {
     private Map<Place, Edge> outEdges;
 
     private String guard;
+    private List<LinearSystem> linearSystems;
+
+    Transition() {
+
+    }
 
     Transition(int nodeID) {
 
@@ -33,6 +38,7 @@ public class Transition extends Node {
         inEdges = new HashMap<>();
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
+        linearSystems = new ArrayList<>();
     }
 
     int[] getInPlaceIDs() {
@@ -99,6 +105,26 @@ public class Transition extends Node {
         else return outEdges.get(place).getData();
     }
 
+    /**
+     * Add a new single Linear System into list of system
+     * @param linearSystem new Linear System object
+     */
+    void addSystem(LinearSystem linearSystem) {
+        linearSystems.add(linearSystem);
+    }
+
+    List<LinearSystem> getListSystem() {
+        return linearSystems;
+    }
+
+    /**
+     * Add list of Linear System object into current Node, also replace variables (if possible).
+     * @param listSystem List of Linear System object.
+     */
+    void addListSystem(List<LinearSystem> listSystem) {
+        linearSystems.addAll(listSystem);
+    }
+
     private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
 
         List<Marking> result = new ArrayList<>();
@@ -121,18 +147,12 @@ public class Transition extends Node {
         return result;
     }
 
-    List<LinearSystem> addVarMappingToAllSystems(Place nextPlace) {
+    List<LinearSystem> deepCopySystems() {
 
         List<LinearSystem> result = new ArrayList<>();
-        List<Transition> inTrans = new ArrayList<>();
-        inTrans.add(this);
 
-        Transition outTran = (nextPlace.isEmptyOutput()) ? null : nextPlace.getOutTransition().get(0);
-        VarMapping currMapping = new VarMapping(inTrans, nextPlace, outTran);
-
-        for(LinearSystem linearSystem: getListSystem()) {
-            LinearSystem newSystem = new LinearSystem(linearSystem);
-            newSystem.getVarMapping().addVarsMapping(currMapping);
+        for(LinearSystem li: getListSystem()) {
+            LinearSystem newSystem = new LinearSystem(li);
             result.add(newSystem);
         }
 

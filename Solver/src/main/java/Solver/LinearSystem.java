@@ -61,7 +61,8 @@ public class LinearSystem {
     }
 
     /**
-     * Create new LinearSystem object by combining other systems. (Combine postfixInequalities and input places).
+     * Create new LinearSystem object by combining other systems.
+     *  - combine all inside elements
      * @param listSystems list of Linear System objects
      */
     LinearSystem(List<LinearSystem> listSystems) {
@@ -70,7 +71,6 @@ public class LinearSystem {
         infixInequalities = new HashSet<>();
         inputPlaces = new HashSet<>();
         varMapping = new VarMapping();
-
 
         for(LinearSystem linearSystem: listSystems) {
             postfixInequalities.addAll(linearSystem.getPostfixInequalities());
@@ -120,6 +120,10 @@ public class LinearSystem {
 
     public VarMapping getVarMapping() {
         return varMapping;
+    }
+
+    public void addVarMapping(VarMapping currVarMapping) {
+        varMapping.addVarsMapping(currVarMapping);
     }
 
     void addInequality(String inequality) {

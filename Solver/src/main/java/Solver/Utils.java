@@ -23,6 +23,8 @@ import java.util.*;
 
 final public class Utils {
 
+    static public Transition DUMMY_TRANSITION = new Transition();
+
     static List<Binding> generateAllBindingFromOneTransition(List<Marking> markings, Transition transition) {
 
         List<List<Token>> tokenWrapper = new ArrayList<>();
@@ -181,11 +183,50 @@ final public class Utils {
         return result;
     }
 
-    static List<LinearSystem> generateAllSystems(Transition currTran) {
+    static List<LinearSystem> addVarMappingToAllSystems(List<LinearSystem> listSystem, VarMapping currMapping) {
+
+        List<LinearSystem> result = new ArrayList<>();
+
+        for(LinearSystem linearSystem: listSystem) {
+            LinearSystem newSystem = new LinearSystem(linearSystem);
+            newSystem.getVarMapping().addVarsMapping(currMapping);
+            result.add(newSystem);
+        }
+
+        return result;
+    }
+
+    /**
+     * Generate all new systems from input places (including update local information in linear systems)
+     * @param currTran current Transition
+     * @return list of Linear System
+     */
+    static List<LinearSystem> generateAllSystemsInTransition(Transition currTran) {
 
         List<List<LinearSystem>> listListSystem = new ArrayList<>();
+
         for(Place place: currTran.getInPlaces()) {
-            listListSystem.add(place.getListSystem());
+
+            if (place.isEmptyInput()) {  /* start place */
+                listListSystem.add(place.getAllListSystem());
+                continue;
+            }
+
+            List<LinearSystem> cartesianInput = new ArrayList<>();
+
+            for(Transition inTran: place.getInTransition()) {
+
+
+                List<Transition> inTrans = new ArrayList<>();
+                inTrans.add(inTran);
+
+                VarMapping currMapping = new VarMapping(inTrans, place, currTran);
+                List<LinearSystem> listSystem = place.getListSystem(inTran);
+                List<LinearSystem> newSystem = Utils.addVarMappingToAllSystems(listSystem, currMapping);
+
+                cartesianInput.addAll(newSystem);
+            }
+            listListSystem.add(cartesianInput);
         }
 
         List<List<LinearSystem>> combinedList = Lists.cartesianProduct(listListSystem);
@@ -199,5 +240,4 @@ final public class Utils {
 
         return result;
     }
-
 }
