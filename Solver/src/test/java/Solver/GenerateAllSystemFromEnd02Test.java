@@ -1,5 +1,6 @@
 package Solver;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,22 +41,28 @@ public class GenerateAllSystemFromEnd02Test {
         List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place03);
         assertEquals(2, listSystem.size());
 
-        Iterator it = listSystem.get(1).getInfixInequalities().iterator();
-        assertEquals("a+1>=0", it.next());
-        assertEquals("a>=2", it.next());
-
-        it = listSystem.get(0).getInfixInequalities().iterator();
-        assertEquals("a+2+a+1<=10", it.next());
-        assertEquals("a>=2", it.next());
-
-
-        Set<Place> inputPlaces = new HashSet<>();
-        Collections.addAll(inputPlaces, place00);
-        assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
+        Set<Place> inputPlaces;
+        Set<String> inequalities;
+        Map<Set<Place>, List<Set<String>>> expectedAnswer = new HashMap<>();
 
         inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
         Collections.addAll(inputPlaces, place00);
-        assertEquals(inputPlaces, listSystem.get(1).getInputPlaces());
+        Collections.addAll(inequalities, "a+1>=0", "a>=2");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
+
+        inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
+        Collections.addAll(inputPlaces, place00);
+        Collections.addAll(inequalities, "a+2+a+1<=10", "a>=2");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
+
+        for(LinearSystem li: listSystem) {
+            Assert.assertTrue(expectedAnswer.containsKey(li.getInputPlaces()));
+            Assert.assertTrue(expectedAnswer.get(li.getInputPlaces()).contains(li.getInfixInequalities()));
+        }
     }
 
     @Test
