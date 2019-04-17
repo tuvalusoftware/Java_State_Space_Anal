@@ -215,8 +215,8 @@ public class Petrinet implements Serializable {
 
         /* if the place has no transition, var name mapping to itself */
         currentPlace.createNewVarMapping();
-        if (currentPlace.isEmptyInput()) {
-            Transition outTran = currentPlace.getOutTransition().get(0);
+        if (currentPlace.isEmptyInput()) {  /* start place */
+            Transition outTran = currentPlace.getOutTransition().get(0);  /* start place have only 1 transition */
             String[] varList = outTran.getVars(currentPlace);
             currentPlace.getVarMapping().addSingleMapping(varList, varList);
             return;
@@ -400,7 +400,7 @@ public class Petrinet implements Serializable {
 
             for(Place inputPlace: inputs) {
                 inputPlaces.add(inputPlace);
-                inputTransitions.add(inputPlace.getOutTransition().get(0));
+                inputTransitions.add(inputPlace.getOutTransition().get(0)); /* there is only 1 transition for start place */
             }
 
             List<Binding> bindings = Utils.generateAllBindingFromMultipleTransition(inputPlaces, inputTransitions);

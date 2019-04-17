@@ -183,12 +183,12 @@ final public class Utils {
 
     static List<LinearSystem> generateAllSystems(Transition currTran) {
 
-        List<List<LinearSystem>> cartesianInput = new ArrayList<>();
+        List<List<LinearSystem>> listListSystem = new ArrayList<>();
         for(Place place: currTran.getInPlaces()) {
-            cartesianInput.add(place.getListSystem());
+            listListSystem.add(place.getListSystem());
         }
 
-        List<List<LinearSystem>> combinedList = Lists.cartesianProduct(cartesianInput);
+        List<List<LinearSystem>> combinedList = Lists.cartesianProduct(listListSystem);
         List<LinearSystem> result = new ArrayList<>();
 
         for(List<LinearSystem> listSystem: combinedList) {
