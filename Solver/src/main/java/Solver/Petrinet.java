@@ -379,6 +379,14 @@ public class Petrinet implements Serializable {
         return res;
     }
 
+    /**
+     * Return all the current binding in the petri net that get stuck.
+     * Steps:
+     *  For each set of start places, we generate all possible bindings with those start places
+     *  For each binding, we check if there is any system that pass the binding (1 check in stuckCondition)
+     *
+     * @return List of Binding that get stuck
+     */
     List<Binding> getListStuckBinding() {
 
         Map<Set<Place>, List<LinearSystem>> allSystems = generateMapAllSystemsFromStarts();
@@ -414,65 +422,37 @@ public class Petrinet implements Serializable {
         return result;
     }
 
-//    boolean isTokenGetStuck(Place startPlace) {
-//
-//        if (filter == null) createInputFilter();
-//        boolean result = false;
-//
-//        for(LinearSystem li: filter.get(startPlace)) {
-//
-//            /* generate all binding (start place only have 1 output transition) */
-//            List<Transition> transitions = new ArrayList<>();
-//            List<Place> places = new ArrayList<>();
-//
-//            for(Place inputPlace: li.getInputPlaces()) {
-//                places.add(inputPlace);
-//                transitions.add(inputPlace.getOutTransition().get(0));
-//            }
-//
-//            List<Binding> bindings = Utils.generateAllBindingFromMultipleTransition(places, transitions);
-//
-//            boolean thisSystemFailed = false;
-//            for(String requiredVar: li.getInputVars()) {
-//                if (!vars.containsKey(requiredVar)) {
-//                    thisSystemFailed = true;
-//                    break;
-//                }
-//            }
-//
-//            result &= ;
-//            if (result)
-//
-//            if (thisSystemFailed) continue;  /* not enough variable's values, move to next system */
-//
-//            boolean isPassSystem = true;
-//            for(String inequality: li.getPostfixInequalities()) {
-//                Interpreter.Value isPassInequality = interpreter.interpretFromString(inequality, vars);
-//                isPassSystem &= isPassInequality.getBoolean();
-//            }
-//            if (isPassSystem) return false;  /* one system pass, token is not get stuck */
-//        }
-//
-//        return true;
-//
-//
-//        if (filter == null) createInputFilter();
-//
-//        List<Set<String>> systems = new ArrayList<>();
-//        for(LinearSystem li: filter.get(startPlace)) {
-//            systems.add(li.getPostfixInequalities());
-//        }
-//
-//        String isStuckCondition = Converter.getComplementaryMultipleSystems(systems);
-//
-//        List<String> varList = Interpreter.getVarList(isStuckCondition);
-//        for(String var: varList) {
-//            if (!inputVars.containsKey(var)) return false;  /* token is not get stuck if it is waiting */
-//        }
-//
-//        return interpreter.interpretFromString(isStuckCondition, inputVars).getBoolean();
-//    }
+    /**
+     * Return whether the mapping is get stuck inside the petri net.
+     * The binding is stuck iff
+     *  - inputVars contains enough var for all system
+     *  - inputVars is false in all systems
+     *
+     * @param inputVars the binding after assigning variables with values
+     * @param startPlace place the specify a list of systems that start from this place
+     * @return get stuck or not (boolean)
+     */
+    boolean isTokenGetStuck(Map<String, String> inputVars, Place startPlace) {
 
+        List<List<LinearSystem>> systems = generateListCompleteSystemsFromStart(startPlace);
+        List<Set<String>> plainSystems = new ArrayList<>();
+
+        for(List<LinearSystem> listSystem: systems) {
+            for(LinearSystem li: listSystem) {
+                plainSystems.add(li.getPostfixInequalities());
+                if (!inputVars.keySet().containsAll(li.getAllInputVars())) return false;
+            }
+        }
+
+        String stuckCondition = Converter.getComplementaryMultipleSystems(plainSystems);
+        return interpreter.interpretFromString(stuckCondition, inputVars).getBoolean();
+    }
+
+    /**
+     * Get all systems from start place, end list represent for one end place
+     * @param startPlace the place that contains in all systems
+     * @return list of (list of all systems start from one end place)
+     */
     List<List<LinearSystem>> generateListCompleteSystemsFromStart(Place startPlace) {
 
         List<List<LinearSystem>> answer = new ArrayList<>();

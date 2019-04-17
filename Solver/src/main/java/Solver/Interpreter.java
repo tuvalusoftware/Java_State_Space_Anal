@@ -811,9 +811,9 @@ class Interpreter implements Serializable {
         return interpret(tokens, variables);
     }
 
-    static List<String> getVarList(String expression) {
+    static Set<String> getVarSet(String expression) {
 
-        List<String> result = new ArrayList<>();
+        Set<String> result = new HashSet<>();
         String[] tokens = expression.split(" ");
 
         for(String token: tokens) {

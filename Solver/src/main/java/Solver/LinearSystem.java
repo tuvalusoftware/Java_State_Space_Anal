@@ -8,16 +8,6 @@ public class LinearSystem {
     private Set<String> infixInequalities;
     private Set<Place> inputPlaces;
     private VarMapping varMapping;
-    private int solvable = 0;  /* -1: not solvable; 0: no check yet; 1: solvable */
-
-    public boolean isSolvable() {
-
-        if (solvable != 0) return (solvable == 1);
-        boolean isSolve = Solver.solve(getAllInputVars(), infixInequalities);
-
-        solvable = isSolve ? 1 : -1;
-        return isSolve;
-    }
 
     public Set<String> getPostfixInequalities() {
         return postfixInequalities;
@@ -43,7 +33,6 @@ public class LinearSystem {
         this.infixInequalities = new HashSet<>();
         this.inputPlaces = inputPlaces;
         this.varMapping = new VarMapping();
-        this.solvable = 0;
     }
 
     /**
@@ -69,7 +58,6 @@ public class LinearSystem {
             newData.put(fromVar, toVarSet);
         }
         this.varMapping = new VarMapping(newData);
-        this.solvable = 0;
     }
 
     /**
@@ -122,11 +110,9 @@ public class LinearSystem {
 
         Set<String> result = new HashSet<>();
 
-        for(Place place: inputPlaces) {
-            for(Transition transition: place.getOutTransition()) {
-                String[] varList = transition.getVars(place);
-                Collections.addAll(result, varList);
-            }
+        for(String inequality: postfixInequalities) {
+            Set<String> varSet = Interpreter.getVarSet(inequality);
+            result.addAll(varSet);
         }
 
         return result;
