@@ -379,7 +379,7 @@ public class Petrinet implements Serializable {
         return res;
     }
 
-    List<Binding> getListStuckToken() {
+    List<Binding> getListStuckBinding() {
 
         Map<Set<Place>, List<LinearSystem>> allSystems = generateMapAllSystemsFromStarts();
         List<Binding> result = new ArrayList<>();

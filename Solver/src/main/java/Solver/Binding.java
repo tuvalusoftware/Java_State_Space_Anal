@@ -64,4 +64,14 @@ public class Binding implements Serializable {
         return vars;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for(Place place: data.keySet()) {
+            s.append("\"").append(place.getID()).append("\"").append(": ").append(data.get(place)).append(",");
+        }
+
+        s.deleteCharAt(s.length() - 1);
+        return s.toString();
+    }
 }

@@ -82,23 +82,18 @@ public class App {
 
         PetrinetModel model = Utils.parseJsonString(json);
         Petrinet net = new Petrinet(model);
-        Interpreter interpreter = new Interpreter();
         StringBuilder response = new StringBuilder("{");
 
-        for(Place startPlace: net.getStartPlaces()) {
-            Transition outTran = startPlace.getOutTransition().get(0);  /* the start place only have 1 out transition */
-            List<Binding> bindings = outTran.generateAllBinding(false, interpreter);
+        List<Binding> bindings = net.getListStuckBinding();
 
-            boolean isStuck = false;
-            for(Binding b: bindings) {
-                isStuck = net.isTokenGetStuck(b.assignValueToVariables(), startPlace);
-                if (isStuck) break;
-            }
-
-            response.append('"').append(startPlace.getID()).append("\":").append(isStuck).append(",");
+        response.append("\"result\":").append(bindings.isEmpty()).append(",");
+        response.append("\"error_binding\": [");
+        for(Binding b: bindings) {
+            response.append("{").append(b).append("},");
         }
 
-        response.replace(response.length() - 1, response.length(), "}");
+        response.replace(response.length() - 1, response.length(), "]");
+        response.append("}");
         return response.toString();
     }
 
@@ -108,8 +103,8 @@ public class App {
 
         for (int i = 0; i < endPlaces.size(); i++) {
             for (int j = 0; j < endPlaces.size(); j++) {
-                Map<Set<Integer>, List<LinearSystem>> allPaths1 = net.generateMapCompleteSystemsFromEnd(endPlaces.get(i));
-                Map<Set<Integer>, List<LinearSystem>> allPaths2 = net.generateMapCompleteSystemsFromEnd(endPlaces.get(j));
+                Map<Set<Integer>, List<LinearSystem>> allPaths1 = net.generateMapIDsCompleteSystemsFromEnd(endPlaces.get(i));
+                Map<Set<Integer>, List<LinearSystem>> allPaths2 = net.generateMapIDsCompleteSystemsFromEnd(endPlaces.get(j));
                 for (Set<Integer> startPlaces1 : allPaths1.keySet()) {
                     for (Set<Integer> startPlaces2 : allPaths2.keySet()) {
                         for (LinearSystem l1 : allPaths1.get(startPlaces1)) {
