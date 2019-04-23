@@ -205,6 +205,7 @@ final public class Utils {
 
         List<List<LinearSystem>> listListSystem = new ArrayList<>();
 
+        /* create input for cartesian product list system of places */
         for(Place place: currTran.getInPlaces()) {
 
             if (place.isEmptyInput()) {  /* start place */
@@ -213,9 +214,7 @@ final public class Utils {
             }
 
             List<LinearSystem> cartesianInput = new ArrayList<>();
-
             for(Transition inTran: place.getInTransition()) {
-
 
                 List<Transition> inTrans = new ArrayList<>();
                 inTrans.add(inTran);
@@ -232,6 +231,7 @@ final public class Utils {
         List<List<LinearSystem>> combinedList = Lists.cartesianProduct(listListSystem);
         List<LinearSystem> result = new ArrayList<>();
 
+        /* create new system and adding new equality */
         for(List<LinearSystem> listSystem: combinedList) {
             LinearSystem newSystem = new LinearSystem(listSystem);
             newSystem.addInequality(currTran.getGuard());
