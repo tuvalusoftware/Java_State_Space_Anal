@@ -7,6 +7,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static Solver.Utils.parseJson;
+import static org.junit.Assert.assertTrue;
 
 public class GenerateAllSystem07Test {
 
@@ -41,21 +42,26 @@ public class GenerateAllSystem07Test {
         List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place12);
         assertEquals(2, listSystem.size());
 
-        Set<Place> inputPlaces = new HashSet<>();
-        Collections.addAll(inputPlaces, place01);
-        assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
+        Set<Place> inputPlaces;
+        Set<String> inequalities;
+        Map<Set<Place>, Set<String>> expectedAnswer = new HashMap<>();
 
         inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
+        Collections.addAll(inputPlaces, place01);
+        Collections.addAll(inequalities, "a+1<=0", "a>=-5");
+        expectedAnswer.put(inputPlaces, inequalities);
+
+        inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
         Collections.addAll(inputPlaces, place04);
-        assertEquals(inputPlaces, listSystem.get(1).getInputPlaces());
+        Collections.addAll(inequalities, "3.0*b-4.0*c<=0", "3.0*b-4.0*c>=1");
+        expectedAnswer.put(inputPlaces, inequalities);
 
-        Iterator it = listSystem.get(0).getInequalities().iterator();
-        assertEquals("a+1<=0", it.next());
-        assertEquals("a>=-5", it.next());
-
-        it = listSystem.get(1).getInequalities().iterator();
-        assertEquals("3.0*b-4.0*c<=0", it.next());
-        assertEquals("3.0*b-4.0*c>=1", it.next());
+        for(LinearSystem li: listSystem) {
+            assertTrue(expectedAnswer.containsKey(li.getInputPlaces()));
+            assertEquals(expectedAnswer.get(li.getInputPlaces()), li.getInfixInequalities());
+        }
     }
 
     @Test
@@ -63,59 +69,55 @@ public class GenerateAllSystem07Test {
         List<LinearSystem> listSystem = net.generateListCompleteSystemsFromEnd(place13);
         assertEquals(6, listSystem.size());
 
-        Set<Place> inputPlaces = new HashSet<>();
+        Set<Place> inputPlaces;
+        Set<String> inequalities;
+        Map<Set<Place>, List<Set<String>>> expectedAnswer = new HashMap<>();
+
+        inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
         Collections.addAll(inputPlaces, place01);
-        assertEquals(inputPlaces, listSystem.get(0).getInputPlaces());
-
-        Iterator it = listSystem.get(0).getInequalities().iterator();
-        assertEquals("a+1<=0", it.next());
-        assertEquals("a>=-5", it.next());
+        Collections.addAll(inequalities, "a+1<=0", "a>=-5");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
 
         inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
         Collections.addAll(inputPlaces, place04);
-        assertEquals(inputPlaces, listSystem.get(1).getInputPlaces());
-
-        it = listSystem.get(1).getInequalities().iterator();
-        assertEquals("3.0*b-4.0*c<=0", it.next());
-        assertEquals("3.0*b-4.0*c>=1", it.next());
+        Collections.addAll(inequalities, "3.0*b-4.0*c<=0", "3.0*b-4.0*c>=1");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
 
         inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
+        Collections.addAll(inputPlaces, place05, place06);
+        Collections.addAll(inequalities, "e>=0", "d>=0", "d-2.0*d>=-10+e");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
+
+        inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
+        Collections.addAll(inputPlaces, place08, place06);
+        Collections.addAll(inequalities, "f<=-1", "d>=0", "d-2.0*d>=2.0*f");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
+
+        inputPlaces = new HashSet<>();
+        inequalities = new HashSet<>();
         Collections.addAll(inputPlaces, place04);
-        assertEquals(inputPlaces, listSystem.get(2).getInputPlaces());
-
-        it = listSystem.get(2).getInequalities().iterator();
-        assertEquals("2.0*b-2.0>=6", it.next());
-        assertEquals("3.0*b-4.0*c>=1", it.next());
+        Collections.addAll(inequalities, "2.0*b-2.0>=6", "3.0*b-4.0*c>=1");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
 
         inputPlaces = new HashSet<>();
-        Collections.addAll(inputPlaces, place06, place05);
-        assertEquals(inputPlaces, listSystem.get(3).getInputPlaces());
+        inequalities = new HashSet<>();
+        Collections.addAll(inputPlaces, place08, place10);
+        Collections.addAll(inequalities, "g+3<=h", "f<=-1", "60.0*f-120.0-45.0*f+45.0+20.0-120.0*g+120.0*h-180.0*h+180.0*g-10>=8.0*f-16.0-6.0*f+6.0-6.0+8.0*g-8.0*h+12.0*h-12.0*g");
+        if (!expectedAnswer.containsKey(inputPlaces)) expectedAnswer.put(inputPlaces, new ArrayList<>());
+        expectedAnswer.get(inputPlaces).add(inequalities);
 
-        it = listSystem.get(3).getInequalities().iterator();
-
-        assertEquals("e>=0", it.next());
-        assertEquals("d>=0", it.next());
-        assertEquals("d-2.0*d>=-10+e", it.next());
-
-        inputPlaces = new HashSet<>();
-        Collections.addAll(inputPlaces, place06, place08);
-        assertEquals(inputPlaces, listSystem.get(4).getInputPlaces());
-
-        it = listSystem.get(4).getInequalities().iterator();
-
-        assertEquals("f<=-1", it.next());
-        assertEquals("d>=0", it.next());
-        assertEquals("d-2.0*d>=2.0*f", it.next());
-
-        inputPlaces = new HashSet<>();
-        Collections.addAll(inputPlaces, place10, place08);
-        assertEquals(inputPlaces, listSystem.get(5).getInputPlaces());
-        assertEquals(3, listSystem.get(5).getInequalities().size());
-
-        it = listSystem.get(5).getInequalities().iterator();
-
-        assertEquals("g+3<=h", it.next());
-        assertEquals("f<=-1", it.next());
-        assertEquals("60.0*f-120.0-45.0*f+45.0+20.0-120.0*g+120.0*h-180.0*h+180.0*g-10>=8.0*f-16.0-6.0*f+6.0-6.0+8.0*g-8.0*h+12.0*h-12.0*g", it.next());
+        for(LinearSystem li: listSystem) {
+            assertTrue(expectedAnswer.containsKey(li.getInputPlaces()));
+            assertTrue(expectedAnswer.get(li.getInputPlaces()).contains(li.getInfixInequalities()));
+        }
     }
 }

@@ -23,7 +23,9 @@ import java.util.*;
 
 final public class Utils {
 
-    static List<Binding> generateAllBinding(List<Marking> markings, Transition transition) {
+    static public Transition DUMMY_TRANSITION = new Transition();
+
+    static List<Binding> generateAllBindingFromOneTransition(List<Marking> markings, Transition transition) {
 
         List<List<Token>> tokenWrapper = new ArrayList<>();
         List<Place> places = new ArrayList<>();
@@ -38,9 +40,31 @@ final public class Utils {
         List<Binding> result = new ArrayList<>();
         for (List<Token> tokens : rawBindings) {
 
-            Binding b = new Binding(transition);
+            Binding b = new Binding();
             for (int id = 0; id < tokens.size(); id++) {
-                b.addToken(places.get(id), tokens.get(id));
+                b.addToken(places.get(id), transition, tokens.get(id));
+            }
+            result.add(b);
+        }
+
+        return result;
+    }
+
+    static List<Binding> generateAllBindingFromMultipleTransition(List<Place> places, List<Transition> transitions) {
+
+        List<List<Token>> tokenWrapper = new ArrayList<>();
+        for(Place place: places) {
+            if (place.getMarking().size() == 0) return new ArrayList<>();  /* there is place that doesn't have token */
+            tokenWrapper.add(place.getMarking().getTokenList());
+        }
+
+        List<List<Token>> rawBindings = Lists.cartesianProduct(tokenWrapper);
+        List<Binding> result = new ArrayList<>();
+
+        for (List<Token> tokens : rawBindings) {
+            Binding b = new Binding();
+            for (int id = 0; id < tokens.size(); id++) {
+                b.addToken(places.get(id), transitions.get(id), tokens.get(id));
             }
             result.add(b);
         }
@@ -159,14 +183,53 @@ final public class Utils {
         return result;
     }
 
-    static List<LinearSystem> generateAllSystems(Transition currTran) {
+    static List<LinearSystem> addVarMappingToAllSystems(List<LinearSystem> listSystem, VarMapping currMapping) {
 
-        List<List<LinearSystem>> cartesianInput = new ArrayList<>();
-        for(Place place: currTran.getInPlaces()) {
-            cartesianInput.add(place.getListSystem());
+        List<LinearSystem> result = new ArrayList<>();
+
+        for(LinearSystem linearSystem: listSystem) {
+            LinearSystem newSystem = new LinearSystem(linearSystem);
+            newSystem.getVarMapping().addVarsMapping(currMapping);
+            result.add(newSystem);
         }
 
-        List<List<LinearSystem>> combinedList = Lists.cartesianProduct(cartesianInput);
+        return result;
+    }
+
+    /**
+     * Generate all new systems from input places (including update local information in linear systems)
+     * @param currTran current Transition
+     * @return list of Linear System
+     */
+    static List<LinearSystem> generateAllSystemsInTransition(Transition currTran) {
+
+        List<List<LinearSystem>> listListSystem = new ArrayList<>();
+
+        for(Place place: currTran.getInPlaces()) {
+
+            if (place.isEmptyInput()) {  /* start place */
+                listListSystem.add(place.getAllListSystem());
+                continue;
+            }
+
+            List<LinearSystem> cartesianInput = new ArrayList<>();
+
+            for(Transition inTran: place.getInTransition()) {
+
+
+                List<Transition> inTrans = new ArrayList<>();
+                inTrans.add(inTran);
+
+                VarMapping currMapping = new VarMapping(inTrans, place, currTran);
+                List<LinearSystem> listSystem = place.getListSystem(inTran);
+                List<LinearSystem> newSystem = Utils.addVarMappingToAllSystems(listSystem, currMapping);
+
+                cartesianInput.addAll(newSystem);
+            }
+            listListSystem.add(cartesianInput);
+        }
+
+        List<List<LinearSystem>> combinedList = Lists.cartesianProduct(listListSystem);
         List<LinearSystem> result = new ArrayList<>();
 
         for(List<LinearSystem> listSystem: combinedList) {
@@ -177,5 +240,4 @@ final public class Utils {
 
         return result;
     }
-
 }

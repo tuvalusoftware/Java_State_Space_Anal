@@ -256,7 +256,7 @@ public class Converter {
         return postProcess(stack.pop());
     }
 
-    public static String getSystemComplementation(Set<String> system) {
+    public static String getComplementarySingleSystem(Set<String> system) {
         Set<String> complement = new HashSet<>();
         String result = "";
 
@@ -303,15 +303,15 @@ public class Converter {
         return result;
     }
 
-    public static String getPlaceComplementation(List<Set<String>> systems){
+    public static String getComplementaryMultipleSystems(List<Set<String>> systems){
         String result = "";
         int i = 0;
         for (Set<String> system: systems){
             if (i<=1){
-                result += getSystemComplementation(system);
+                result += getComplementarySingleSystem(system);
             }
             else{
-                result += "&& " + getSystemComplementation(system);
+                result += "&& " + getComplementarySingleSystem(system);
             }
             i += 1;
         }

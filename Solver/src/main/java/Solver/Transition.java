@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import static Solver.Utils.generateAllBinding;
 
 public class Transition extends Node {
     private List<Place> inPlaces;
@@ -25,6 +24,11 @@ public class Transition extends Node {
     private Map<Place, Edge> outEdges;
 
     private String guard;
+    private List<LinearSystem> linearSystems;
+
+    Transition() {
+
+    }
 
     Transition(int nodeID) {
 
@@ -34,6 +38,7 @@ public class Transition extends Node {
         inEdges = new HashMap<>();
         outPlaces = new ArrayList<>();
         outEdges = new HashMap<>();
+        linearSystems = new ArrayList<>();
     }
 
     int[] getInPlaceIDs() {
@@ -100,6 +105,26 @@ public class Transition extends Node {
         else return outEdges.get(place).getData();
     }
 
+    /**
+     * Add a new single Linear System into list of system
+     * @param linearSystem new Linear System object
+     */
+    void addSystem(LinearSystem linearSystem) {
+        linearSystems.add(linearSystem);
+    }
+
+    List<LinearSystem> getListSystem() {
+        return linearSystems;
+    }
+
+    /**
+     * Add list of Linear System object into current Node, also replace variables (if possible).
+     * @param listSystem List of Linear System object.
+     */
+    void addListSystem(List<LinearSystem> listSystem) {
+        linearSystems.addAll(listSystem);
+    }
+
     private List<Marking> getPartialPlaceMarkings(Place excludedPlace) {
 
         List<Marking> result = new ArrayList<>();
@@ -122,18 +147,12 @@ public class Transition extends Node {
         return result;
     }
 
-    List<LinearSystem> addVarMappingToAllSystems(Place nextPlace) {
+    List<LinearSystem> deepCopySystems() {
 
         List<LinearSystem> result = new ArrayList<>();
-        List<Transition> inTrans = new ArrayList<>();
-        inTrans.add(this);
 
-        Transition outTran = (nextPlace.isEmptyOutput()) ? null : nextPlace.getOutTransition().get(0);
-        VarMapping currMapping = new VarMapping(inTrans, nextPlace, outTran);
-
-        for(LinearSystem linearSystem: getListSystem()) {
-            LinearSystem newSystem = new LinearSystem(linearSystem);
-            newSystem.getVarMapping().addVarsMapping(currMapping);
+        for(LinearSystem li: getListSystem()) {
+            LinearSystem newSystem = new LinearSystem(li);
             result.add(newSystem);
         }
 
@@ -171,16 +190,16 @@ public class Transition extends Node {
         return new Token(tokenData);
     }
 
-    List<Binding> getFireableBinding(Interpreter interpreter) {
+    List<Binding> generateAllBinding(boolean checkingGuard, Interpreter interpreter) {
 
         List<Binding> fireableBindings = new ArrayList<>();
         List<Marking> markings = getPlaceMarkings();
-        List<Binding> allBinding = generateAllBinding(markings, this);
+        List<Binding> allBinding = Utils.generateAllBindingFromOneTransition(markings, this);
 
         for(Binding b: allBinding) {
             Map<String, String> varMapping = b.assignValueToVariables();
             if (varMapping == null) continue;
-            if (stopByGuard(varMapping, interpreter)) continue;
+            if (checkingGuard && stopByGuard(varMapping, interpreter)) continue;
 
             fireableBindings.add(b);
         }
@@ -190,7 +209,7 @@ public class Transition extends Node {
 
     void executeWithID(int bindingID, Interpreter interpreter) {
 
-        List<Binding> fireableBindings = getFireableBinding(interpreter);
+        List<Binding> fireableBindings = generateAllBinding(true, interpreter);
 
         Binding fireBinding;
         if (fireableBindings.isEmpty()) {

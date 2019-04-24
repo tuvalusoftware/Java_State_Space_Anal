@@ -29,9 +29,10 @@ public class VarMapping {
     }
 
     /**
-     * Create a var mapping with the union places in [fromTransitions] && place.getInTranstion()
+     * Create a var mapping with from the toTransition (fromVars) ~> fromTransition (toVars)
      * @param fromTransitions list of input transitions
      * @param place current place
+     * @param toTransition the output transition
      */
     VarMapping(List<Transition> fromTransitions, Place place, Transition toTransition) {
         Set<Transition> inTransitionSet = new HashSet<>(place.getInTransition());

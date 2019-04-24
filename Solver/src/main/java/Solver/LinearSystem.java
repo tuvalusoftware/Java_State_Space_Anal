@@ -4,13 +4,16 @@ import java.util.*;
 
 public class LinearSystem {
 
-    private Set<String> inequalities;
+    private Set<String> postfixInequalities;
+    private Set<String> infixInequalities;
     private Set<Place> inputPlaces;
     private VarMapping varMapping;
 
-    public Set<String> getInequalities() {
-        return inequalities;
+    public Set<String> getPostfixInequalities() {
+        return postfixInequalities;
     }
+
+    public Set<String> getInfixInequalities() { return infixInequalities; }
 
     public Set<Place> getInputPlaces() {
         return inputPlaces;
@@ -26,7 +29,8 @@ public class LinearSystem {
     }
 
     LinearSystem(Set<Place> inputPlaces) {
-        this.inequalities = new HashSet<>();
+        this.postfixInequalities = new HashSet<>();
+        this.infixInequalities = new HashSet<>();
         this.inputPlaces = inputPlaces;
         this.varMapping = new VarMapping();
     }
@@ -37,8 +41,11 @@ public class LinearSystem {
      */
     LinearSystem(LinearSystem linearSystem) {
 
-        this.inequalities = new HashSet<>();
-        this.inequalities.addAll(linearSystem.getInequalities());
+        this.postfixInequalities = new HashSet<>();
+        this.postfixInequalities.addAll(linearSystem.getPostfixInequalities());
+
+        this.infixInequalities = new HashSet<>();
+        this.infixInequalities.addAll(linearSystem.getInfixInequalities());
 
         this.inputPlaces = new HashSet<>();
         this.inputPlaces.addAll(linearSystem.getInputPlaces());
@@ -54,38 +61,45 @@ public class LinearSystem {
     }
 
     /**
-     * Create new LinearSystem object by combining other systems. (Combine inequalities and input places).
+     * Create new LinearSystem object by combining other systems.
+     *  - combine all inside elements
      * @param listSystems list of Linear System objects
      */
     LinearSystem(List<LinearSystem> listSystems) {
 
-        inequalities = new HashSet<>();
+        postfixInequalities = new HashSet<>();
+        infixInequalities = new HashSet<>();
         inputPlaces = new HashSet<>();
         varMapping = new VarMapping();
 
         for(LinearSystem linearSystem: listSystems) {
-            inequalities.addAll(linearSystem.getInequalities());
+            postfixInequalities.addAll(linearSystem.getPostfixInequalities());
+            infixInequalities.addAll(linearSystem.getInfixInequalities());
             inputPlaces.addAll(linearSystem.getInputPlaces());
             varMapping.addVarsMapping(linearSystem.getVarMapping());
         }
     }
 
     /**
-     * Replace variable in inequalities by a new VarMapping.
+     * Replace variable in postfixInequalities by a new VarMapping.
      */
     void applyCurrentVarMapping() {
 
         List<Map<String, String>> possibleMapping = Utils.generateAllPossibleVarMapping(varMapping);
 
-        Set<String> newEqualities = new HashSet<>();
-        for(String inequality: inequalities) {
+        Set<String> newPostfix = new HashSet<>();
+        Set<String> newInfix = new HashSet<>();
+
+        for(String inequality: postfixInequalities) {
             for (Map<String, String> mapping : possibleMapping) {
                 String newGuard = Utils.replaceVar(mapping, inequality);
-                newEqualities.add(newGuard);
+                newPostfix.add(newGuard);
+                newInfix.add(Converter.toInfixFlatten(newGuard));
             }
         }
 
-        inequalities = newEqualities;
+        postfixInequalities = newPostfix;
+        infixInequalities = newInfix;
     }
 
     /**
@@ -96,33 +110,25 @@ public class LinearSystem {
 
         Set<String> result = new HashSet<>();
 
-        for(Place place: inputPlaces) {
-            for(Transition transition: place.getOutTransition()) {
-                String[] varList = transition.getVars(place);
-                Collections.addAll(result, varList);
-            }
+        for(String inequality: postfixInequalities) {
+            Set<String> varSet = Interpreter.getVarSet(inequality);
+            result.addAll(varSet);
         }
 
         return result;
-    }
-
-    void convertAllToInfix() {
-
-        Set<String> newEqualities = new HashSet<>();
-        for(String inequality: inequalities) {
-            String newGuard = Converter.toInfixFlatten(inequality);
-            newEqualities.add(newGuard);
-        }
-
-        inequalities = newEqualities;
     }
 
     public VarMapping getVarMapping() {
         return varMapping;
     }
 
+    public void addVarMapping(VarMapping currVarMapping) {
+        varMapping.addVarsMapping(currVarMapping);
+    }
+
     void addInequality(String inequality) {
         if (inequality.trim().isEmpty()) return;
-        inequalities.add(inequality);
+        infixInequalities.add(Converter.toInfixFlatten(inequality));
+        postfixInequalities.add(inequality);
     }
 }

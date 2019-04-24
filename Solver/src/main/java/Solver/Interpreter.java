@@ -811,4 +811,16 @@ class Interpreter implements Serializable {
         return interpret(tokens, variables);
     }
 
+    static Set<String> getVarSet(String expression) {
+
+        Set<String> result = new HashSet<>();
+        String[] tokens = expression.split(" ");
+
+        for(String token: tokens) {
+            if (getValueType(token) == ValueType.VARIABLE) result.add(token);
+        }
+
+        return result;
+    }
+
 }

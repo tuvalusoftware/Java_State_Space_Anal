@@ -41,7 +41,7 @@ public class ConverterComplementTest {
         vars.put("x","6");
         vars.put("y","10");
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
 
@@ -64,7 +64,7 @@ public class ConverterComplementTest {
         vars.put("x","6");
         vars.put("y","10");
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
 
@@ -92,7 +92,7 @@ public class ConverterComplementTest {
         vars.put("x","6");
         vars.put("y","10");
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
         assertEquals(false,ip.interpretFromString(complement,vars).getBoolean());
@@ -119,7 +119,7 @@ public class ConverterComplementTest {
         vars.put("x","6");
         vars.put("y","10");
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
         assertEquals(false,ip.interpretFromString(complement,vars).getBoolean());
@@ -142,7 +142,7 @@ public class ConverterComplementTest {
         Map<String,String> vars = new HashMap<>();
         vars.put("x","3");
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
         assertEquals(false,ip.interpretFromString(complement,vars).getBoolean());
@@ -165,7 +165,7 @@ public class ConverterComplementTest {
         Map<String,String> vars = new HashMap<>();
         vars.put("x","4");
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
         assertEquals(true,ip.interpretFromString(complement,vars).getBoolean());
@@ -197,7 +197,7 @@ public class ConverterComplementTest {
         vars.put("y","3");
 
 
-        String complement = Converter.getPlaceComplementation(systems);
+        String complement = Converter.getComplementaryMultipleSystems(systems);
         print(complement);
         print(toInfix(complement));
         assertEquals(true,ip.interpretFromString(complement,vars).getBoolean());

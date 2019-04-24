@@ -72,22 +72,47 @@ public class App {
         return "Error in Solver";
     }
 
+    /**
+     * For all start places, check which place contains a stuck token.
+     * @param json petri net json string
+     * @return json string response
+     */
+    @PostMapping("/stuckquery")
+    public String stuckQuery(@RequestBody String json) {
+
+        PetrinetModel model = Utils.parseJsonString(json);
+        Petrinet net = new Petrinet(model);
+        StringBuilder response = new StringBuilder("{");
+
+        List<Binding> bindings = net.getListStuckBinding();
+
+        response.append("\"result\":").append(bindings.isEmpty()).append(",");
+        response.append("\"error_binding\": [");
+        for(Binding b: bindings) {
+            response.append("{").append(b).append("},");
+        }
+
+        response.replace(response.length() - 1, response.length(), "]");
+        response.append("}");
+        return response.toString();
+    }
+
     private List<SubsetReport> subsetTable(Petrinet net) {
         List<Place> endPlaces = net.getEndPlaces();
         List<SubsetReport> report = new ArrayList<>();
 
         for (int i = 0; i < endPlaces.size(); i++) {
             for (int j = 0; j < endPlaces.size(); j++) {
-                Map<Set<Integer>, List<LinearSystem>> allPaths1 = net.generateMapCompleteSystems(endPlaces.get(i));
-                Map<Set<Integer>, List<LinearSystem>> allPaths2 = net.generateMapCompleteSystems(endPlaces.get(j));
+                Map<Set<Integer>, List<LinearSystem>> allPaths1 = net.generateMapIDsCompleteSystemsFromEnd(endPlaces.get(i));
+                Map<Set<Integer>, List<LinearSystem>> allPaths2 = net.generateMapIDsCompleteSystemsFromEnd(endPlaces.get(j));
                 for (Set<Integer> startPlaces1 : allPaths1.keySet()) {
                     for (Set<Integer> startPlaces2 : allPaths2.keySet()) {
                         for (LinearSystem l1 : allPaths1.get(startPlaces1)) {
                             for (LinearSystem l2 : allPaths2.get(startPlaces2)) {
-                                if (!l1.getInequalities().containsAll(l2.getInequalities())) {
+                                if (!l1.getInfixInequalities().containsAll(l2.getInfixInequalities())) {
                                     Set<String> vars = net.getAllInputVars();
-                                    boolean isSubset1 = Solver.isSubset(l1.getInequalities(), l2.getInequalities(), vars);
-                                    boolean isSubset2 = Solver.isSubset(l2.getInequalities(), l1.getInequalities(), vars);
+                                    boolean isSubset1 = Solver.isSubset(l1.getInfixInequalities(), l2.getInfixInequalities(), vars);
+                                    boolean isSubset2 = Solver.isSubset(l2.getInfixInequalities(), l1.getInfixInequalities(), vars);
                                     int status = -1;
                                     if (isSubset1 && isSubset2) {
                                         status = 3;
@@ -99,8 +124,8 @@ public class App {
                                         status = 0;
                                     }
                                     SubsetReport temp = new SubsetReport(
-                                            new Path(startPlaces1, endPlaces.get(i).getID(), l1.getInequalities()),
-                                            new Path(startPlaces2, endPlaces.get(j).getID(), l2.getInequalities()),
+                                            new Path(startPlaces1, endPlaces.get(i).getID(), l1.getInfixInequalities()),
+                                            new Path(startPlaces2, endPlaces.get(j).getID(), l2.getInfixInequalities()),
                                             status);
                                     report.add(temp);
                                 }
