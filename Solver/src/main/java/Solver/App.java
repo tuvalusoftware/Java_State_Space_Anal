@@ -77,7 +77,8 @@ public class App {
      * @param json petri net json string
      * @return json string response
      */
-    @PostMapping("/stuckquery")
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/stuckquery")
     public String stuckQuery(@RequestBody String json) {
 
         PetrinetModel model = Utils.parseJsonString(json);
