@@ -61,6 +61,18 @@ public class Token implements Serializable {
         return s.toString();
     }
 
+    public String toOneString() {
+        StringBuilder s = new StringBuilder("[");
+
+        for(int i = 0; i < data.size(); i++) {
+            s.append(data.get(i));
+            if (i != data.size() - 1) s.append(",");
+        }
+        s.append("]");
+
+        return s.toString();
+    }
+
     @Override
     public boolean equals(Object obj) {
 

@@ -91,7 +91,7 @@ public class App {
         response.append("\"error_binding\": [");
         for(int i = 0; i < bindings.size(); i++) {
             Binding b = bindings.get(i);
-            response.append("{").append(b).append("}");
+            response.append("{").append(b.toOneString()).append("}");
 
             if (i != bindings.size() - 1) response.append(",");
         }
