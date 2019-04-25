@@ -88,12 +88,14 @@ public class App {
 
         response.append("\"result\":").append(bindings.isEmpty()).append(",");
         response.append("\"error_binding\": [");
-        for(Binding b: bindings) {
-            response.append("{").append(b).append("},");
+        for(int i = 0; i < bindings.size(); i++) {
+            Binding b = bindings.get(i);
+            response.append("{").append(b).append("}");
+
+            if (i != bindings.size() - 1) response.append(",");
         }
 
-        response.replace(response.length() - 1, response.length(), "]");
-        response.append("}");
+        response.append("]}");
         return response.toString();
     }
 

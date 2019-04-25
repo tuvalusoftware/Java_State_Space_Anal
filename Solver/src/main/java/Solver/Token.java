@@ -53,7 +53,7 @@ public class Token implements Serializable {
         StringBuilder s = new StringBuilder();
         s.append('[');
         for(int i = 0; i < data.size(); i++) {
-            s.append(data.get(i));
+            s.append("\"").append(data.get(i)).append("\"");
             if (i != data.size() - 1) s.append(",");
         }
         s.append(']');
