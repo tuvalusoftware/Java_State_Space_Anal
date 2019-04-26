@@ -171,29 +171,6 @@ public class UtilsTest {
     }
 
     @Test
-    public void testConvertPostfixWithExpr() {
-        String infix01 = "(4 + 5) * 4 + 6";
-        String postfix01 = "4 5 + 4 * 6 +";
-        String output01 = Utils.convertPostfix(infix01).trim();
-        assertEquals(postfix01, output01);
-
-        String infix02 = "(4 + 5) * (5 + 4) + 6 + (2 + 3)";
-        String postfix02 = "4 5 + 5 4 + * 6 + 2 3 + +";
-        String output02 = Utils.convertPostfix(infix02).trim();
-        assertEquals(postfix02, output02);
-
-        String infix03 = "(a + 3 + (a + 5) / (b + c)) * (3 + 4)";
-        String postfix03 = "a 3 + a 5 + b c + / + 3 4 + *";
-        String output03 = Utils.convertPostfix(infix03).trim();
-        assertEquals(postfix03, output03);
-
-        String infix04 = "'thong' concat 'one1'";
-        String postfix04 = "'thongone1'";
-        String output04 = Utils.convertPostfix(infix04).trim();
-        assertEquals(postfix04, output04);
-    }
-
-    @Test
     public void testConvertPostfixWithCond() {
         String infix01 = "4 > 3";
         String postfix01 = "4 3 >";
@@ -209,26 +186,5 @@ public class UtilsTest {
         String postfix03 = "a 3 + 2 == x 2 + 3 < && x 3 + 2 == ||";
         String output03 = Utils.convertPostfix(infix03).trim();
         assertEquals(postfix03, output03);
-    }
-
-    @Test
-    public void testConvertPostfixToken() {
-        String infix01 = "(2, 3 + 3, a * 43)";
-        String postfix01 = "[ 2 , 3 3 + , a 43 * ]";
-        String output01 = Utils.convertPostfix(infix01).trim();
-        assertEquals(postfix01, output01);
-    }
-
-    @Test
-    public void testConvertPostfixIfElse() {
-        String infix01 = "if a = 2 then (3, 4) else (a, b)";
-        String postfix01 = "a 2 == [ 3 , 4 ] [ a , b ] ifelse";
-        String output01 = Utils.convertPostfix(infix01).trim();
-        assertEquals(postfix01, output01);
-
-        String infix02 = "if (a = 2) andalso (x + 3 < 4) then (3, 4) else (a, b)";
-        String postfix02 = "a 2 == x 3 + 4 < and [ 3 , 4 ] [ a , b ] ifelse";
-        String output02 = Utils.convertPostfix(infix02).trim();
-        assertEquals(postfix02, output02);
     }
 }
