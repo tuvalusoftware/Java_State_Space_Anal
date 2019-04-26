@@ -74,4 +74,14 @@ public class Binding implements Serializable {
         s.deleteCharAt(s.length() - 1);
         return s.toString();
     }
+
+    public String toOneString() {
+        StringBuilder s = new StringBuilder();
+        for(Place place: data.keySet()) {
+            s.append("\"").append(place.getID()).append("\"").append(": \"").append(data.get(place).toOneString()).append("\",");
+        }
+
+        s.deleteCharAt(s.length() - 1);
+        return s.toString();
+    }
 }
