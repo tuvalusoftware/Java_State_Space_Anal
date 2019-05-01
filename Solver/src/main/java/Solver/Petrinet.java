@@ -320,7 +320,7 @@ public class Petrinet implements Serializable {
 
             for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place, visitingPlaces, visitingTransitions);
 
-            List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran, visitingPlaces, visitingTransitions);
+            List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran);
             currTran.addListSystem(linearSystems);
 
             visitingTransitions.remove(currTran);
