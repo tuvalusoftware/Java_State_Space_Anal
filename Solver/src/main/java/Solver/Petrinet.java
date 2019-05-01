@@ -283,19 +283,19 @@ public class Petrinet implements Serializable {
      * @return list of System
      */
     private List<LinearSystem> combineGuardFromEndNode(Node currNode,
-                                                       Set<Place> visitedPlaces,
-                                                       Set<Transition> visitedTrans) {
+                                                       Set<Place> visitingPlaces,
+                                                       Set<Transition> visitingTransitions) {
 
         if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
-            if (visitedPlaces.contains(currPlace)) return new ArrayList<>();
-            visitedPlaces.add(currPlace);
+            if (visitingPlaces.contains(currPlace)) return new ArrayList<>();
+            visitingPlaces.add(currPlace);
 
             if (!currPlace.isEmptySystem()) return currPlace.getAllListSystem();
 
             for (Transition transition : currPlace.getInTransition()) {
-                combineGuardFromEndNode(transition, visitedPlaces, visitedTrans);
+                combineGuardFromEndNode(transition, visitingPlaces, visitingTransitions);
                 List<LinearSystem> newSystems = transition.deepCopySystems();
                 currPlace.addListSystem(transition, newSystems);
             }
@@ -306,22 +306,24 @@ public class Petrinet implements Serializable {
                 currPlace.addSystem(Utils.DUMMY_TRANSITION, new LinearSystem(inputPlaces));
             }
 
+            visitingPlaces.remove(currPlace);
             return currPlace.getAllListSystem();
         }
 
         else {   /* Transition */
 
             Transition currTran = (Transition) currNode;
-            if (visitedTrans.contains(currTran)) return new ArrayList<>();
-            visitedTrans.add(currTran);
+            if (visitingTransitions.contains(currTran)) return new ArrayList<>();
+            visitingTransitions.add(currTran);
 
             if (!currTran.getListSystem().isEmpty()) return currTran.getListSystem();
 
-            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place, visitedPlaces, visitedTrans);
+            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place, visitingPlaces, visitingTransitions);
 
-            List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran);
+            List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran, visitingPlaces, visitingTransitions);
             currTran.addListSystem(linearSystems);
 
+            visitingTransitions.remove(currTran);
             return currTran.getListSystem();
         }
     }

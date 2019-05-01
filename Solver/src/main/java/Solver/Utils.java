@@ -231,12 +231,16 @@ final public class Utils {
      * @param currTran current Transition
      * @return list of Linear System
      */
-    static List<LinearSystem> generateAllSystemsInTransition(Transition currTran) {
+    static List<LinearSystem> generateAllSystemsInTransition(Transition currTran,
+                                                             Set<Place> visitingPlaces,
+                                                             Set<Transition> visitingTransitions) {
 
         List<List<LinearSystem>> listListSystem = new ArrayList<>();
 
         /* create input for cartesian product list system of places */
         for(Place place: currTran.getInPlaces()) {
+
+            if (visitingPlaces.contains(place) && currTran.getOutPlaces().contains(place)) continue;
 
             if (place.isEmptyInput()) {  /* start place */
                 listListSystem.add(place.getAllListSystem());
