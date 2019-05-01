@@ -259,46 +259,61 @@ public class Converter {
     public static String getComplementarySingleSystem(Set<String> system) {
         Set<String> complement = new HashSet<>();
         String result = "";
+        String separator;
+
 
         for(String inequality: system){
             String[] op = inequality.split(" ");
             String temp = "";
+            separator = " ";
             for (int j=0; j<op.length; j++){
+                if (j==op.length-1) separator = "";
+
                 if (op[j].equals(">=")) {
-                    complement.add(temp + "<");
+                    temp += "<" + separator;
                 }
                 else if (op[j].equals("<=")){
-                    complement.add(temp + ">");
+                    temp += ">" + separator;
                 }
                 else if (op[j].equals(">")){
-                    complement.add(temp + "<=");
+                    temp += "<=" + separator;
                 }
                 else if (op[j].equals("<")){
-                    complement.add(temp + ">=");
+                    temp += ">=" + separator;
                 }
                 else if (op[j].equals("!=")){
-                    complement.add(temp + "==");
+                    temp += "==" + separator;
                 }
                 else if (op[j].equals("==")){
-                    complement.add(temp + "!=");
+                    temp += "!=" + separator;
+                }
+                else if (op[j].equals("&&")){
+                    temp += "||" + separator;
+                }
+                else if (op[j].equals("||")){
+                    temp += "&&" + separator;
                 }
                 else{
-                    temp += op[j] + " ";
+                    temp += op[j] + separator;
                 }
             }
+            complement.add(temp);
         }
         int i=0;
+        separator = " ";
         for (String inequality: complement){
+            if (i == complement.size()-1) separator = "";
             if (i<=1){
-                result += inequality + " ";
+                result += inequality + separator;
             }
             else{
-                result += "|| " + inequality + " ";
+                result += "|| " + inequality + separator;
             }
             i += 1;
         }
+
         if (i>=2){
-            result += "|| ";
+            result += " ||";
         }
         return result;
     }
@@ -306,17 +321,35 @@ public class Converter {
     public static String getComplementaryMultipleSystems(List<Set<String>> systems){
         String result = "";
         int i = 0;
+        String separator = " ";
+
+        //remove empty system
+        for (int t=0; t<systems.size(); t++){
+            if (systems.get(t).size() == 0){
+                systems.remove(t);
+                t -= 1;
+            }
+        }
+
+        //traverse valid systems
         for (Set<String> system: systems){
+            if (i == systems.size()-1) separator = "";
+            //add path complementary to the logic
             if (i<=1){
-                result += getComplementarySingleSystem(system);
+                result += getComplementarySingleSystem(system) + separator;
             }
             else{
-                result += "&& " + getComplementarySingleSystem(system);
+                result += "&& " + getComplementarySingleSystem(system) + separator;
             }
             i += 1;
         }
         if (i>=2){
-            result += "&&";
+            result += " &&";
+        }
+
+        //if empty then return true for interpreter to read
+        if (result.isEmpty()){
+            return "False";
         }
         return result;
     }
@@ -343,8 +376,8 @@ public class Converter {
         return index+1;
     }
 
-    public static List<String> splitByAnd (String guard){
-        List<String> result = new ArrayList<>();
+    public static Set<String> splitByAnd (String guard){
+        Set<String> result = new HashSet<>();
         //cant split then just return
         if (!guard.contains("&&")){
             result.add(guard);
@@ -362,8 +395,8 @@ public class Converter {
         return result;
     }
 
-    public static List<List<String>> splitGuard (String guard){
-        List<List<String>> result = new ArrayList<>();
+    public static List<Set<String>> splitGuard (String guard){
+        List<Set<String>> result = new ArrayList<>();
         //cant split then just return
         if (!guard.contains("||")){
             result.add(splitByAnd(guard));
