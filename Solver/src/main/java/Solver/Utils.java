@@ -72,6 +72,36 @@ final public class Utils {
         return result;
     }
 
+    static List<Binding> generateAllBindingFromMultipleTransition(List<Place> places,
+                                                                  List<Transition> transitions,
+                                                                  Place injectedPlace,
+                                                                  List<Token> injectedTokenList) {
+
+        List<List<Token>> tokenWrapper = new ArrayList<>();
+        for(Place place: places) {
+            if (place.getID() == injectedPlace.getID()) {
+                tokenWrapper.add(injectedTokenList);
+            }
+            else {
+                if (place.getMarking().size() == 0) return new ArrayList<>();  /* there is place that doesn't have token */
+                else tokenWrapper.add(place.getMarking().getTokenList());
+            }
+        }
+
+        List<List<Token>> rawBindings = Lists.cartesianProduct(tokenWrapper);
+        List<Binding> result = new ArrayList<>();
+
+        for (List<Token> tokens : rawBindings) {
+            Binding b = new Binding();
+            for (int id = 0; id < tokens.size(); id++) {
+                b.addToken(places.get(id), transitions.get(id), tokens.get(id));
+            }
+            result.add(b);
+        }
+
+        return result;
+    }
+
 
     static List<String> parseMarkingString(String s) {
         List<String> result = new ArrayList<>();
