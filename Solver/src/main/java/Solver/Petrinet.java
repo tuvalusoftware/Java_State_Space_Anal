@@ -289,7 +289,7 @@ public class Petrinet implements Serializable {
         if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
-            if (!visitedPlaces.contains(currPlace)) return new ArrayList<>();
+            if (visitedPlaces.contains(currPlace)) return new ArrayList<>();
             visitedPlaces.add(currPlace);
 
             if (!currPlace.isEmptySystem()) return currPlace.getAllListSystem();
@@ -312,7 +312,7 @@ public class Petrinet implements Serializable {
         else {   /* Transition */
 
             Transition currTran = (Transition) currNode;
-            if (!visitedTrans.contains(currTran)) return new ArrayList<>();
+            if (visitedTrans.contains(currTran)) return new ArrayList<>();
             visitedTrans.add(currTran);
 
             if (!currTran.getListSystem().isEmpty()) return currTran.getListSystem();
