@@ -282,15 +282,20 @@ public class Petrinet implements Serializable {
      * @param currNode Node (Place or Transition)
      * @return list of System
      */
-    private List<LinearSystem> combineGuardFromEndNode(Node currNode) {
+    private List<LinearSystem> combineGuardFromEndNode(Node currNode,
+                                                       Set<Place> visitedPlaces,
+                                                       Set<Transition> visitedTrans) {
 
         if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
+            if (!visitedPlaces.contains(currPlace)) return new ArrayList<>();
+            visitedPlaces.add(currPlace);
+
             if (!currPlace.isEmptySystem()) return currPlace.getAllListSystem();
 
             for (Transition transition : currPlace.getInTransition()) {
-                combineGuardFromEndNode(transition);
+                combineGuardFromEndNode(transition, visitedPlaces, visitedTrans);
                 List<LinearSystem> newSystems = transition.deepCopySystems();
                 currPlace.addListSystem(transition, newSystems);
             }
@@ -307,9 +312,12 @@ public class Petrinet implements Serializable {
         else {   /* Transition */
 
             Transition currTran = (Transition) currNode;
+            if (!visitedTrans.contains(currTran)) return new ArrayList<>();
+            visitedTrans.add(currTran);
+
             if (!currTran.getListSystem().isEmpty()) return currTran.getListSystem();
 
-            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place);
+            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place, visitedPlaces, visitedTrans);
 
             List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran);
             currTran.addListSystem(linearSystems);
@@ -319,7 +327,9 @@ public class Petrinet implements Serializable {
     }
 
     public List<LinearSystem> generateListCompleteSystemsFromEnd(Place endPlace) {
-        List<LinearSystem> result = combineGuardFromEndNode(endPlace);
+
+
+        List<LinearSystem> result = combineGuardFromEndNode(endPlace, new HashSet<>(), new HashSet<>());
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();
         }
@@ -329,7 +339,7 @@ public class Petrinet implements Serializable {
 
     Map<Set<Integer>, List<LinearSystem>> generateMapIDsCompleteSystemsFromEnd(Place endPlace) {
 
-        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
+        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace, new HashSet<>(), new HashSet<>());
         Map<Set<Integer>, List<LinearSystem>> result = new HashMap<>();
 
         for (LinearSystem linearSystem : listSystem) {
@@ -346,7 +356,7 @@ public class Petrinet implements Serializable {
 
     Map<Set<Place>, List<LinearSystem>> generateMapCompleteSystemsFromEnd(Place endPlace) {
 
-        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
+        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace, new HashSet<>(), new HashSet<>());
         Map<Set<Place>, List<LinearSystem>> result = new HashMap<>();
 
         for (LinearSystem linearSystem : listSystem) {
@@ -367,7 +377,7 @@ public class Petrinet implements Serializable {
         Set<Integer> endPlaceIDs = new HashSet<>();
 
         for(Place place: endPlaces) {
-            List<LinearSystem> listSystem = combineGuardFromEndNode(place);
+            List<LinearSystem> listSystem = combineGuardFromEndNode(place, new HashSet<>(), new HashSet<>());
             casterianInput.add(listSystem);
             endPlaceIDs.add(place.getID());
         }
@@ -493,6 +503,32 @@ public class Petrinet implements Serializable {
     }
 
     /**
+     * Return whether the mapping is get stuck inside the petri net.
+     * The binding is stuck iff
+     *  - inputVars contains enough var for all system
+     *  - inputVars is false in all systems
+     *
+     * @param inputVars the binding after assigning variables with values
+     * @param startPlace place the specify a list of systems that start from this place
+     * @return get stuck or not (boolean)
+     */
+    boolean isTokenGetStuck(Map<String, String> inputVars, Place startPlace) {
+
+        List<List<LinearSystem>> systems = generateListCompleteSystemsFromStart(startPlace);
+        List<Set<String>> plainSystems = new ArrayList<>();
+
+        for(List<LinearSystem> listSystem: systems) {
+            for(LinearSystem li: listSystem) {
+                plainSystems.add(li.getPostfixInequalities());
+                if (!inputVars.keySet().containsAll(li.getAllInputVars())) return false;
+            }
+        }
+
+        String stuckCondition = Converter.getComplementaryMultipleSystems(plainSystems);
+        return isBindingStuck(inputVars, stuckCondition);
+    }
+
+    /**
      * Return a list of stuck binding from a list of bindings
      * @param bindings list bindings that need to be checked
      * @param stuckCondition a complementary system
@@ -511,6 +547,15 @@ public class Petrinet implements Serializable {
     boolean isBindingStuck(Binding b, String stuckCondition) throws IllegalArgumentException {
         try {
             Interpreter.Value isStuck = interpreter.interpretFromString(stuckCondition, b.assignValueToVariables());
+            return isStuck.getBoolean();
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    boolean isBindingStuck(Map<String, String> inputVar, String stuckCondition) throws IllegalArgumentException {
+        try {
+            Interpreter.Value isStuck = interpreter.interpretFromString(stuckCondition, inputVar);
             return isStuck.getBoolean();
         } catch (Exception e) {
             throw new IllegalArgumentException();
