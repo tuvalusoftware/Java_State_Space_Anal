@@ -282,15 +282,20 @@ public class Petrinet implements Serializable {
      * @param currNode Node (Place or Transition)
      * @return list of System
      */
-    private List<LinearSystem> combineGuardFromEndNode(Node currNode) {
+    private List<LinearSystem> combineGuardFromEndNode(Node currNode,
+                                                       Set<Place> visitingPlaces,
+                                                       Set<Transition> visitingTransitions) {
 
         if (currNode instanceof Place) {   /* Place */
 
             Place currPlace = (Place) currNode;
+            if (visitingPlaces.contains(currPlace)) return new ArrayList<>();
+            visitingPlaces.add(currPlace);
+
             if (!currPlace.isEmptySystem()) return currPlace.getAllListSystem();
 
             for (Transition transition : currPlace.getInTransition()) {
-                combineGuardFromEndNode(transition);
+                combineGuardFromEndNode(transition, visitingPlaces, visitingTransitions);
                 List<LinearSystem> newSystems = transition.deepCopySystems();
                 currPlace.addListSystem(transition, newSystems);
             }
@@ -301,25 +306,32 @@ public class Petrinet implements Serializable {
                 currPlace.addSystem(Utils.DUMMY_TRANSITION, new LinearSystem(inputPlaces));
             }
 
+            visitingPlaces.remove(currPlace);
             return currPlace.getAllListSystem();
         }
 
         else {   /* Transition */
 
             Transition currTran = (Transition) currNode;
+            if (visitingTransitions.contains(currTran)) return new ArrayList<>();
+            visitingTransitions.add(currTran);
+
             if (!currTran.getListSystem().isEmpty()) return currTran.getListSystem();
 
-            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place);
+            for (Place place : currTran.getInPlaces()) combineGuardFromEndNode(place, visitingPlaces, visitingTransitions);
 
             List<LinearSystem> linearSystems = Utils.generateAllSystemsInTransition(currTran);
             currTran.addListSystem(linearSystems);
 
+            visitingTransitions.remove(currTran);
             return currTran.getListSystem();
         }
     }
 
     public List<LinearSystem> generateListCompleteSystemsFromEnd(Place endPlace) {
-        List<LinearSystem> result = combineGuardFromEndNode(endPlace);
+
+
+        List<LinearSystem> result = combineGuardFromEndNode(endPlace, new HashSet<>(), new HashSet<>());
         for (LinearSystem linearSystem : result) {
             linearSystem.applyCurrentVarMapping();
         }
@@ -329,7 +341,7 @@ public class Petrinet implements Serializable {
 
     Map<Set<Integer>, List<LinearSystem>> generateMapIDsCompleteSystemsFromEnd(Place endPlace) {
 
-        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
+        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace, new HashSet<>(), new HashSet<>());
         Map<Set<Integer>, List<LinearSystem>> result = new HashMap<>();
 
         for (LinearSystem linearSystem : listSystem) {
@@ -346,7 +358,7 @@ public class Petrinet implements Serializable {
 
     Map<Set<Place>, List<LinearSystem>> generateMapCompleteSystemsFromEnd(Place endPlace) {
 
-        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace);
+        List<LinearSystem> listSystem = combineGuardFromEndNode(endPlace, new HashSet<>(), new HashSet<>());
         Map<Set<Place>, List<LinearSystem>> result = new HashMap<>();
 
         for (LinearSystem linearSystem : listSystem) {
@@ -367,7 +379,7 @@ public class Petrinet implements Serializable {
         Set<Integer> endPlaceIDs = new HashSet<>();
 
         for(Place place: endPlaces) {
-            List<LinearSystem> listSystem = combineGuardFromEndNode(place);
+            List<LinearSystem> listSystem = combineGuardFromEndNode(place, new HashSet<>(), new HashSet<>());
             casterianInput.add(listSystem);
             endPlaceIDs.add(place.getID());
         }
@@ -441,13 +453,55 @@ public class Petrinet implements Serializable {
             String stuckCondition = Converter.getComplementaryMultipleSystems(plainSystem);
 
             /* Step 3: check to see which binding is stuck, variables is enough for interpreter to run */
-            for(Binding b: bindings) {
-                Interpreter.Value isStuck = interpreter.interpretFromString(stuckCondition, b.assignValueToVariables());
-                if (isStuck.getBoolean()) result.add(b);
-            }
+            result.addAll(filterStuckList(bindings, stuckCondition));
         }
 
         return result;
+    }
+
+    /**
+     * Check whether a new token added to a place is stuck or not
+     * @param place a place that received a token
+     * @param token a token that added
+     * @return list of stuck binding
+     */
+    boolean canRunToEnd(Place place, Token token) {
+
+        Map<Set<Place>, List<LinearSystem>> allSystems = generateMapAllSystemsFromStarts();
+        boolean allWait = true;
+
+        for(Set<Place> inputs: allSystems.keySet()) {
+
+            if (!inputs.contains(place)) continue;
+
+            /* Step 1: create input for generating binding */
+            List<Place> inputPlaces = new ArrayList<>();
+            List<Transition> inputTransitions = new ArrayList<>();
+
+            for(Place inputPlace: inputs) {
+                inputPlaces.add(inputPlace);
+                inputTransitions.add(inputPlace.getOutTransition().get(0)); /* there is only 1 transition for start place */
+            }
+
+            List<Token> injectedTokenList = new ArrayList<>();
+            injectedTokenList.add(token);
+            List<Binding> bindings = Utils.generateAllBindingFromMultipleTransition(
+                    inputPlaces, inputTransitions, place, injectedTokenList);
+
+            /* Step 2: create single condition for checking a binding is stuck or not */
+            List<Set<String>> plainSystem = new ArrayList<>();
+            for(LinearSystem li: allSystems.get(inputs)) {
+                plainSystem.add(li.getPostfixInequalities());
+            }
+            String stuckCondition = Converter.getComplementaryMultipleSystems(plainSystem);
+
+            if (bindings.size() > 0) allWait = false;
+
+            /* Step 3 : check to see which binding is stuck, variables is enough for interpreter to run */
+            if (filterStuckList(bindings, stuckCondition).size() != bindings.size()) return true;
+        }
+
+        return allWait;
     }
 
     /**
@@ -473,7 +527,41 @@ public class Petrinet implements Serializable {
         }
 
         String stuckCondition = Converter.getComplementaryMultipleSystems(plainSystems);
-        return interpreter.interpretFromString(stuckCondition, inputVars).getBoolean();
+        return isBindingStuck(inputVars, stuckCondition);
+    }
+
+    /**
+     * Return a list of stuck binding from a list of bindings
+     * @param bindings list bindings that need to be checked
+     * @param stuckCondition a complementary system
+     * @return list of stuck bindings
+     */
+    List<Binding> filterStuckList(List<Binding> bindings, String stuckCondition) {
+
+        List<Binding> result = new ArrayList<>();
+        for(Binding b: bindings) {
+            boolean isStuck = isBindingStuck(b, stuckCondition);
+            if (isStuck) result.add(b);
+        }
+        return result;
+    }
+
+    boolean isBindingStuck(Binding b, String stuckCondition) throws IllegalArgumentException {
+        try {
+            Interpreter.Value isStuck = interpreter.interpretFromString(stuckCondition, b.assignValueToVariables());
+            return isStuck.getBoolean();
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    boolean isBindingStuck(Map<String, String> inputVar, String stuckCondition) throws IllegalArgumentException {
+        try {
+            Interpreter.Value isStuck = interpreter.interpretFromString(stuckCondition, inputVar);
+            return isStuck.getBoolean();
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
     }
 
     /**
