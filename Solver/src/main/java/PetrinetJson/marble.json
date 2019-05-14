@@ -1,0 +1,129 @@
+{
+  "Expressions": [
+    [
+      [
+        0,
+        "[ ]"
+      ]
+    ],
+    [
+      [
+        3,
+        "[ color , level , toPerson ]"
+      ]
+    ],
+    [
+      [
+        3,
+        "[ color , level , toPerson ]"
+      ],
+      [
+        2,
+        "[ ]"
+      ]
+    ],
+    [
+      [
+        1,
+        "[ color , level , fromPerson , toPerson , cmd ]"
+      ]
+    ]
+  ],
+  "Guards": [
+    "cmd 'remove' == toPerson 'empty' == && removeColor color == removeLevel level == && removePerson fromPerson == && &&",
+    "cmd 'transfer' == transferColor color == && transferLevel level == fromPerson transferPerson == && &&",
+    "cmd 'add' == fromPerson 'empty' == &&",
+    ""
+  ],
+  "Markings": [
+    "",
+    "",
+    "",
+    "",
+    "['Red',1,'empty','Bob','add']"
+  ],
+  "T": 4,
+  "Variables": [
+    [
+      [
+        1,
+        "color,level,fromPerson,toPerson,cmd"
+      ],
+      [
+        3,
+        "removeColor,removeLevel,removePerson"
+      ]
+    ],
+    [
+      [
+        1,
+        "color,level,fromPerson,toPerson,cmd"
+      ],
+      [
+        3,
+        "transferColor,transferLevel,transferPerson"
+      ]
+    ],
+    [
+      [
+        1,
+        "color,level,fromPerson,toPerson,cmd"
+      ]
+    ],
+    [
+      [
+        4,
+        "color,level,fromPerson,toPerson,cmd"
+      ]
+    ]
+  ],
+  "inPlace": [
+    [
+      1,
+      3
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      1
+    ],
+    [
+      4
+    ]
+  ],
+  "outPlace": [
+    [
+      0
+    ],
+    [
+      3
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      1
+    ]
+  ],
+  "placeToColor": {
+    "0": "UNIT",
+    "1": "STRING*INT*STRING*STRING*STRING",
+    "2": "UNIT",
+    "3": "STRING*INT*STRING",
+    "4": "STRING*INT*STRING*STRING*STRING"
+  },
+  "placeToType": {
+    "0": "UNIT",
+    "1": "TRANSACTION",
+    "2": "UNIT",
+    "3": "MARBLE",
+    "4": "TRANSACTION"
+  },
+  "typeToColor": {
+    "TRANSACTION": "STRING*INT*STRING*STRING*STRING",
+    "MARBLE": "STRING*INT*STRING"
+  }
+}

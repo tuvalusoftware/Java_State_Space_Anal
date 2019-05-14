@@ -12,10 +12,7 @@ package Solver;
 
 import org.javatuples.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Place extends Node {
 
@@ -119,7 +116,14 @@ public class Place extends Node {
     }
 
     List<LinearSystem> getListSystem(Transition transition) {
-        return linearSystemMap.get(transition);
+        if (linearSystemMap.containsKey(transition)) {
+            return linearSystemMap.get(transition);
+        } else {
+            LinearSystem li = new LinearSystem(new HashSet<>());
+            List<LinearSystem> result = new ArrayList<>();
+            result.add(li);
+            return result;
+        }
     }
 
     List<LinearSystem> getAllListSystem() {

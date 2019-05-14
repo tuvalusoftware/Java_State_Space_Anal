@@ -82,11 +82,18 @@ public class App {
     @PostMapping(value = "/stuckquery")
     public String stuckQuery(@RequestBody String json) {
 
-        PetrinetModel model = Utils.parseJsonString(json);
-        Petrinet net = new Petrinet(model);
         StringBuilder response = new StringBuilder("{");
-
-        List<Binding> bindings = net.getListStuckBinding();
+        List<Binding> bindings;
+        try {
+            PetrinetModel model = Utils.parseJsonString(json);
+            Petrinet net = new Petrinet(model);
+            bindings = net.getListStuckBinding();
+        } catch (IllegalArgumentException e) {
+            return "{\"status\":400," +
+                    "\"error\":\"Error Params\"," +
+                    "\"message\":\"Check your petri net specification\"," +
+                    "\"path\":\"/stuckquery\"}";
+        }
 
         response.append("\"result\":").append(bindings.isEmpty()).append(",");
         response.append("\"error_binding\": [");

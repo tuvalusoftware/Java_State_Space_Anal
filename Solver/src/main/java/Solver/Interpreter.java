@@ -744,7 +744,9 @@ class Interpreter implements Serializable {
         switch (valueType) {
             case VARIABLE: {
                 String variableValue = variables.get(token);
-                if (variableValue == null) throw new IllegalArgumentException("Variable's values are not provided");
+                if (variableValue == null) {
+                    throw new IllegalArgumentException("Variable's values are not provided");
+                }
                 pushOperandToStack(variableValue);
                 break;
             }
