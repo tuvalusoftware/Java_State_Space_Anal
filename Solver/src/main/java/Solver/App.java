@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class App {
@@ -97,6 +98,32 @@ public class App {
         }
 
         response.append("]}");
+        return response.toString();
+    }
+
+    @CrossOrigin(origins = "*")
+    @PostMapping(value = "/getConnectionRules")
+    public String getConnectionRules(@RequestBody String json) {
+
+        PetrinetModel model = Utils.parseJsonString(json);
+        Petrinet net = new Petrinet(model);
+        StringBuilder response = new StringBuilder("{");
+
+        Map<Set<Place>, List<LinearSystem>> allSystems = net.generateMapAllSystemsFromStarts();
+        response.append("\"result\": {");
+
+        int index = 0;
+        for(Set<Place> places: allSystems.keySet()) {
+            String setAsString = places.stream()
+                    .map(key -> String.valueOf(key.getID()))
+                    .collect(Collectors.joining(", ", "[", "]"));
+            response.append("\"").append(index).append("\":").append(setAsString);
+            if (index + 1 < allSystems.size()) response.append(",");
+            index++;
+        }
+        response.append("},");
+        response.append("\"message\": \"success\"}");
+
         return response.toString();
     }
 
