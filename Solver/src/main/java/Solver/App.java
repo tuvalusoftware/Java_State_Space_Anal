@@ -133,7 +133,7 @@ public class App {
                 listResObj.add(setAsString);
             }
 
-            response.append("\"").append(i).append("\":[").append(String.join(",", listResObj)).append("]");
+            response.append("\"").append(endPlace.getID()).append("\":[").append(String.join(",", listResObj)).append("]");
             if (i + 1 < endPlaces.size()) response.append(",");
         }
 
