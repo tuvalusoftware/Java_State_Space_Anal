@@ -401,6 +401,19 @@ public class Petrinet implements Serializable {
         return result;
     }
 
+    Map<Place, List<LinearSystem>> generateMapAllSystemsFromEnds() {
+
+        Map<Place, List<LinearSystem>> res = new HashMap<>();
+
+        for(Place endPlace: places.values()) {
+            if (!endPlace.isEmptyOutput()) continue;
+            List<LinearSystem> systemFromEnds = generateListCompleteSystemsFromEnd(endPlace);
+            res.put(endPlace, systemFromEnds);
+        }
+
+        return res;
+    }
+
     Map<Set<Place>, List<LinearSystem>> generateMapAllSystemsFromStarts() {
 
         Map<Set<Place>, List<LinearSystem>> res = new HashMap<>();
@@ -410,9 +423,9 @@ public class Petrinet implements Serializable {
             List<LinearSystem> systemFromEnds = generateListCompleteSystemsFromEnd(endPlace);
 
             for(LinearSystem li: systemFromEnds) {
-                    Set<Place> inputPlaces = li.getInputPlaces();
-                    if (!res.containsKey(inputPlaces)) res.put(inputPlaces, new ArrayList<>());
-                    res.get(inputPlaces).add(li);
+                Set<Place> inputPlaces = li.getInputPlaces();
+                if (!res.containsKey(inputPlaces)) res.put(inputPlaces, new ArrayList<>());
+                res.get(inputPlaces).add(li);
             }
         }
 

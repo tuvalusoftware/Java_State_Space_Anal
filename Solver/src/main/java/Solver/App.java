@@ -116,18 +116,27 @@ public class App {
         Petrinet net = new Petrinet(model);
         StringBuilder response = new StringBuilder("{");
 
-        Map<Set<Place>, List<LinearSystem>> allSystems = net.generateMapAllSystemsFromStarts();
-        response.append("\"result\": {");
+        Map<Place, List<LinearSystem>> allSystems = net.generateMapAllSystemsFromEnds();
+        List<String> listResObj = new ArrayList<>();
+        List<Place> endPlaces = net.getEndPlaces();
 
-        int index = 0;
-        for(Set<Place> places: allSystems.keySet()) {
-            String setAsString = places.stream()
-                    .map(key -> String.valueOf(key.getID()))
-                    .collect(Collectors.joining(", ", "[", "]"));
-            response.append("\"").append(index).append("\":").append(setAsString);
-            if (index + 1 < allSystems.size()) response.append(",");
-            index++;
+        response.append("\"result\": {");
+        for(int i = 0; i < endPlaces.size(); i++) {
+
+            listResObj.clear();
+            Place endPlace = endPlaces.get(i);
+
+            for(LinearSystem li: allSystems.get(endPlace)) {
+                String setAsString = li.getInputPlaces().stream()
+                        .map(key -> String.valueOf(key.getID()))
+                        .collect(Collectors.joining(", ", "[", "]"));
+                listResObj.add(setAsString);
+            }
+
+            response.append("\"").append(i).append("\":[").append(String.join(",", listResObj)).append("]");
+            if (i + 1 < endPlaces.size()) response.append(",");
         }
+
         response.append("},");
         response.append("\"message\": \"success\"}");
 
